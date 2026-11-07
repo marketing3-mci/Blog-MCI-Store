@@ -1,0 +1,157 @@
+{
+  "posts": {
+    "p-aputure-storm-cs32": {
+      "autor": "MCI Store",
+      "capa": "",
+      "corpo": "",
+      "data": "2026-10-08",
+      "frente": "t",
+      "resumo": "3.200 W e temperatura de cor de 1.800 K a 20.000 K.",
+      "status": "publicado",
+      "titulo": "Aputure STORM CS32: potência para transformar sua iluminação",
+      "url": "https://mcistore.blog/aputure-storm-cs32-potencia-para-transformar-sua-iluminacao/",
+      "videoId": ""
+    },
+    "p-blair-aputure": {
+      "autor": "MCI Store",
+      "capa": "",
+      "corpo": "",
+      "data": "2026-06-22",
+      "frente": "m",
+      "resumo": "O que vimos em uma demonstração exclusiva no estande da Aputure.",
+      "status": "publicado",
+      "titulo": "Tecnologia BLAIR da Aputure: o futuro da iluminação LED",
+      "url": "https://mcistore.blog/tecnologia-blair-da-aputure-o-futuro-da-iluminacao-led-para-cinema-e-fotografia/",
+      "videoId": ""
+    },
+    "p-creamsource-c3": {
+      "autor": "MCI Store",
+      "capa": "",
+      "corpo": "",
+      "data": "2026-09-09",
+      "frente": "t",
+      "resumo": "3.000 W, foco de 18° a 60° e proteção IP65.",
+      "status": "publicado",
+      "titulo": "Creamsource lança o C3: Fresnel LED full-color para cinema",
+      "url": "https://mcistore.blog/creamsource-lanca-o-c3-fresnel-led-full-color-para-cinema/",
+      "videoId": ""
+    },
+    "p-dzofilm-arles-zoom": {
+      "autor": "MCI Store",
+      "capa": "",
+      "corpo": "",
+      "data": "2026-10-15",
+      "frente": "t",
+      "resumo": "A família Arles ganha zooms pensados para cineastas e diretores de fotografia.",
+      "status": "publicado",
+      "titulo": "Conheça as novas lentes da DZOFilm Arles Zoom: 25–75 mm e 65–180",
+      "url": "https://mcistore.blog/conheca-as-novas-lentes-da-dzofilm-arles-zoom-25-75-mm-e-65-180/",
+      "videoId": ""
+    },
+    "p-lente-anamorfica": {
+      "autor": "MCI Store",
+      "capa": "",
+      "corpo": "",
+      "data": "2026-09-23",
+      "frente": "s",
+      "resumo": "Bokeh, flares e o visual cinematográfico explicados na prática.",
+      "status": "publicado",
+      "titulo": "O que uma lente anamórfica realmente muda na imagem?",
+      "url": "https://mcistore.blog/o-que-uma-lente-anamorfica-realmente-muda-na-imagem/",
+      "videoId": ""
+    },
+    "p-swit-energia": {
+      "autor": "MCI Store",
+      "capa": "",
+      "corpo": "",
+      "data": "2026-08-25",
+      "frente": "s",
+      "resumo": "Quando a luz está perfeita, a energia não pode ser o problema.",
+      "status": "publicado",
+      "titulo": "A solução de energia Swit que sua produção precisa",
+      "url": "https://mcistore.blog/a-solucao-de-energia-swit-que-sua-producao-precisa/",
+      "videoId": ""
+    }
+  },
+  "videos": {},
+  "marcos": {
+    "m1": {
+      "ano": "2003",
+      "foto": "",
+      "local": "Fortaleza, CE",
+      "texto": "A MCI Store começa como uma empresa de tecnologia na capital do Ceará.",
+      "titulo": "Nasce em Fortaleza"
+    },
+    "m2": {
+      "ano": "a definir",
+      "foto": "",
+      "local": "",
+      "texto": "Em busca de novos horizontes, a empresa migra para o universo da fotografia profissional.",
+      "titulo": "Rumo à fotografia profissional"
+    },
+    "m3": {
+      "ano": "a definir",
+      "foto": "",
+      "local": "",
+      "texto": "Nessa jornada, a MCI encontra seu verdadeiro território: o cinema e o audiovisual.",
+      "titulo": "O território do cinema e do audiovisual"
+    },
+    "m4": {
+      "ano": "a definir",
+      "foto": "",
+      "local": "Fortaleza (CE), São Paulo (SP) e Itajaí (SC)",
+      "texto": "Filiais em Fortaleza e São Paulo e centro de distribuição em Itajaí.",
+      "titulo": "Presença em três regiões do Brasil"
+    },
+    "m5": {
+      "ano": "a definir",
+      "foto": "",
+      "local": "Miami, EUA",
+      "texto": "A MCI cruza fronteiras e passa a operar também nos Estados Unidos.",
+      "titulo": "Operação em Miami"
+    },
+    "m6": {
+      "ano": "2024",
+      "foto": "",
+      "local": "",
+      "texto": "Nasce a nova ID Visual da MCI, que será apresentada ao mercado aos poucos.",
+      "titulo": "Nova identidade visual"
+    },
+    "m7": {
+      "ano": "2026",
+      "foto": "",
+      "local": "",
+      "texto": "Portfólio selecionado, assistência técnica oficial, garantia nacional e uma frase que resume tudo: “É da MCI.”",
+      "titulo": "Mais de 23 anos de confiança"
+    }
+  },
+  "paginas": {},
+  "site": {
+    "config": {
+      "contatoEmail": "marketing@mcistore.com.br",
+      "contatoTel": "(85) 3254-4700",
+      "devNota": "",
+      "heroTexto": "Vídeos, bastidores e técnica de set com quem cria imagem em movimento, direto de Fortaleza para o mundo.",
+      "heroTitulo": "Tecnologia para contar histórias",
+      "menu": "Início | #\nVídeos | #videos\nLançamentos | #lancamentos\nDicas de set | #dicas\nGente | #gente\nEventos | #eventos\nSobre a MCI | #sobre\nLoja | https://www.mci.tv/",
+      "missao": "Conectar o audiovisual brasileiro às melhores tecnologias, marcas e conhecimentos do mundo, com curadoria, suporte e confiança, para que quem cria possa contar suas histórias em um nível mais alto.",
+      "missaoAtual": "",
+      "valores": "Curadoria: não vendemos tudo, vendemos o que acreditamos.\nConfiança: produto original, garantia, assistência e palavra cumprida. É da MCI.\nConhecimento aplicado: recomendamos explicando impacto, uso e limites.\nOrigem com alcance: Fortaleza como ponto de vista, o mundo como destino.\nAlma jovem e criatividade produtiva: curiosidade, agilidade e foco em fazer acontecer.\nComunidade e inclusão: crescemos com quem cria, de todos os perfis e regiões.",
+      "valoresAtual": "",
+      "videoSobre": "",
+      "visao": "Ser reconhecida, do Nordeste para o mundo, como a plataforma de tecnologia, conhecimento e conexão que impulsiona o audiovisual brasileiro.",
+      "visaoAtual": ""
+    }
+  },
+  "equipe": {
+    "e1793282456159": {
+      "email": "john.flavio@gmail.com",
+      "funcao": "desenvolvedor ",
+      "id": "e1793282456159",
+      "nivel": "Editor",
+      "nome": "John Flávio | Diretor ",
+      "obs": "",
+      "status": "Ativo"
+    }
+  }
+}
