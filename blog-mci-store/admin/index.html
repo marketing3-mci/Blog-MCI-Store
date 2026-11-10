@@ -77,6 +77,15 @@ h2{font-size:1.1rem;margin:0 0 1rem}
 .prev{position:relative;width:100%;max-width:420px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#000;margin-top:.8rem}
 .prev.v{aspect-ratio:9/16;max-width:320px}
 .prev iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.player-midia{position:relative;width:100%;max-width:340px;border-radius:8px;overflow:hidden;background:#000;margin-top:.8rem}
+.p-iframe{aspect-ratio:var(--prop,.56);background:#fff}.p-facade{aspect-ratio:16/9;max-width:480px}
+.p-iframe iframe,.p-facade iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.p-arquivo{max-width:480px}.p-arquivo video{display:block;width:100%;max-height:60vh}
+.facade{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;color:#fff;background:#0B3A33 center/cover}
+.facade .play{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(14,17,16,.62);border:2px solid #fff}
+.facade .play::after{content:"";position:absolute;left:21px;top:15px;border-left:17px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent}
+.facade .cap{display:none}
+.barra{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:.5rem}.barra i{display:block;height:100%;width:0;background:var(--teal);transition:width .2s}
 .checks{display:grid;gap:.35rem;max-height:220px;overflow:auto;padding:.6rem;border:1px solid var(--line);border-radius:8px}
 .checks label{display:flex;gap:.5rem;align-items:center;color:var(--txt);margin:0;font-size:.9rem}
 .checks input{width:auto}
@@ -125,6 +134,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     <button data-v="painel">Painel</button>
     <button data-v="posts">Posts</button>
     <button data-v="videos">Vídeos das redes</button>
+    <button data-v="destaques">Destaque da semana</button>
     <button data-v="historia">História da MCI</button>
     <button data-v="mvv">Missão, visão e valores</button>
     <button data-v="paginas">Páginas</button>
@@ -147,7 +157,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 <script src="/assets/mci.js"></script>
 <script>
 (function () {
-  const { db, C, FRENTES, esc, urlSegura, emb, dataBR } = window.MCI;
+  const { db, C, FRENTES, SECOES, esc, urlSegura, emb, player, dataBR } = window.MCI;
   const $ = s => document.querySelector(s);
   const RANK = { leitor: 1, colaborador: 2, editor: 3, admin: 4 };
   const NIVEL_NOME = { leitor: "Leitor", colaborador: "Colaborador", editor: "Editor", admin: "Administrador (acesso total)" };
@@ -228,8 +238,47 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     raiz.querySelectorAll("[data-imgtira]").forEach(b => b.addEventListener("click", () => atualiza(b.dataset.imgtira, "")));
   }
 
+  // Envia um arquivo de vídeo (até 50 MB) para o Storage.
+  async function enviarVideo(arquivo, pasta, aoProgresso) {
+    if (!arquivo) return null;
+    if (!/^video\/(mp4|quicktime|webm)$/.test(arquivo.type)) { toast("Use um vídeo MP4, MOV ou WEBM.", true); return null; }
+    if (arquivo.size > 50 * 1024 * 1024) { toast("O vídeo tem " + Math.round(arquivo.size / 1048576) + " MB. O limite é 50 MB; para vídeos maiores, publique no YouTube e cole o link.", true); return null; }
+    const ext = { "video/mp4": "mp4", "video/quicktime": "mov", "video/webm": "webm" }[arquivo.type];
+    const caminho = "video/" + pasta + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + "." + ext;
+    if (aoProgresso) aoProgresso(30);
+    const { error } = await db.storage.from(C.BUCKET).upload(caminho, arquivo, { contentType: arquivo.type, upsert: false });
+    if (aoProgresso) aoProgresso(100);
+    if (error) { falhou(error); return null; }
+    return db.storage.from(C.BUCKET).getPublicUrl(caminho).data.publicUrl;
+  }
+
+  // Campo de vídeo: colar link (YouTube, Instagram, TikTok, Facebook) ou enviar arquivo.
+  function campoVideo(id, rotulo, valor, ajuda) {
+    return '<div class="campo"><label for="' + id + '">' + esc(rotulo) + '</label><input id="' + id + '" value="' + esc(valor || "") + '" placeholder="https://www.youtube.com/watch?v=… ou https://www.instagram.com/reel/…">' +
+      '<div class="acoes" style="justify-content:flex-start;margin-top:.5rem"><label class="btn sec" style="margin:0">Enviar arquivo de vídeo<input type="file" accept="video/mp4,video/quicktime,video/webm" hidden data-vid="' + id + '"></label>' +
+      '<button type="button" class="btn sec" data-vidtira="' + id + '">Remover vídeo</button></div>' +
+      '<div class="barra" id="' + id + 'Barra" hidden><i></i></div><div class="mut" id="' + id + 'Info" style="font-size:.85rem;margin-top:.3rem">' + esc(ajuda || "") + '</div><div id="' + id + 'Prev"></div></div>';
+  }
+  function ligarVideos(raiz, pasta) {
+    raiz.querySelectorAll("input[id]").forEach(inp => {
+      const prev = raiz.querySelector("#" + inp.id + "Prev"); if (!prev || !raiz.querySelector('[data-vid="' + inp.id + '"]')) return;
+      const mostra = () => { const e = emb(inp.value); prev.innerHTML = ""; raiz.querySelector("#" + inp.id + "Info").textContent = inp.value ? (e.rede ? "Reconhecido: " + e.rede : "Link não reconhecido. Use o link do vídeo/post, não o do perfil.") : raiz.querySelector("#" + inp.id + "Info").dataset.ajuda || ""; if (e.tipo) prev.appendChild(player(inp.value, {})); };
+      raiz.querySelector("#" + inp.id + "Info").dataset.ajuda = raiz.querySelector("#" + inp.id + "Info").textContent;
+      inp.addEventListener("change", mostra); mostra();
+      raiz.querySelector('[data-vid="' + inp.id + '"]').addEventListener("change", async ev => {
+        const barra = raiz.querySelector("#" + inp.id + "Barra"); barra.hidden = false;
+        const url = await enviarVideo(ev.target.files[0], pasta, pct => barra.firstChild.style.width = pct + "%");
+        barra.hidden = true; barra.firstChild.style.width = "0";
+        if (url) { inp.value = url; mostra(); toast("Vídeo enviado"); }
+      });
+      raiz.querySelector('[data-vidtira="' + inp.id + '"]').addEventListener("click", () => { inp.value = ""; mostra(); });
+    });
+  }
+
   function abrirDialogo(html, aoSalvar, aoMontar) {
-    const dlg = $("#dlg"), f = $("#dlgForm");
+    const dlg = $("#dlg"), velho = $("#dlgForm");
+    // Formulário novo a cada abertura: evita que ouvintes de um editor anterior continuem ativos.
+    const f = velho.cloneNode(false); velho.replaceWith(f);
     f.innerHTML = html;
     if (aoMontar) aoMontar(f);
     f.querySelector("[data-cancelar]")?.addEventListener("click", () => dlg.close());
@@ -252,7 +301,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       v.innerHTML = '<div class="topo"><div><h1>Olá' + (perfil.nome ? ", " + esc(perfil.nome) : "") + '</h1><p class="mut">Tudo o que aparece no blog é editado por aqui.</p></div><a class="btn" href="/" target="_blank" rel="noopener">Ver o blog ↗</a></div>' +
         '<div class="cards"><div class="card"><div class="num">' + c("publicado") + '</div>publicados</div><div class="card"><div class="num">' + c("agendado") + '</div>agendados</div><div class="card"><div class="num">' + c("rascunho") + '</div>rascunhos</div><div class="card"><div class="num">' + videos.length + '</div>vídeos</div><div class="card"><div class="num">' + marcos.filter(m => /definir/i.test(m.ano || "") || !m.ano).length + '</div>marcos sem ano</div></div>' +
         '<div class="grid2"><div class="card"><h2>Posts recentes</h2><div class="lista">' + (recentes.map(p => '<div><span class="tag ' + p.status + '">' + p.status + "</span>" + esc(p.titulo) + ' <span class="mut">· ' + dataBR(p.data) + "</span></div>").join("") || '<p class="mut">Nenhum post.</p>') + "</div></div>" +
-        '<div class="card"><h2>Antes de publicar</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>Título com só a primeira letra maiúscula.</li><li>Frente editorial escolhida.</li><li>Autor com nome (nunca e-mail).</li><li>Capa e, se houver, vídeo full ligado.</li><li>Autorização de imagem de quem aparece.</li></ul></div></div>';
+        '<div class="card"><h2>Antes de publicar</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>Título com só a primeira letra maiúscula.</li><li>Seção do blog escolhida.</li><li>Autor com nome (nunca e-mail).</li><li>Foto de capa e, se houver, o vídeo do post.</li><li>Autorização de imagem de quem aparece.</li></ul></div></div>';
     },
 
     async posts(v) {
@@ -264,7 +313,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         '<div class="filtros">' + ["todos"].concat(STATUS).map(s => '<button data-f="' + s + '" aria-pressed="' + (s === filtro) + '">' + s + "</button>").join("") + "</div>" +
         '<div class="lista">' + (lista.map(p => {
           const f = vid[p.video_id]; const n = (p.cortes || []).length;
-          return '<div class="item"><div class="th" style="background-image:' + (urlSegura(p.capa) ? "url('" + esc(p.capa) + "')" : "") + '"></div><div><div class="t">' + esc(p.titulo) + '</div><div class="s"><span class="tag ' + p.status + '">' + p.status + "</span>" + esc(FRENTES[p.frente] || "sem frente") + " · " + dataBR(p.data) +
+          return '<div class="item"><div class="th" style="background-image:' + ((urlSegura(p.capa) || emb(p.video_url).miniatura) ? "url('" + esc(urlSegura(p.capa) || emb(p.video_url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(p.titulo) + '</div><div class="s"><span class="tag ' + p.status + '">' + p.status + "</span>" + esc(SECOES[p.secao] || "sem seção") + " · " + dataBR(p.data) + (p.video_url ? " · com vídeo" : "") +
             (f || n ? "<br>Full: " + esc(f ? f.titulo : "—") + " | " + n + " cortes e posts" : "") + '</div></div><div class="acoes">' +
             (pode("colaborador") ? '<button class="btn sec" data-ed="' + esc(p.id) + '">Editar</button>' : "") +
             '<a class="btn sec" href="/?post=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener">Ver</a>' +
@@ -278,20 +327,59 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
     async videos(v) {
       const videos = await listar("videos", "criado_em");
-      v.innerHTML = '<div class="topo"><div><h1>Vídeos das redes</h1><p class="mut">Cole o link do Instagram, YouTube, TikTok ou Facebook. O vídeo continua na rede; o blog mostra o player.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Vídeos das redes</h1><p class="mut">Cole o link do Instagram, YouTube, TikTok ou Facebook. O vídeo continua na rede; o blog mostra o player. “Corte ou Reels” aparece nas trilhas; “Vídeo full” vira o destaque do topo; marque “no rodapé” para entrar no feed das redes.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
         '<div class="card" style="margin-bottom:1.5rem"><h2>Testar um link agora</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="teste">Link do vídeo</label><input id="teste" placeholder="https://www.instagram.com/reel/…"></div><div><button class="btn sec" id="btnTeste">Testar</button></div></div><div id="testeRes"></div></div>' +
-        '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + (urlSegura(x.capa) ? "url('" + esc(x.capa) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + esc(emb(x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
+        '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + ((urlSegura(x.capa) || emb(x.url).miniatura) ? "url('" + esc(urlSegura(x.capa) || emb(x.url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + (x.no_rodape ? '<span class="tag publicado">no rodapé</span>' : "") + esc(emb(x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
           (pode("colaborador") ? '<button class="btn sec" data-ed="' + esc(x.id) + '">Editar</button>' : "") + (pode("editor") ? '<button class="btn perigo" data-ex="' + esc(x.id) + '">Excluir</button>' : "") + "</div></div>").join("") || '<p class="mut">Nenhum vídeo cadastrado. O blog mostra as trilhas de exemplo enquanto isso.</p>') + "</div>";
       const testar = (url, alvo) => {
         const e = emb(url);
-        alvo.innerHTML = e.src ? '<p class="mut" style="margin:.8rem 0 0">Rede: <b>' + e.rede + '</b></p><div class="prev' + (e.vertical ? " v" : "") + '"><iframe src="' + esc(e.src) + '" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><p class="mut" style="font-size:.85rem">Se o quadro ficar vazio, o post pode ser privado ou a rede bloqueou a incorporação. O link continua válido.</p>'
-          : '<div class="aviso" style="margin-top:.8rem">Não reconheci esse link. Use o endereço do post/vídeo (não o do perfil).</div>';
+        alvo.innerHTML = e.tipo ? '<p class="mut" style="margin:.8rem 0 0">Rede: <b>' + e.rede + '</b>. É assim que ele aparece no blog.</p>' : '<div class="aviso" style="margin-top:.8rem">Não reconheci esse link. Use o endereço do post/vídeo (não o do perfil).</div>';
+        if (e.tipo) { alvo.appendChild(player(url, {})); alvo.insertAdjacentHTML("beforeend", '<p class="mut" style="font-size:.85rem">Se o quadro ficar vazio, o post pode ser privado ou a rede bloqueou a incorporação. O link continua válido.</p>'); }
       };
       v.querySelector("#btnTeste").onclick = () => testar(v.querySelector("#teste").value, v.querySelector("#testeRes"));
       v.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { const x = videos.find(y => y.id === b.dataset.ver); v.querySelector("#teste").value = x.url; testar(x.url, v.querySelector("#testeRes")); v.querySelector("#teste").scrollIntoView({ behavior: "smooth" }); });
       v.querySelector("#novo")?.addEventListener("click", () => editarVideo(null));
       v.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => editarVideo(videos.find(x => x.id === b.dataset.ed)));
       v.querySelectorAll("[data-ex]").forEach(b => b.onclick = async () => { const x = videos.find(y => y.id === b.dataset.ex); if (await excluir("videos", x.id, x.titulo)) render(); });
+    },
+
+    async destaques(v) {
+      const lista = await listar("destaques", "semana");
+      const TIPOS_D = ["Setup", "Bastidores", "Pergunta da galera", "Projeto"];
+      v.innerHTML = '<div class="topo"><div><h1>Destaque da semana</h1><p class="mut">A pessoa que aparece na faixa “Qual será o nosso próximo take?”. Só um destaque fica no ar por vez; os anteriores ficam guardados aqui.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Novo destaque</button>' : "") + "</div>" +
+        '<div class="lista">' + (lista.map(d => '<div class="item"><div class="th" style="background-image:' + ((urlSegura(d.foto) || emb(d.midia_url).miniatura) ? "url('" + esc(urlSegura(d.foto) || emb(d.midia_url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(d.nome) + (d.arroba ? ' <span class="mut">@' + esc(String(d.arroba).replace(/^@/, "")) + "</span>" : "") + '</div><div class="s">' + (d.ativo ? '<span class="tag publicado">no ar</span>' : "") + esc(d.tipo) + " · semana de " + dataBR(d.semana) + (d.titulo ? " · " + esc(d.titulo) : "") + '</div></div><div class="acoes">' +
+          (pode("colaborador") && !d.ativo ? '<button class="btn" data-ativar="' + esc(d.id) + '">Colocar no ar</button>' : "") + (pode("colaborador") && d.ativo ? '<button class="btn sec" data-tirar="' + esc(d.id) + '">Tirar do ar</button>' : "") +
+          (pode("colaborador") ? '<button class="btn sec" data-ed="' + esc(d.id) + '">Editar</button>' : "") + (pode("editor") ? '<button class="btn perigo" data-ex="' + esc(d.id) + '">Excluir</button>' : "") + "</div></div>").join("") ||
+          '<p class="mut">Nenhum destaque ainda. Enquanto isso, o blog mostra o adesivo da caixa.</p>') + "</div>";
+      const ativar = async id => {
+        const { error: e1 } = await db.from("destaques").update({ ativo: false }).eq("ativo", true);
+        if (e1) return falhou(e1);
+        if (id) { const { error: e2 } = await db.from("destaques").update({ ativo: true }).eq("id", id); if (e2) return falhou(e2); }
+        evento("mci:salvo", { tabela: "destaques", id }); toast(id ? "Destaque no ar" : "Destaque retirado"); render();
+      };
+      const form = d => '<h2>' + (d ? "Editar destaque" : "Novo destaque") + '</h2><div class="grid3"><div class="campo"><label for="nome">Nome</label><input id="nome" required value="' + esc(d?.nome || "") + '"></div><div class="campo"><label for="arroba">@ no Instagram/TikTok</label><input id="arroba" value="' + esc(d?.arroba || "") + '" placeholder="@usuario"></div>' +
+        '<div class="campo"><label for="tipo">Tipo</label><select id="tipo">' + TIPOS_D.map(t => "<option" + ((d?.tipo || "Setup") === t ? " selected" : "") + ">" + t + "</option>").join("") + "</select></div></div>" +
+        '<div class="grid2"><div class="campo"><label for="titulo">Título curto</label><input id="titulo" value="' + esc(d?.titulo || "") + '" placeholder="O setup de um curta em Juazeiro"></div><div class="campo"><label for="semana">Semana</label><input id="semana" type="date" value="' + esc(d?.semana || new Date().toISOString().slice(0, 10)) + '"></div></div>' +
+        '<div class="campo"><label for="texto">Texto (2 ou 3 frases)</label><textarea id="texto">' + esc(d?.texto || "") + "</textarea></div>" +
+        campoVideo("midia_url", "Vídeo ou post da pessoa", d?.midia_url, "Cole o link do Reels, TikTok ou YouTube, ou envie um arquivo de até 50 MB.") +
+        campoImagem("foto", "Foto (usada se não houver vídeo)", d?.foto) +
+        '<div class="campo"><label><input type="checkbox" id="ativo" style="width:auto" ' + (d?.ativo || !d ? "checked" : "") + '> Colocar no ar agora (substitui o destaque atual)</label></div>' +
+        '<div class="aviso">Confirme que a pessoa autorizou o uso da imagem e do conteúdo no blog.</div>' +
+        '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar destaque</button></div>';
+      const abrir = d => abrirDialogo(form(d), async f => {
+        const querAtivo = f.querySelector("#ativo").checked;
+        const dados = { nome: val(f, "nome"), arroba: val(f, "arroba"), tipo: val(f, "tipo"), titulo: val(f, "titulo"), semana: val(f, "semana"), texto: val(f, "texto"), midia_url: val(f, "midia_url"), foto: val(f, "foto"), ativo: false };
+        if (d?.ativo && querAtivo) delete dados.ativo;
+        const salvo = await salvar("destaques", dados, d?.id);
+        if (!salvo) return false;
+        if (querAtivo && !d?.ativo) await ativar(salvo.id);
+        return true;
+      }, f => { ligarImagens(f, "destaques"); ligarVideos(f, "destaques"); });
+      v.querySelector("#novo")?.addEventListener("click", () => abrir(null));
+      v.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => abrir(lista.find(x => x.id === b.dataset.ed)));
+      v.querySelectorAll("[data-ativar]").forEach(b => b.onclick = () => ativar(b.dataset.ativar));
+      v.querySelectorAll("[data-tirar]").forEach(b => b.onclick = () => ativar(null));
+      v.querySelectorAll("[data-ex]").forEach(b => b.onclick = async () => { const x = lista.find(y => y.id === b.dataset.ex); if (await excluir("destaques", x.id, x.nome)) render(); });
     },
 
     async historia(v) {
@@ -383,28 +471,30 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     abrirDialogo(
       "<h2>" + (p ? "Editar post" : "Novo post") + '</h2><div id="avisos"></div>' +
       '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(p?.titulo || "") + '"></div>' +
-      '<div class="grid3"><div class="campo"><label for="frente">Frente editorial</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (p?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div>' +
-      '<div class="campo"><label for="status">Status</label><select id="status">' + STATUS.map(s => "<option" + ((p?.status || "rascunho") === s ? " selected" : "") + ">" + s + "</option>").join("") + '</select></div>' +
+      '<div class="grid2"><div class="campo"><label for="secao">Seção do blog</label><select id="secao"><option value="">—</option>' + Object.entries(SECOES).map(([k, n]) => '<option value="' + k + '"' + (p?.secao === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div>' +
+      '<div class="campo"><label for="frente">Frente editorial</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (p?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div></div>' +
+      '<div class="grid2"><div class="campo"><label for="status">Status</label><select id="status">' + STATUS.map(s => "<option" + ((p?.status || "rascunho") === s ? " selected" : "") + ">" + s + "</option>").join("") + '</select></div>' +
       '<div class="campo"><label for="data">Data</label><input id="data" type="date" value="' + esc(p?.data || new Date().toISOString().slice(0, 10)) + '"></div></div>' +
       '<div class="grid2"><div class="campo"><label for="autor">Autor (nome)</label><input id="autor" value="' + esc(p?.autor || perfil.nome || "") + '"></div><div class="campo"><label for="url">Link da matéria original (opcional)</label><input id="url" value="' + esc(p?.url || "") + '"></div></div>' +
       '<div class="campo"><label for="resumo">Resumo</label><input id="resumo" maxlength="160" value="' + esc(p?.resumo || "") + '"><div class="cont" id="contResumo"></div></div>' +
       '<div class="campo"><label for="corpo">Texto (uma linha em branco entre parágrafos)</label><textarea id="corpo" style="min-height:200px">' + esc(p?.corpo || "") + "</textarea></div>" +
-      campoImagem("capa", "Capa do post", p?.capa) +
-      '<div class="grid2"><div class="campo"><label for="video_id">Vídeo full (destaque do post)</label><select id="video_id"><option value="">— nenhum —</option>' + opts + '</select></div><div class="campo"><label>Cortes, reels e posts ligados</label><div class="checks" id="cortes">' + (checks || '<span class="mut">Cadastre vídeos em “Vídeos das redes”.</span>') + "</div></div></div>" +
+      campoVideo("video_url", "Vídeo do post", p?.video_url, "Cole o link (YouTube, Instagram, TikTok, Facebook) ou envie um arquivo de até 50 MB. Aparece no topo da matéria.") +
+      campoImagem("capa", "Foto de capa", p?.capa) +
+      '<div class="grid2"><div class="campo"><label for="video_id">Vídeo da biblioteca (opcional)</label><select id="video_id"><option value="">— nenhum —</option>' + opts + '</select></div><div class="campo"><label>Cortes, reels e posts ligados</label><div class="checks" id="cortes">' + (checks || '<span class="mut">Cadastre vídeos em “Vídeos das redes”.</span>') + "</div></div></div>" +
       '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar post</button></div>',
       async f => {
-        const d = { titulo: val(f, "titulo"), frente: val(f, "frente"), status: val(f, "status"), data: val(f, "data"), autor: val(f, "autor"), url: val(f, "url"), resumo: val(f, "resumo"), corpo: val(f, "corpo"), capa: val(f, "capa"), video_id: val(f, "video_id"),
+        const d = { titulo: val(f, "titulo"), frente: val(f, "frente"), status: val(f, "status"), data: val(f, "data"), autor: val(f, "autor"), url: val(f, "url"), resumo: val(f, "resumo"), corpo: val(f, "corpo"), capa: val(f, "capa"), video_id: val(f, "video_id"), secao: val(f, "secao"), video_url: val(f, "video_url"),
           cortes: [...f.querySelectorAll("#cortes input:checked")].map(i => i.value).filter(x => x !== val(f, "video_id")) };
         return !!(await salvar("posts", d, p?.id));
       },
       f => {
-        ligarImagens(f, "posts");
+        ligarImagens(f, "posts"); ligarVideos(f, "posts");
         const av = () => {
           const t = f.querySelector("#titulo").value, a = [];
-          if (!f.querySelector("#frente").value) a.push("Escolha a frente editorial.");
+          if (!f.querySelector("#secao").value) a.push("Escolha a seção do blog (matéria, vídeo educativo, evento, produto ou cinema).");
           if (/@/.test(f.querySelector("#autor").value)) a.push("O autor parece um e-mail. Use o nome da pessoa.");
           const pal = t.split(/\s+/).filter(w => w.length > 3); if (pal.length >= 3 && pal.every(w => /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(w))) a.push("O título parece estar em Title Case. Em português, só a primeira palavra e nomes próprios vão em maiúscula.");
-          if (f.querySelector("#status").value === "publicado" && !f.querySelector("#capa").value) a.push("Post publicado sem capa.");
+          if (f.querySelector("#status").value === "publicado" && !f.querySelector("#capa").value && !emb(f.querySelector("#video_url").value).miniatura) a.push("Post publicado sem capa: adicione uma foto para a lista do blog.");
           f.querySelector("#avisos").innerHTML = a.map(x => '<div class="aviso">' + esc(x) + "</div>").join("");
           f.querySelector("#contResumo").textContent = f.querySelector("#resumo").value.length + "/160";
         };
@@ -417,16 +507,17 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       "<h2>" + (x ? "Editar vídeo" : "Adicionar vídeo") + '</h2><div class="campo"><label for="url">Link do vídeo</label><input id="url" required value="' + esc(x?.url || "") + '" placeholder="https://www.instagram.com/reel/…"><div class="mut" id="rede" style="font-size:.85rem;margin-top:.3rem"></div></div>' +
       '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(x?.titulo || "") + '"></div>' +
       '<div class="grid2"><div class="campo"><label for="tipo">Tipo</label><select id="tipo">' + TIPOS.map(t => "<option" + ((x?.tipo || "Corte ou Reels") === t ? " selected" : "") + ">" + t + "</option>").join("") + '</select></div><div class="campo"><label for="frente">Frente</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (x?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + "</select></div></div>" +
-      campoImagem("capa", "Capa do vídeo", x?.capa) + '<div id="prev"></div>' +
+      '<div class="campo"><label><input type="checkbox" id="no_rodape" style="width:auto" ' + (x?.no_rodape ? "checked" : "") + '> Mostrar no feed das redes, no rodapé do blog</label></div>' +
+      campoImagem("capa", "Capa (opcional; o Instagram e o TikTok já mostram a capa do próprio vídeo)", x?.capa) + '<div id="prev"></div>' +
       '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar vídeo</button></div>',
       async f => {
         const url = val(f, "url"), e = emb(url);
         if (!urlSegura(url)) { toast("Link inválido.", true); return false; }
-        return !!(await salvar("videos", { url, rede: e.rede || null, titulo: val(f, "titulo"), tipo: val(f, "tipo"), frente: val(f, "frente"), capa: val(f, "capa") }, x?.id));
+        return !!(await salvar("videos", { url, rede: e.rede || null, titulo: val(f, "titulo"), tipo: val(f, "tipo"), frente: val(f, "frente"), capa: val(f, "capa"), no_rodape: f.querySelector("#no_rodape").checked }, x?.id));
       },
       f => {
         ligarImagens(f, "videos");
-        const u = f.querySelector("#url"), mostra = () => { const e = emb(u.value); f.querySelector("#rede").textContent = u.value ? (e.rede ? "Reconhecido: " + e.rede : "Rede não reconhecida") : ""; f.querySelector("#prev").innerHTML = e.src ? '<div class="prev' + (e.vertical ? " v" : "") + '"><iframe src="' + esc(e.src) + '" allowfullscreen></iframe></div>' : ""; };
+        const u = f.querySelector("#url"), mostra = () => { const e = emb(u.value); f.querySelector("#rede").textContent = u.value ? (e.rede ? "Reconhecido: " + e.rede : "Rede não reconhecida") : ""; const pv = f.querySelector("#prev"); pv.innerHTML = ""; if (e.tipo) pv.appendChild(player(u.value, {})); };
         u.addEventListener("change", mostra); mostra();
       });
   }

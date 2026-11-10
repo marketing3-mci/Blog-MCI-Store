@@ -28,56 +28,85 @@ img{max-width:100%;display:block}
 :focus-visible{outline:3px solid var(--lime);outline-offset:3px}
 .wrap{width:min(1180px,100% - 2.5rem);margin-inline:auto}
 .dark{background:var(--ink);color:#F2F2F2}
-.btn{display:inline-block;padding:.8rem 1.4rem;border-radius:999px;background:var(--teal);color:#06130F;font-weight:600;text-decoration:none;border:2px solid var(--teal);cursor:pointer;font:inherit;font-weight:600}
+.btn{display:inline-block;padding:.8rem 1.4rem;border-radius:999px;background:var(--teal);color:#06130F;text-decoration:none;border:2px solid var(--teal);cursor:pointer;font:inherit;font-weight:600}
 .btn.ghost{background:transparent;color:#F2F2F2;border-color:rgba(242,242,242,.4)}
 .btn:hover{background:var(--mint);border-color:var(--mint);color:#06130F}
 .top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.3rem 0}
 .top img{height:38px;width:auto}
-.top nav{display:flex;gap:1.4rem;align-items:center;font-weight:500;font-size:.95rem;flex-wrap:wrap;justify-content:flex-end}
+.top nav{display:flex;gap:1.3rem;align-items:center;font-weight:500;font-size:.95rem;flex-wrap:wrap;justify-content:flex-end}
 .top nav a{text-decoration:none;color:#cfe3dd}.top nav a:hover{color:#fff}
 .hero{background:radial-gradient(60% 80% at 100% 0%,rgba(28,166,141,.35),transparent 65%),var(--ink)}
 .hero-body{display:grid;grid-template-columns:1fr 1.1fr;gap:3rem;align-items:center;padding:clamp(2rem,6vw,4.5rem) 0 clamp(3.5rem,8vw,6rem)}
 h1{font:500 clamp(2rem,4.6vw,3.6rem)/1.1 var(--disp);letter-spacing:-.03em;margin:0 0 1.2rem}
 .hero p{color:#cfe3dd;font-size:1.08rem;max-width:44ch;margin:0 0 1.8rem}
 .cta{display:flex;flex-wrap:wrap;gap:.8rem}
+/* Moldura de visor (assinatura visual do adesivo) */
 .vf{position:relative}
 .vf::before{content:"";position:absolute;inset:var(--o,-14px);pointer-events:none;z-index:2;background:var(--ln) top left/26px 3px,var(--ln) top left/3px 26px,var(--ln) top right/26px 3px,var(--ln) top right/3px 26px,var(--ln) bottom left/26px 3px,var(--ln) bottom left/3px 26px,var(--ln) bottom right/26px 3px,var(--ln) bottom right/3px 26px;background-repeat:no-repeat}
 .player::before{animation:focus 1.4s cubic-bezier(.2,.8,.2,1) backwards}
 @keyframes focus{from{inset:-46px;opacity:.15}to{inset:-14px;opacity:1}}
 @media (prefers-reduced-motion:reduce){.player::before{animation:none}}
-.screen{display:block;width:100%;aspect-ratio:16/9;border-radius:4px;border:0;padding:0;text-decoration:none;color:#fff;position:relative;overflow:hidden;cursor:pointer;background:radial-gradient(70% 90% at 80% 10%,rgba(171,217,126,.5),transparent 60%),linear-gradient(135deg,#0B3A33,#1CA68D 70%,#4EBF8B);background-size:cover;background-position:center;font:inherit;text-align:left}
-.screen.vert{aspect-ratio:9/16;width:100%;max-width:340px;margin-inline:auto}
-.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* Players de vídeo */
+.player-midia{position:relative;width:100%;border-radius:6px;overflow:hidden;background:#0b0f0e}
+.p-iframe{aspect-ratio:var(--prop,.56);background:#fff}
+.p-facade{aspect-ratio:16/9}
+.p-iframe iframe,.p-facade iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.p-arquivo video{display:block;width:100%;max-height:80vh;background:#000}
+.facade{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;cursor:pointer;color:#fff;text-align:left;font:inherit;background:radial-gradient(70% 90% at 80% 10%,rgba(171,217,126,.5),transparent 60%),linear-gradient(135deg,#0B3A33,#1CA68D 70%,#4EBF8B);background-size:cover;background-position:center}
+.hero .p-iframe{max-width:380px;margin-inline:auto}
 .play{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:rgba(14,17,16,.62);border:2px solid #fff}
 .play::after{content:"";position:absolute;left:30px;top:22px;border-left:22px solid #fff;border-top:15px solid transparent;border-bottom:15px solid transparent}
-.screen:hover .play{background:var(--teal)}
+.facade:hover .play{background:var(--teal)}
 .cap{position:absolute;left:0;right:0;bottom:0;padding:1.2rem 1.3rem;background:linear-gradient(transparent,rgba(0,0,0,.72))}
-.cap b{display:block;font-size:1.1rem;font-weight:600}.cap span{font-size:.9rem;color:#dff1ec}
-section{padding:clamp(3rem,7vw,5rem) 0}
+.cap b{display:block;font-size:1.05rem;font-weight:600}.cap span{font-size:.88rem;color:#dff1ec}
+.screen{display:block;aspect-ratio:16/9;border-radius:4px;text-decoration:none;color:#fff;position:relative;overflow:hidden;background:radial-gradient(70% 90% at 80% 10%,rgba(171,217,126,.5),transparent 60%),linear-gradient(135deg,#0B3A33,#1CA68D 70%,#4EBF8B)}
+section{padding:clamp(3rem,7vw,5rem) 0;scroll-margin-top:1rem}
 h2{font:500 clamp(1.5rem,3vw,2.2rem)/1.15 var(--disp);letter-spacing:-.02em;margin:0 0 .7rem}
 .lead{max-width:58ch;margin:0 0 2.2rem;color:var(--muted)}
 .dark .lead{color:#b9d1ca}
-.reels{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6rem}
-.reel{text-decoration:none;display:block;background:none;border:0;padding:0;color:inherit;text-align:left;cursor:pointer;font:inherit}
-.reel .v{aspect-ratio:9/14;border-radius:4px;background:var(--g);background-size:cover;background-position:center;position:relative;display:flex;align-items:flex-end;padding:1rem;--o:-8px;color:#fff}
+/* Trilhas */
+.reels{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6rem;align-items:start}
+.reel{display:block;color:inherit;text-decoration:none}
+.reel .vf{--o:-8px}
+.reel .v{aspect-ratio:9/14;border-radius:4px;background:var(--g);position:relative;display:flex;align-items:flex-end;padding:1rem;color:#fff}
 .reel .v::after{content:attr(data-d);position:absolute;top:.8rem;right:.8rem;padding:.1rem .55rem;border-radius:999px;background:rgba(0,0,0,.55);font-size:.78rem;font-weight:500}
-.reel .v[data-d=""]::after{display:none}
-.reel .v b{font:600 1.05rem/1.3 var(--sans);position:relative;z-index:1;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.reel .v b{font:600 1.05rem/1.3 var(--sans)}
 .reel h3{margin:1rem 0 .2rem;font-size:1rem;font-weight:600;color:var(--mint)}
 .reel p{margin:0;font-size:.9rem;color:#b9d1ca}
-.reel:hover .v{filter:brightness(1.12)}
+.reel a.abrir{color:#cfe3dd;font-size:.85rem}
+/* Leituras */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:-1rem 0 1.6rem}
+.chips button{font:inherit;font-size:.9rem;padding:.4rem .95rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#06130F;font-weight:600}
 .rows{border-top:1px solid var(--line)}
-.row{display:grid;grid-template-columns:11rem 1fr auto;gap:1.5rem;align-items:baseline;padding:1.1rem 0;border-bottom:1px solid var(--line);text-decoration:none}
-.row b{color:var(--at);font-weight:600;font-size:.92rem}.row span{font-size:1.05rem;font-weight:500}.row time{color:var(--muted);font-size:.88rem;white-space:nowrap}
+.row{display:grid;grid-template-columns:96px 11rem 1fr auto;gap:1.3rem;align-items:center;padding:.9rem 0;border-bottom:1px solid var(--line);text-decoration:none}
+.row .th{width:96px;aspect-ratio:16/10;border-radius:4px;background:linear-gradient(135deg,#0B3A33,#1CA68D);background-size:cover;background-position:center;position:relative}
+.row .th.v::after{content:"";position:absolute;left:50%;top:50%;margin:-9px 0 0 -6px;border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.row b{color:var(--at);font-weight:600;font-size:.88rem}.row span{font-size:1.05rem;font-weight:500}.row time{color:var(--muted);font-size:.88rem;white-space:nowrap}
 .row:hover span{text-decoration:underline;text-decoration-color:var(--teal);text-underline-offset:4px}
 .vazio{color:var(--muted);padding:1rem 0}
+/* Cinema */
+.cinema{background:radial-gradient(50% 70% at 0% 100%,rgba(28,166,141,.25),transparent 60%),#0a0d0c;color:#F2F2F2}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem}
+.card{display:block;text-decoration:none;color:inherit}
+.card .th{aspect-ratio:16/9;border-radius:4px;background:linear-gradient(135deg,#15322C,#1CA68D);background-size:cover;background-position:center}
+.card b{display:block;margin:.9rem 0 .2rem;font-size:1.05rem}
+.card p{margin:0;color:#b9d1ca;font-size:.92rem}
+/* Destaque da semana */
 .setup{background:linear-gradient(135deg,#0F8C80,#1CA68D 55%,#34B8A0);color:#fff}
 .setup .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:3rem;align-items:center}
 .setup p{max-width:48ch;font-size:1.05rem}
 .setup .btn{background:#0E1110;border-color:#0E1110;color:#fff}.setup .btn:hover{background:#fff;color:#0E1110}
-.setup img{width:min(300px,100%);margin-inline:auto;border-radius:4px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.setup .adesivo{width:min(300px,100%);margin-inline:auto;border-radius:4px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.selo{display:inline-block;background:#0E1110;color:var(--lime);font:600 .78rem var(--disp);letter-spacing:.04em;text-transform:uppercase;padding:.35rem .8rem;border-radius:999px;margin-bottom:1rem}
+.pessoa{background:rgba(14,17,16,.18);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:1.1rem 1.2rem;margin:1.4rem 0;max-width:48ch}
+.pessoa strong{display:block;font-size:1.15rem}.pessoa small{color:#e3f6f1}
+.pessoa h3{margin:.6rem 0 .3rem;font-size:1.05rem}
+.pessoa p{margin:0;font-size:.98rem}
+.midia-destaque{max-width:380px;width:100%;margin-inline:auto;--o:-10px}
+.midia-destaque img{border-radius:6px;width:100%}
 /* Sobre / história */
-.linha{list-style:none;margin:0;padding:0;display:grid;gap:0;border-left:2px solid var(--teal);margin-left:.4rem}
+.linha{list-style:none;margin:0;padding:0;border-left:2px solid var(--teal);margin-left:.4rem}
 .linha li{position:relative;padding:0 0 2rem 1.8rem}
 .linha li::before{content:"";position:absolute;left:-.48rem;top:.35rem;width:.8rem;height:.8rem;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px var(--bg)}
 .linha .ano{font:600 .9rem var(--disp);color:var(--at)}
@@ -91,27 +120,36 @@ h2{font:500 clamp(1.5rem,3vw,2.2rem)/1.15 var(--disp);letter-spacing:-.02em;marg
 .mvv h3{margin:0 0 .4rem;font:600 1rem var(--disp);color:var(--at)}
 .mvv p,.mvv li{margin:0;color:var(--text)}
 .mvv ul{margin:0;padding-left:1.1rem;display:grid;gap:.35rem}
-/* Post e páginas */
+/* Post, vídeo e páginas */
 .artigo{max-width:760px;margin-inline:auto}
 .artigo .meta{color:var(--muted);font-size:.92rem;margin-bottom:1.5rem}
 .artigo .capa{width:100%;border-radius:4px;margin:0 0 2rem}
+.artigo .bloco-video{margin:0 auto 2rem}
+.artigo .bloco-video .p-iframe{max-width:420px;margin-inline:auto}
 .artigo .corpo p{font-size:1.08rem;margin:0 0 1.1rem}
-.artigo .cortes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem;margin:2rem 0}
+.artigo .cortes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.4rem;margin:2rem 0}
 .voltar{display:inline-block;margin-bottom:1.5rem;color:var(--at);font-weight:600;text-decoration:none}
+/* Rodapé */
 .cine{display:flex;align-items:center;gap:1.5rem;padding:2rem 0;border-bottom:1px solid #26302d}
 .cine img{height:84px;width:auto}.cine p{margin:0;color:#b9d1ca;max-width:60ch}
+.feed{padding:2.2rem 0;border-bottom:1px solid #26302d}
+.feed-topo{display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.feed-topo h2{font-size:1.2rem;margin:0;color:#F2F2F2}
+.feed-topo .seguir{display:flex;gap:.6rem;flex-wrap:wrap}
+.feed-topo .btn{padding:.5rem 1rem;font-size:.9rem}
+.feed-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.2rem;align-items:start}
 footer{padding:2.2rem 0 2.6rem;font-size:.92rem;color:#b9d1ca}
 footer .cols{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.5rem;padding-top:2rem}
-footer img{height:34px;width:auto;margin-bottom:.6rem}
-@media (max-width:900px){.hero-body,.setup .wrap,.sobre-grid{grid-template-columns:1fr}.reels{grid-template-columns:1fr 1fr}.top nav a:not(.btn){display:none}.row{grid-template-columns:1fr auto}.row b{grid-column:1/-1}}
-@media (max-width:520px){.reels{grid-template-columns:1fr}.reel .v{aspect-ratio:16/10}.cine{flex-direction:column;align-items:flex-start}}
+footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
+@media (max-width:900px){.hero-body,.setup .wrap,.sobre-grid{grid-template-columns:1fr}.reels{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}.top nav a:not(.btn){display:none}.row{grid-template-columns:80px 1fr auto}.row .th{width:80px}.row b{display:none}}
+@media (max-width:560px){.reels,.cards{grid-template-columns:1fr}.reels .p-iframe{max-width:340px;margin-inline:auto}.cine{flex-direction:column;align-items:flex-start}.row{grid-template-columns:72px 1fr}.row .th{width:72px}.row time{grid-column:2}}
 </style>
 </head>
 <body>
 <header class="dark hero">
   <div class="wrap top">
     <a href="/" aria-label="Início"><img src="/assets/logo-principal.png" alt="MCI"></a>
-    <nav id="nav"><a href="#videos">Vídeos</a><a href="#leituras">Leituras</a><a href="#sobre">Sobre a MCI</a><a class="btn ghost" href="https://www.mci.tv/">Loja</a></nav>
+    <nav id="nav"><a href="#videos">Vídeos</a><a href="#leituras">Leituras</a><a href="#cinema">Cinema</a><a href="#sobre">Sobre a MCI</a><a class="btn ghost" href="https://www.mci.tv/">Loja</a></nav>
   </div>
   <div class="wrap hero-body" id="hero">
     <div>
@@ -135,8 +173,17 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
 <section id="leituras">
   <div class="wrap">
     <h2>Para ler com calma</h2>
-    <p class="lead">Lançamentos e explicações técnicas continuam aqui, mas agora organizados por quem vai usar.</p>
+    <p class="lead">Matérias, vídeos educativos, eventos e lançamentos, organizados por quem vai usar.</p>
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por seção"></div>
     <div class="rows" id="rows"><p class="vazio">Carregando…</p></div>
+  </div>
+</section>
+
+<section class="cinema" id="cinema">
+  <div class="wrap">
+    <h2>Cinema em alta</h2>
+    <p class="lead">Filmes e séries que estão dando o que falar, e o equipamento por trás de cada cena.</p>
+    <div class="cards" id="cinemaCards"></div>
   </div>
 </section>
 
@@ -154,12 +201,13 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
 
 <section class="setup" id="setup">
   <div class="wrap">
-    <div>
+    <div id="setupTexto">
       <h2>Qual será o nosso próximo take?</h2>
       <p>Recebeu sua caixa? Poste, marque a gente e bora inovar nesse setup! Os melhores setups, bastidores e perguntas da galera viram vídeo aqui no blog.</p>
+      <div id="pessoa"></div>
       <a class="btn" href="https://www.instagram.com/mcistore/">Marcar @mcistore</a>
     </div>
-    <img src="/assets/adesivo-caixa.jpg" alt="Adesivo da caixa MCI: Seu pedido chegou! Tecnologia para contar histórias." loading="lazy">
+    <div id="setupMidia"><img class="adesivo" src="/assets/adesivo-caixa.jpg" alt="Adesivo da caixa MCI: Seu pedido chegou! Tecnologia para contar histórias." loading="lazy"></div>
   </div>
 </section>
 </main>
@@ -169,6 +217,10 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
 <footer class="dark">
   <div class="wrap">
     <div class="cine"><img src="/assets/cinepro.png" alt="CinePro Solutions" loading="lazy"><p>CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.</p></div>
+    <div class="feed" id="feed" hidden>
+      <div class="feed-topo"><h2>A MCI nas redes</h2><div class="seguir"><a class="btn ghost" href="https://www.instagram.com/mcistore/" target="_blank" rel="noopener">Seguir no Instagram</a><a class="btn ghost" href="https://www.tiktok.com/@mcistore_" target="_blank" rel="noopener">Seguir no TikTok</a></div></div>
+      <div class="feed-grade" id="feedGrade"></div>
+    </div>
     <div class="cols">
       <div><img src="/assets/logo-branca.png" alt="MCI" loading="lazy">Ceará, Santa Catarina, São Paulo e Miami</div>
       <div>Instagram e Facebook @mcistore<br>TikTok @mcistore_<br>YouTube @mcistore.oficial</div>
@@ -182,7 +234,7 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
 <script src="/assets/mci.js"></script>
 <script>
 (async function () {
-  const { db, C, FRENTES, esc, urlSegura, emb, menu, dataBR, paragrafos } = window.MCI;
+  const { db, C, FRENTES, SECOES, esc, urlSegura, emb, player, menu, dataBR, paragrafos } = window.MCI;
   const $ = id => document.getElementById(id);
   const GRAD = ["linear-gradient(160deg,#0B3A33,#1CA68D)","linear-gradient(160deg,#10301F,#4EBF8B)","linear-gradient(160deg,#15322C,#7FB96A)","linear-gradient(160deg,#0E1110,#2B8E86)"];
   const TRILHAS_EXEMPLO = [
@@ -191,35 +243,17 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
     ["Do roteiro à tela: um curta cearense","Do roteiro à tela","Projetos que saíram do papel, com resultado na tela.","4:30"],
     ["Anamórfica em 60 segundos","Em 60 segundos","Resposta direta para quem tem pressa.","0:58"]
   ];
-
-  // Capa clicável que vira player só ao clicar (carrega mais rápido e respeita privacidade).
-  function telaVideo(v, opts) {
-    opts = opts || {};
-    const e = emb(v && v.url);
-    const capa = v && urlSegura(v.capa);
-    const vert = opts.vertical != null ? opts.vertical : e.vertical;
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "screen" + (vert && !opts.forcarHorizontal ? " vert" : "");
-    if (capa) b.style.backgroundImage = "linear-gradient(transparent 55%,rgba(0,0,0,.55)),url('" + capa.replace(/'/g, "%27") + "')";
-    b.setAttribute("aria-label", "Assistir: " + ((v && v.titulo) || "vídeo"));
-    b.innerHTML = '<span class="play"></span><span class="cap"><b>' + esc((v && v.titulo) || "") + "</b><span>" + esc(opts.legenda || (e.rede ? "Assista no " + e.rede : "")) + "</span></span>";
-    b.addEventListener("click", () => {
-      if (!e.src) { const u = urlSegura(v && v.url); if (u) window.open(u, "_blank", "noopener"); return; }
-      b.innerHTML = '<iframe src="' + esc(e.src) + '" title="' + esc(v.titulo || "Vídeo") + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>';
-      const sep = e.src.includes("?") ? "&" : "?";
-      if (/youtube/.test(e.src)) b.querySelector("iframe").src = e.src + sep + "autoplay=1";
-    }, { once: !!e.src });
-    return b;
-  }
+  // Itens do menu que filtram as leituras
+  const HASH_SECAO = { lancamentos: "produto", produtos: "produto", dicas: "educativo", educativos: "educativo", eventos: "evento", materias: "materia" };
 
   // ---- Dados
-  const [cfgR, postsR, videosR, marcosR, paginasR] = await Promise.all([
+  const [cfgR, postsR, videosR, marcosR, paginasR, destR] = await Promise.all([
     db.from("site_config").select("*").eq("id", "config").maybeSingle(),
     db.from("posts").select("*").eq("status", "publicado").order("data", { ascending: false }),
     db.from("videos").select("*").order("criado_em", { ascending: false }),
     db.from("marcos").select("*").order("ordem"),
-    db.from("paginas").select("*").order("titulo")
+    db.from("paginas").select("*").order("titulo"),
+    db.from("destaques").select("*").eq("ativo", true).limit(1).maybeSingle()
   ]);
   const erro = [cfgR, postsR, videosR, marcosR, paginasR].find(r => r.error);
   const cfg = cfgR.data || {};
@@ -231,17 +265,27 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
     return (na - nb) || (a.ordem - b.ordem);
   });
   const paginas = paginasR.data || [];
+  const destaque = destR.data || null;
   const videoPorId = Object.fromEntries(videos.map(v => [v.id, v]));
+
+  // Miniatura de um post: capa > miniatura do vídeo do post > miniatura do vídeo full ligado
+  function miniaturaPost(p) {
+    const vf = videoPorId[p.video_id];
+    return urlSegura(p.capa) || emb(p.video_url).miniatura || (vf && (urlSegura(vf.capa) || emb(vf.url).miniatura)) || "";
+  }
+  const temVideo = p => !!(p.video_url || p.video_id);
+  const linkPost = p => ((p.corpo && p.corpo.trim()) || temVideo(p) || p.capa) ? "?post=" + encodeURIComponent(p.id) : (urlSegura(p.url) || "?post=" + encodeURIComponent(p.id));
 
   // ---- Menu
   const itens = menu(cfg.menu);
   paginas.filter(p => p.menu).forEach(p => itens.splice(Math.max(itens.length - 1, 0), 0, { rotulo: p.titulo, destino: "?pagina=" + p.slug }));
   if (itens.length) {
     $("nav").innerHTML = itens.map(i => {
-      const loja = /loja/i.test(i.rotulo);
-      const href = i.destino.startsWith("#") || i.destino.startsWith("?") ? i.destino : urlSegura(i.destino);
       if (i.destino === "#") return "";
-      return '<a ' + (loja ? 'class="btn ghost" ' : "") + 'href="' + esc(href || "#") + '">' + esc(i.rotulo) + "</a>";
+      const loja = /loja/i.test(i.rotulo);
+      const interno = i.destino.startsWith("#") || i.destino.startsWith("?");
+      const href = interno ? (location.search && i.destino.startsWith("#") ? "/" + i.destino : i.destino) : urlSegura(i.destino);
+      return "<a " + (loja ? 'class="btn ghost" ' : "") + 'href="' + esc(href || "#") + '">' + esc(i.rotulo) + "</a>";
     }).join("");
   }
 
@@ -249,7 +293,7 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
   if (cfg.hero_titulo) $("heroTitulo").textContent = cfg.hero_titulo;
   if (cfg.hero_texto) $("heroTexto").textContent = cfg.hero_texto;
   const full = videos.find(v => v.tipo === "Vídeo full");
-  if (full) $("destaque").appendChild(telaVideo(full, { forcarHorizontal: true }));
+  if (full) $("destaque").appendChild(player(full.url, { titulo: full.titulo, capa: full.capa }));
   else {
     const a = document.createElement("a");
     a.className = "screen"; a.href = C.CANAL_YOUTUBE;
@@ -257,39 +301,63 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
     $("destaque").appendChild(a);
   }
 
-  // ---- Trilhas (cortes e reels)
+  // ---- Trilhas: o vídeo aparece direto no cartão
   const cortes = videos.filter(v => v.tipo !== "Vídeo full").slice(0, 8);
-  const reels = $("reels");
   if (cortes.length) {
-    cortes.forEach((v, i) => {
-      const b = document.createElement("button");
-      b.type = "button"; b.className = "reel";
-      const capa = urlSegura(v.capa);
-      b.innerHTML = '<div class="v vf" data-d="' + esc(emb(v.url).rede) + '" style="--g:' + (capa ? "linear-gradient(transparent 50%,rgba(0,0,0,.6)),url(\'" + esc(capa).replace(/'/g, "%27") + "\')" : GRAD[i % 4]) + '"><b>' + esc(v.titulo) + "</b></div><h3>" + esc(FRENTES[v.frente] || v.tipo) + "</h3><p>" + esc(v.tipo) + "</p>";
-      b.addEventListener("click", () => abrirVideo(v));
-      reels.appendChild(b);
+    cortes.forEach(v => {
+      const d = document.createElement("div"); d.className = "reel";
+      const moldura = document.createElement("div"); moldura.className = "vf";
+      moldura.appendChild(player(v.url, { titulo: v.titulo, capa: v.capa }));
+      d.appendChild(moldura);
+      d.insertAdjacentHTML("beforeend", "<h3>" + esc(FRENTES[v.frente] || v.tipo) + "</h3><p>" + esc(v.titulo) + "</p>");
+      $("reels").appendChild(d);
     });
   } else {
-    reels.innerHTML = TRILHAS_EXEMPLO.map((t, i) => '<div class="reel"><div class="v vf" data-d="' + t[3] + '" style="--g:' + GRAD[i] + '"><b>' + t[0] + "</b></div><h3>" + t[1] + "</h3><p>" + t[2] + "</p></div>").join("");
+    $("reels").innerHTML = TRILHAS_EXEMPLO.map((t, i) => '<div class="reel"><div class="v vf" data-d="' + t[3] + '" style="--g:' + GRAD[i] + ';--o:-8px"><b>' + t[0] + "</b></div><h3>" + t[1] + "</h3><p>" + t[2] + "</p></div>").join("");
   }
 
-  // ---- Leituras
-  if (erro && !posts.length) {
-    $("rows").innerHTML = '<p class="vazio">Não foi possível carregar as matérias agora. Tente de novo em instantes.</p>';
-  } else if (!posts.length) {
-    $("rows").innerHTML = '<p class="vazio">Nenhuma matéria publicada ainda.</p>';
-  } else {
-    $("rows").innerHTML = posts.map(p => {
-      const temTexto = (p.corpo && p.corpo.trim()) || p.video_id;
-      const href = temTexto ? "?post=" + encodeURIComponent(p.id) : (urlSegura(p.url) || "?post=" + encodeURIComponent(p.id));
-      return '<a class="row" href="' + esc(href) + '"><b>' + esc(FRENTES[p.frente] || "MCI") + "</b><span>" + esc(p.titulo) + "</span><time>" + esc(dataBR(p.data)) + "</time></a>";
+  // ---- Leituras com filtro por seção
+  const leituras = posts.filter(p => p.secao !== "cinema");
+  const secoesUsadas = Object.keys(SECOES).filter(k => k !== "cinema" && leituras.some(p => p.secao === k));
+  let filtro = "";
+  function desenharLeituras() {
+    $("chips").innerHTML = secoesUsadas.length > 1 ? ['<button type="button" data-s="" aria-pressed="' + (!filtro) + '">Tudo</button>']
+      .concat(secoesUsadas.map(k => '<button type="button" data-s="' + k + '" aria-pressed="' + (filtro === k) + '">' + esc(SECOES[k]) + "</button>")).join("") : "";
+    $("chips").querySelectorAll("button").forEach(b => b.onclick = () => { filtro = b.dataset.s; desenharLeituras(); });
+    const lista = leituras.filter(p => !filtro || p.secao === filtro);
+    if (erro && !posts.length) { $("rows").innerHTML = '<p class="vazio">Não foi possível carregar as matérias agora. Tente de novo em instantes.</p>'; return; }
+    if (!lista.length) { $("rows").innerHTML = '<p class="vazio">Nenhuma matéria aqui ainda.</p>'; return; }
+    $("rows").innerHTML = lista.map(p => {
+      const th = miniaturaPost(p);
+      return '<a class="row" href="' + esc(linkPost(p)) + '"><div class="th' + (temVideo(p) ? " v" : "") + '"' + (th ? " style=\"background-image:url('" + esc(th).replace(/'/g, "%27") + "')\"" : "") + "></div><b>" + esc(SECOES[p.secao] || FRENTES[p.frente] || "MCI") + "</b><span>" + esc(p.titulo) + "</span><time>" + esc(dataBR(p.data)) + "</time></a>";
     }).join("");
   }
+  desenharLeituras();
 
-  // ---- Sobre: vídeo, marcos, missão/visão/valores
+  // ---- Cinema
+  const cinema = posts.filter(p => p.secao === "cinema");
+  $("cinemaCards").innerHTML = cinema.length ? cinema.slice(0, 6).map(p => {
+    const th = miniaturaPost(p);
+    return '<a class="card" href="' + esc(linkPost(p)) + '"><div class="th"' + (th ? " style=\"background-image:url('" + esc(th).replace(/'/g, "%27") + "')\"" : "") + "></div><b>" + esc(p.titulo) + "</b><p>" + esc(p.resumo || "") + "</p></a>";
+  }).join("") : '<p class="lead" style="grid-column:1/-1;margin:0">Em breve: os filmes e séries do momento e o equipamento que fez cada cena acontecer.</p>';
+
+  // ---- Destaque da semana
+  if (destaque) {
+    $("pessoa").innerHTML = '<span class="selo">Destaque da semana · ' + esc(destaque.tipo) + '</span><div class="pessoa"><strong>' + esc(destaque.nome) + "</strong>" +
+      (destaque.arroba ? '<small>@' + esc(String(destaque.arroba).replace(/^@/, "")) + "</small>" : "") +
+      (destaque.titulo ? "<h3>" + esc(destaque.titulo) + "</h3>" : "") + (destaque.texto ? "<p>" + esc(destaque.texto) + "</p>" : "") + "</div>";
+    const alvo = $("setupMidia"); alvo.innerHTML = "";
+    const caixa = document.createElement("div"); caixa.className = "midia-destaque vf";
+    if (destaque.midia_url && emb(destaque.midia_url).tipo) caixa.appendChild(player(destaque.midia_url, { titulo: destaque.titulo || destaque.nome, capa: destaque.foto }));
+    else if (urlSegura(destaque.foto)) caixa.innerHTML = '<img src="' + esc(urlSegura(destaque.foto)) + '" alt="' + esc(destaque.nome) + '">';
+    else caixa.innerHTML = '<img class="adesivo" src="/assets/adesivo-caixa.jpg" alt="Adesivo da caixa MCI">';
+    alvo.appendChild(caixa);
+  }
+
+  // ---- Sobre
   if (cfg.video_sobre) {
     const d = document.createElement("div"); d.className = "vf"; d.style.margin = "0 0 3rem";
-    d.appendChild(telaVideo({ url: cfg.video_sobre, titulo: "Quem cresceu com a gente" }, { forcarHorizontal: true, legenda: "A MCI contada por quem faz parte" }));
+    d.appendChild(player(cfg.video_sobre, { titulo: "Quem cresceu com a gente", legenda: "A MCI contada por quem faz parte" }));
     $("videoSobre").appendChild(d);
   }
   $("marcos").innerHTML = marcos.map(m =>
@@ -303,9 +371,22 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
     (cfg.visao ? "<div><h3>Visão</h3><p>" + esc(cfg.visao) + "</p></div>" : "") +
     (valores.length ? "<div><h3>Valores</h3><ul>" + valores.map(v => "<li>" + esc(v) + "</li>").join("") + "</ul></div>" : "");
 
-  // ---- Contatos
+  // ---- Rodapé: feed das redes (vídeos e posts marcados no painel)
+  const feed = videos.filter(v => v.no_rodape).slice(0, 8);
+  if (feed.length) {
+    $("feed").hidden = false;
+    feed.forEach(v => $("feedGrade").appendChild(player(v.url, { titulo: v.titulo, capa: v.capa })));
+  }
   const em = cfg.contato_email || "marketing@mcistore.com.br";
   $("contatos").innerHTML = '<a href="mailto:' + esc(em) + '">' + esc(em) + "</a>" + (cfg.contato_tel ? "<br>" + esc(cfg.contato_tel) : "") + '<br><a href="https://www.mci.tv/">mci.tv</a>';
+
+  // ---- Âncoras do menu que filtram (Lançamentos, Dicas, Eventos...) e "Gente" → destaque
+  function aplicarHash() {
+    const h = location.hash.slice(1);
+    if (HASH_SECAO[h]) { filtro = secoesUsadas.includes(HASH_SECAO[h]) ? HASH_SECAO[h] : ""; desenharLeituras(); $("leituras").scrollIntoView(); }
+    else if (h === "gente") $("setup").scrollIntoView();
+  }
+  window.addEventListener("hashchange", aplicarHash);
 
   // ---- Leitura de post / página / vídeo
   function mostrarLeitura(html, titulo) {
@@ -314,35 +395,33 @@ footer img{height:34px;width:auto;margin-bottom:.6rem}
     if (titulo) document.title = titulo + " | Blog MCI";
     window.scrollTo(0, 0);
   }
-  function abrirVideo(v) {
-    mostrarLeitura('<div class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><h2>' + esc(v.titulo) + '</h2><p class="meta">' + esc(v.tipo) + " · " + esc(emb(v.url).rede) + '</p><div class="vf" id="vAbrir"></div></div>', v.titulo);
-    const t = telaVideo(v); $("vAbrir").appendChild(t); t.click();
-    history.pushState({}, "", "?video=" + encodeURIComponent(v.id));
-  }
+  const voltar = '<a class="voltar" href="/">← Voltar ao blog</a>';
   const q = new URLSearchParams(location.search);
   if (q.get("post")) {
     const p = posts.find(x => x.id === q.get("post"));
-    if (!p) mostrarLeitura('<div class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><h2>Matéria não encontrada</h2></div>');
+    if (!p) mostrarLeitura('<div class="artigo">' + voltar + "<h2>Matéria não encontrada</h2></div>");
     else {
       const capa = urlSegura(p.capa), orig = urlSegura(p.url);
-      mostrarLeitura('<article class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><p class="meta">' + esc(FRENTES[p.frente] || "") + "</p><h1>" + esc(p.titulo) + '</h1><p class="meta">' + esc(p.autor || "MCI Store") + " · " + esc(dataBR(p.data)) + "</p>" +
-        (capa ? '<img class="capa" src="' + esc(capa) + '" alt="">' : "") + '<div class="vf" id="pFull" style="margin:0 0 2rem"></div>' +
+      mostrarLeitura('<article class="artigo">' + voltar + '<p class="meta">' + esc(SECOES[p.secao] || FRENTES[p.frente] || "") + "</p><h1>" + esc(p.titulo) + '</h1><p class="meta">' + esc(p.autor || "MCI Store") + " · " + esc(dataBR(p.data)) + "</p>" +
+        (capa && !p.video_url ? '<img class="capa" src="' + esc(capa) + '" alt="">' : "") + '<div class="bloco-video vf" id="pVideo"></div><div class="bloco-video vf" id="pFull"></div>' +
         '<div class="corpo">' + (p.corpo ? paragrafos(p.corpo) : "<p>" + esc(p.resumo || "") + "</p>") + "</div>" +
+        (capa && p.video_url ? '<img class="capa" src="' + esc(capa) + '" alt="">' : "") +
         '<div class="cortes" id="pCortes"></div>' + (orig ? '<p><a class="voltar" href="' + esc(orig) + '">Ver a matéria original →</a></p>' : "") + "</article>", p.titulo);
-      const vf = videoPorId[p.video_id]; if (vf) $("pFull").appendChild(telaVideo(vf, { forcarHorizontal: !emb(vf.url).vertical })); else $("pFull").remove();
-      (p.cortes || []).map(id => videoPorId[id]).filter(Boolean).forEach(v => { const d = document.createElement("div"); d.className = "vf"; d.style.setProperty("--o", "-8px"); d.appendChild(telaVideo(v)); $("pCortes").appendChild(d); });
+      if (p.video_url && emb(p.video_url).tipo) $("pVideo").appendChild(player(p.video_url, { titulo: p.titulo, capa: p.capa })); else $("pVideo").remove();
+      const vf = videoPorId[p.video_id]; if (vf && vf.url !== p.video_url) $("pFull").appendChild(player(vf.url, { titulo: vf.titulo, capa: vf.capa })); else $("pFull").remove();
+      (p.cortes || []).map(id => videoPorId[id]).filter(Boolean).forEach(v => { const d = document.createElement("div"); d.className = "vf"; d.style.setProperty("--o", "-8px"); d.appendChild(player(v.url, { titulo: v.titulo, capa: v.capa })); $("pCortes").appendChild(d); });
     }
   } else if (q.get("pagina")) {
     const pg = paginas.find(x => x.slug === q.get("pagina"));
-    if (!pg) mostrarLeitura('<div class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><h2>Página não encontrada</h2></div>');
+    if (!pg) mostrarLeitura('<div class="artigo">' + voltar + "<h2>Página não encontrada</h2></div>");
     else {
-      mostrarLeitura('<article class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><h1>' + esc(pg.titulo) + '</h1><div class="vf" id="pgV" style="margin:0 0 2rem"></div><div class="corpo">' + paragrafos(pg.texto) + "</div></article>", pg.titulo);
-      if (pg.video) $("pgV").appendChild(telaVideo({ url: pg.video, titulo: pg.titulo }, { forcarHorizontal: true })); else $("pgV").remove();
+      mostrarLeitura('<article class="artigo">' + voltar + "<h1>" + esc(pg.titulo) + '</h1><div class="bloco-video vf" id="pgV"></div><div class="corpo">' + paragrafos(pg.texto) + "</div></article>", pg.titulo);
+      if (pg.video) $("pgV").appendChild(player(pg.video, { titulo: pg.titulo })); else $("pgV").remove();
     }
   } else if (q.get("video")) {
-    const v = videoPorId[q.get("video")]; if (v) abrirVideo(v);
-  }
-  window.addEventListener("popstate", () => location.reload());
+    const v = videoPorId[q.get("video")];
+    if (v) { mostrarLeitura('<div class="artigo">' + voltar + "<h2>" + esc(v.titulo) + '</h2><div class="bloco-video vf" id="vAbrir"></div></div>', v.titulo); $("vAbrir").appendChild(player(v.url, { titulo: v.titulo, capa: v.capa })); }
+  } else if (location.hash) aplicarHash();
 })();
 </script>
 </body>
