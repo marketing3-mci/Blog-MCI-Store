@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Back-office | Blog MCI</title>
+<link rel="icon" href="/assets/logo-principal.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E1110;--ink2:#151B19;--ink3:#1C2421;--teal:#1CA68D;--mint:#A0D9CE;--lime:#ABD97E;--green:#4EBF8B;--txt:#EAF2EF;--mut:#9DB3AC;--line:#2A3835;--warn:#F2C14E;--err:#F07167;
+--sans:"Poppins",Helvetica,Arial,sans-serif;--disp:"Unbounded","Poppins",Helvetica,Arial,sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--ink);color:var(--txt);font:400 15px/1.55 var(--sans)}
+a{color:var(--mint)}
+:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.05rem;border-radius:999px;border:2px solid var(--teal);background:var(--teal);color:#06130F;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--mint);border-color:var(--mint)}
+.btn.sec{background:transparent;color:var(--txt);border-color:var(--line)}
+.btn.sec:hover{border-color:var(--mint);color:var(--mint);background:transparent}
+.btn.perigo{background:transparent;border-color:#5a2b28;color:var(--err)}
+.btn.perigo:hover{background:#3a1c1a}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+input,select,textarea{width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid var(--line);background:var(--ink);transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);outline:none}
+textarea{min-height:110px;resize:vertical}
+label{display:block;font-size:.85rem;color:var(--mut);margin:0 0 .3rem}
+.campo{margin-bottom:1rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+h1,h2,h3{font-family:var(--disp);font-weight:500;letter-spacing:-.01em}
+h1{font-size:1.5rem;margin:0 0 .3rem}
+h2{font-size:1.1rem;margin:0 0 1rem}
+.mut{color:var(--mut)}
+/* Login */
+.login{min-height:100vh;display:grid;place-items:center;padding:1.5rem;background:radial-gradient(60% 60% at 100% 0%,rgba(28,166,141,.3),transparent 60%),var(--ink)}
+.login form{width:min(380px,100%);background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:2rem}
+.login img{height:40px;margin-bottom:1.2rem}
+/* App */
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.lado{background:var(--ink2);border-right:1px solid var(--line);padding:1.2rem 1rem;display:flex;flex-direction:column;gap:.2rem;position:sticky;top:0;height:100vh;overflow:auto}
+.lado img{height:32px;margin:0 .5rem 1.2rem}
+.lado button,.lado a.it{display:block;width:100%;text-align:left;background:none;border:0;padding:.55rem .75rem;border-radius:8px;color:var(--mut);cursor:pointer;text-decoration:none;font-weight:500}
+.lado button:hover,.lado a.it:hover{background:var(--ink3);color:var(--txt)}
+.lado button[aria-current="page"]{background:rgba(28,166,141,.16);color:var(--mint)}
+.lado .rod{margin-top:auto;padding:.8rem .5rem 0;border-top:1px solid var(--line);font-size:.82rem;color:var(--mut)}
+.lado .rod b{color:var(--txt);font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis}
+.conteudo{padding:1.8rem clamp(1rem,3vw,2.5rem) 4rem;min-width:0}
+.topo{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.6rem;flex-wrap:wrap}
+.card{background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:1.3rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-bottom:1.5rem}
+.num{font:600 2rem var(--disp);color:var(--mint)}
+.lista{display:grid;gap:.6rem}
+.item{display:grid;grid-template-columns:64px 1fr auto;gap:1rem;align-items:center;background:var(--ink2);border:1px solid var(--line);border-radius:10px;padding:.7rem .9rem}
+.item .th{width:64px;height:48px;border-radius:6px;background:linear-gradient(135deg,#0B3A33,#1CA68D);background-size:cover;background-position:center}
+.item .t{font-weight:600}
+.item .s{font-size:.85rem;color:var(--mut)}
+.acoes{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+.tag{display:inline-block;font-size:.75rem;padding:.08rem .5rem;border-radius:999px;border:1px solid var(--line);color:var(--mut);margin-right:.3rem}
+.tag.publicado{border-color:var(--teal);color:var(--mint)}
+.tag.agendado{border-color:var(--warn);color:var(--warn)}
+.filtros{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.filtros button{padding:.35rem .8rem;border-radius:999px;border:1px solid var(--line);background:none;color:var(--mut);cursor:pointer}
+.filtros button[aria-pressed="true"]{background:var(--teal);color:#06130F;border-color:var(--teal)}
+.aviso{background:rgba(242,193,78,.1);border:1px solid rgba(242,193,78,.4);color:var(--warn);border-radius:8px;padding:.6rem .8rem;font-size:.88rem;margin-bottom:.6rem}
+.erro{background:rgba(240,113,103,.1);border-color:rgba(240,113,103,.4);color:var(--err)}
+.ok{background:rgba(28,166,141,.12);border-color:rgba(28,166,141,.4);color:var(--mint)}
+.capaprev{width:100%;max-width:320px;aspect-ratio:16/9;border-radius:8px;border:1px dashed var(--line);background:var(--ink) center/cover no-repeat;margin-bottom:.5rem;display:grid;place-items:center;color:var(--mut);font-size:.85rem}
+.prev{position:relative;width:100%;max-width:420px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#000;margin-top:.8rem}
+.prev.v{aspect-ratio:9/16;max-width:320px}
+.prev iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.checks{display:grid;gap:.35rem;max-height:220px;overflow:auto;padding:.6rem;border:1px solid var(--line);border-radius:8px}
+.checks label{display:flex;gap:.5rem;align-items:center;color:var(--txt);margin:0;font-size:.9rem}
+.checks input{width:auto}
+.toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:var(--teal);color:#06130F;padding:.7rem 1.2rem;border-radius:999px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.4);z-index:50}
+.toast.erro{background:var(--err);color:#fff}
+dialog{background:var(--ink2);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:0;width:min(820px,96vw);max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.65)}
+dialog form{padding:1.5rem}
+dialog .rodape{display:flex;justify-content:space-between;gap:.6rem;padding-top:1rem;border-top:1px solid var(--line);margin-top:.5rem;flex-wrap:wrap}
+.cont{font-size:.78rem;color:var(--mut);text-align:right}
+table{width:100%;border-collapse:collapse}
+td,th{text-align:left;padding:.6rem;border-bottom:1px solid var(--line);vertical-align:middle}
+th{color:var(--mut);font-weight:500;font-size:.85rem}
+code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88em}
+.menuMob{display:none}
+@media (max-width:860px){.app{grid-template-columns:1fr}.lado{position:fixed;inset:0 30% 0 0;z-index:40;transform:translateX(-102%);transition:transform .2s}.lado.aberto{transform:none}.menuMob{display:inline-flex}.grid2,.grid3{grid-template-columns:1fr}.item{grid-template-columns:48px 1fr}.item .acoes{grid-column:1/-1;justify-content:flex-start}}
+</style>
+</head>
+<body>
+
+<div class="login" id="telaLogin" hidden>
+  <form id="formLogin">
+    <img src="/assets/logo-principal.png" alt="MCI">
+    <h1>Back-office do blog</h1>
+    <p class="mut" style="margin:0 0 1.4rem">Entre com o e-mail e a senha cadastrados.</p>
+    <div id="msgLogin"></div>
+    <div class="campo"><label for="lEmail">E-mail</label><input id="lEmail" type="email" autocomplete="username" required></div>
+    <div class="campo" id="campoSenha"><label for="lSenha">Senha</label><input id="lSenha" type="password" autocomplete="current-password" required></div>
+    <button class="btn" type="submit" style="width:100%;justify-content:center" id="btnEntrar">Entrar</button>
+    <p style="text-align:center;margin:1rem 0 0"><a href="#" id="esqueci">Esqueci minha senha</a></p>
+  </form>
+</div>
+
+<div class="login" id="telaNovaSenha" hidden>
+  <form id="formNovaSenha">
+    <img src="/assets/logo-principal.png" alt="MCI">
+    <h1>Criar nova senha</h1>
+    <div class="campo"><label for="nSenha">Nova senha (mínimo 8 caracteres)</label><input id="nSenha" type="password" minlength="8" autocomplete="new-password" required></div>
+    <button class="btn" type="submit" style="width:100%;justify-content:center">Salvar senha</button>
+  </form>
+</div>
+
+<div class="app" id="app" hidden>
+  <aside class="lado" id="lado">
+    <img src="/assets/logo-principal.png" alt="MCI">
+    <button data-v="painel">Painel</button>
+    <button data-v="posts">Posts</button>
+    <button data-v="videos">Vídeos das redes</button>
+    <button data-v="historia">História da MCI</button>
+    <button data-v="mvv">Missão, visão e valores</button>
+    <button data-v="paginas">Páginas</button>
+    <button data-v="site">Site e menu</button>
+    <button data-v="acessos" data-min="admin">Acessos e equipe</button>
+    <button data-v="dev">Desenvolvedor</button>
+    <a class="it" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>
+    <a class="it" href="https://mcistore.blog" target="_blank" rel="noopener">Blog atual (WordPress) ↗</a>
+    <div class="rod"><b id="quem"></b><span id="nivelTxt"></span><br><a href="#" id="sair">Sair</a></div>
+  </aside>
+  <main class="conteudo">
+    <button class="btn sec menuMob" id="abrirMenu" style="margin-bottom:1rem">☰ Menu</button>
+    <div id="vista"></div>
+  </main>
+</div>
+
+<dialog id="dlg"><form method="dialog" id="dlgForm"></form></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/assets/config.js"></script>
+<script src="/assets/mci.js"></script>
+<script>
+(function () {
+  const { db, C, FRENTES, esc, urlSegura, emb, dataBR } = window.MCI;
+  const $ = s => document.querySelector(s);
+  const RANK = { leitor: 1, colaborador: 2, editor: 3, admin: 4 };
+  const NIVEL_NOME = { leitor: "Leitor", colaborador: "Colaborador", editor: "Editor", admin: "Administrador (acesso total)" };
+  const TIPOS = ["Vídeo full", "Corte ou Reels", "Post"];
+  const STATUS = ["rascunho", "agendado", "publicado"];
+  let eu = null, perfil = null, vistaAtual = "painel";
+  const pode = n => perfil && RANK[perfil.nivel] >= RANK[n];
+
+  // Avisa plugins/integrações (mesmo contrato da versão anterior).
+  const evento = (nome, detalhe) => window.dispatchEvent(new CustomEvent(nome, { detail: detalhe }));
+  window.MCI.eventos = ["mci:salvo", "mci:excluido"];
+
+  function toast(msg, erro) {
+    const t = document.createElement("div");
+    t.className = "toast" + (erro ? " erro" : ""); t.textContent = msg; t.setAttribute("role", "status");
+    document.body.appendChild(t); setTimeout(() => t.remove(), erro ? 6000 : 2600);
+  }
+  function falhou(e) {
+    console.error(e);
+    const m = (e && e.message) || String(e);
+    toast(/row-level security|permission|42501/i.test(m) ? "Seu nível de acesso não permite essa ação." : "Não foi possível salvar: " + m, true);
+  }
+
+  // ---------- Banco
+  async function salvar(tabela, dados, id) {
+    const q = id ? db.from(tabela).update(dados).eq("id", id).select().single()
+                 : db.from(tabela).insert(dados).select().single();
+    const { data, error } = await q;
+    if (error) { falhou(error); return null; }
+    evento("mci:salvo", { tabela, registro: data });
+    toast("Salvo"); return data;
+  }
+  async function excluir(tabela, id, nome) {
+    if (!confirm("Excluir “" + (nome || "este item") + "”? Essa ação não pode ser desfeita.")) return false;
+    const { error } = await db.from(tabela).delete().eq("id", id);
+    if (error) { falhou(error); return false; }
+    evento("mci:excluido", { tabela, id }); toast("Excluído"); return true;
+  }
+  async function listar(tabela, ordem, asc) {
+    const { data, error } = await db.from(tabela).select("*").order(ordem || "id", { ascending: !!asc });
+    if (error) { falhou(error); return []; }
+    return data;
+  }
+
+  // Reduz a imagem no navegador e envia para o Storage (bucket "midia").
+  async function enviarImagem(arquivo, pasta) {
+    if (!arquivo) return null;
+    if (!/^image\//.test(arquivo.type)) { toast("Envie um arquivo de imagem.", true); return null; }
+    const img = await createImageBitmap(arquivo).catch(() => null);
+    let blob = arquivo;
+    if (img) {
+      const max = 1600, esc_ = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * esc_); c.height = Math.round(img.height * esc_);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.85));
+    }
+    const caminho = pasta + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
+    const { error } = await db.storage.from(C.BUCKET).upload(caminho, blob, { contentType: "image/jpeg", upsert: false });
+    if (error) { falhou(error); return null; }
+    return db.storage.from(C.BUCKET).getPublicUrl(caminho).data.publicUrl;
+  }
+
+  // Campo de imagem reaproveitável: prévia + enviar arquivo + ou colar link.
+  function campoImagem(id, rotulo, valor) {
+    return '<div class="campo"><label>' + esc(rotulo) + '</label><div class="capaprev" id="' + id + 'Prev" style="background-image:' + (urlSegura(valor) ? "url('" + esc(valor) + "')" : "none") + '">' + (valor ? "" : "Sem imagem") + "</div>" +
+      '<input type="hidden" id="' + id + '" value="' + esc(valor || "") + '"><div class="acoes" style="justify-content:flex-start">' +
+      '<label class="btn sec" style="margin:0">Enviar imagem<input type="file" accept="image/*" hidden data-img="' + id + '"></label>' +
+      '<button type="button" class="btn sec" data-imgurl="' + id + '">Colar link</button>' +
+      '<button type="button" class="btn sec" data-imgtira="' + id + '">Remover</button></div></div>';
+  }
+  function ligarImagens(raiz, pasta) {
+    const atualiza = (id, url) => { const p = raiz.querySelector("#" + id + "Prev"); raiz.querySelector("#" + id).value = url || ""; p.style.backgroundImage = url ? "url('" + url + "')" : "none"; p.textContent = url ? "" : "Sem imagem"; };
+    raiz.querySelectorAll("[data-img]").forEach(i => i.addEventListener("change", async () => {
+      const id = i.dataset.img; raiz.querySelector("#" + id + "Prev").textContent = "Enviando…";
+      const url = await enviarImagem(i.files[0], pasta); atualiza(id, url || raiz.querySelector("#" + id).value);
+    }));
+    raiz.querySelectorAll("[data-imgurl]").forEach(b => b.addEventListener("click", () => { const u = prompt("Cole o link da imagem (https://…)"); if (u && urlSegura(u)) atualiza(b.dataset.imgurl, urlSegura(u)); }));
+    raiz.querySelectorAll("[data-imgtira]").forEach(b => b.addEventListener("click", () => atualiza(b.dataset.imgtira, "")));
+  }
+
+  function abrirDialogo(html, aoSalvar, aoMontar) {
+    const dlg = $("#dlg"), f = $("#dlgForm");
+    f.innerHTML = html;
+    if (aoMontar) aoMontar(f);
+    f.querySelector("[data-cancelar]")?.addEventListener("click", () => dlg.close());
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const btn = f.querySelector("[type=submit]"); btn.disabled = true;
+      const ok = await aoSalvar(f); btn.disabled = false;
+      if (ok) { dlg.close(); render(); }
+    };
+    dlg.showModal();
+  }
+  const val = (f, id) => (f.querySelector("#" + id).value || "").trim() || null;
+
+  // ---------- Vistas
+  const VISTAS = {
+    async painel(v) {
+      const [posts, videos, marcos] = await Promise.all([listar("posts", "data"), listar("videos", "criado_em"), listar("marcos", "ordem", true)]);
+      const c = s => posts.filter(p => p.status === s).length;
+      const recentes = posts.slice(0, 5);
+      v.innerHTML = '<div class="topo"><div><h1>Olá' + (perfil.nome ? ", " + esc(perfil.nome) : "") + '</h1><p class="mut">Tudo o que aparece no blog é editado por aqui.</p></div><a class="btn" href="/" target="_blank" rel="noopener">Ver o blog ↗</a></div>' +
+        '<div class="cards"><div class="card"><div class="num">' + c("publicado") + '</div>publicados</div><div class="card"><div class="num">' + c("agendado") + '</div>agendados</div><div class="card"><div class="num">' + c("rascunho") + '</div>rascunhos</div><div class="card"><div class="num">' + videos.length + '</div>vídeos</div><div class="card"><div class="num">' + marcos.filter(m => /definir/i.test(m.ano || "") || !m.ano).length + '</div>marcos sem ano</div></div>' +
+        '<div class="grid2"><div class="card"><h2>Posts recentes</h2><div class="lista">' + (recentes.map(p => '<div><span class="tag ' + p.status + '">' + p.status + "</span>" + esc(p.titulo) + ' <span class="mut">· ' + dataBR(p.data) + "</span></div>").join("") || '<p class="mut">Nenhum post.</p>') + "</div></div>" +
+        '<div class="card"><h2>Antes de publicar</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>Título com só a primeira letra maiúscula.</li><li>Frente editorial escolhida.</li><li>Autor com nome (nunca e-mail).</li><li>Capa e, se houver, vídeo full ligado.</li><li>Autorização de imagem de quem aparece.</li></ul></div></div>';
+    },
+
+    async posts(v) {
+      const [posts, videos] = await Promise.all([listar("posts", "data"), listar("videos", "criado_em")]);
+      const vid = Object.fromEntries(videos.map(x => [x.id, x]));
+      const filtro = sessionStorage.getItem("mciFiltro") || "todos";
+      const lista = posts.filter(p => filtro === "todos" || p.status === filtro);
+      v.innerHTML = '<div class="topo"><div><h1>Posts</h1><p class="mut">' + posts.length + ' no total.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Novo post</button>' : "") + "</div>" +
+        '<div class="filtros">' + ["todos"].concat(STATUS).map(s => '<button data-f="' + s + '" aria-pressed="' + (s === filtro) + '">' + s + "</button>").join("") + "</div>" +
+        '<div class="lista">' + (lista.map(p => {
+          const f = vid[p.video_id]; const n = (p.cortes || []).length;
+          return '<div class="item"><div class="th" style="background-image:' + (urlSegura(p.capa) ? "url('" + esc(p.capa) + "')" : "") + '"></div><div><div class="t">' + esc(p.titulo) + '</div><div class="s"><span class="tag ' + p.status + '">' + p.status + "</span>" + esc(FRENTES[p.frente] || "sem frente") + " · " + dataBR(p.data) +
+            (f || n ? "<br>Full: " + esc(f ? f.titulo : "—") + " | " + n + " cortes e posts" : "") + '</div></div><div class="acoes">' +
+            (pode("colaborador") ? '<button class="btn sec" data-ed="' + esc(p.id) + '">Editar</button>' : "") +
+            '<a class="btn sec" href="/?post=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener">Ver</a>' +
+            (pode("editor") ? '<button class="btn perigo" data-ex="' + esc(p.id) + '">Excluir</button>' : "") + "</div></div>";
+        }).join("") || '<p class="mut">Nenhum post aqui.</p>') + "</div>";
+      v.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { sessionStorage.setItem("mciFiltro", b.dataset.f); render(); });
+      v.querySelector("#novo")?.addEventListener("click", () => editarPost(null, videos));
+      v.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => editarPost(posts.find(p => p.id === b.dataset.ed), videos));
+      v.querySelectorAll("[data-ex]").forEach(b => b.onclick = async () => { const p = posts.find(x => x.id === b.dataset.ex); if (await excluir("posts", p.id, p.titulo)) render(); });
+    },
+
+    async videos(v) {
+      const videos = await listar("videos", "criado_em");
+      v.innerHTML = '<div class="topo"><div><h1>Vídeos das redes</h1><p class="mut">Cole o link do Instagram, YouTube, TikTok ou Facebook. O vídeo continua na rede; o blog mostra o player.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
+        '<div class="card" style="margin-bottom:1.5rem"><h2>Testar um link agora</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="teste">Link do vídeo</label><input id="teste" placeholder="https://www.instagram.com/reel/…"></div><div><button class="btn sec" id="btnTeste">Testar</button></div></div><div id="testeRes"></div></div>' +
+        '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + (urlSegura(x.capa) ? "url('" + esc(x.capa) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + esc(emb(x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
+          (pode("colaborador") ? '<button class="btn sec" data-ed="' + esc(x.id) + '">Editar</button>' : "") + (pode("editor") ? '<button class="btn perigo" data-ex="' + esc(x.id) + '">Excluir</button>' : "") + "</div></div>").join("") || '<p class="mut">Nenhum vídeo cadastrado. O blog mostra as trilhas de exemplo enquanto isso.</p>') + "</div>";
+      const testar = (url, alvo) => {
+        const e = emb(url);
+        alvo.innerHTML = e.src ? '<p class="mut" style="margin:.8rem 0 0">Rede: <b>' + e.rede + '</b></p><div class="prev' + (e.vertical ? " v" : "") + '"><iframe src="' + esc(e.src) + '" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><p class="mut" style="font-size:.85rem">Se o quadro ficar vazio, o post pode ser privado ou a rede bloqueou a incorporação. O link continua válido.</p>'
+          : '<div class="aviso" style="margin-top:.8rem">Não reconheci esse link. Use o endereço do post/vídeo (não o do perfil).</div>';
+      };
+      v.querySelector("#btnTeste").onclick = () => testar(v.querySelector("#teste").value, v.querySelector("#testeRes"));
+      v.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { const x = videos.find(y => y.id === b.dataset.ver); v.querySelector("#teste").value = x.url; testar(x.url, v.querySelector("#testeRes")); v.querySelector("#teste").scrollIntoView({ behavior: "smooth" }); });
+      v.querySelector("#novo")?.addEventListener("click", () => editarVideo(null));
+      v.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => editarVideo(videos.find(x => x.id === b.dataset.ed)));
+      v.querySelectorAll("[data-ex]").forEach(b => b.onclick = async () => { const x = videos.find(y => y.id === b.dataset.ex); if (await excluir("videos", x.id, x.titulo)) render(); });
+    },
+
+    async historia(v) {
+      const marcos = await listar("marcos", "ordem", true);
+      v.innerHTML = '<div class="topo"><div><h1>História da MCI</h1><p class="mut">O mural de marcos da página “Sobre a MCI”. No blog, os marcos aparecem por ano; os que estão “a definir” vão para o fim.</p></div>' + (pode("editor") ? '<button class="btn" id="novo">+ Novo marco</button>' : "") + "</div>" +
+        '<div class="lista">' + marcos.map(m => '<div class="item"><div class="th" style="background-image:' + (urlSegura(m.foto) ? "url('" + esc(m.foto) + "')" : "") + '"></div><div><div class="t">' + esc(m.ano || "a definir") + " · " + esc(m.titulo) + '</div><div class="s">' + esc(m.local || "") + "</div></div><div class=\"acoes\">" +
+          (pode("editor") ? '<button class="btn sec" data-ed="' + esc(m.id) + '">Editar</button><button class="btn perigo" data-ex="' + esc(m.id) + '">Excluir</button>' : "") + "</div></div>").join("") + "</div>";
+      const form = m => '<h2>' + (m ? "Editar marco" : "Novo marco") + '</h2><div class="grid3"><div class="campo"><label for="ano">Ano</label><input id="ano" value="' + esc(m?.ano || "") + '" placeholder="2003"></div><div class="campo"><label for="ordem">Ordem (desempate)</label><input id="ordem" type="number" value="' + esc(m?.ordem ?? marcos.length + 1) + '"></div><div class="campo"><label for="local">Local</label><input id="local" value="' + esc(m?.local || "") + '"></div></div>' +
+        '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(m?.titulo || "") + '"></div><div class="campo"><label for="texto">Texto</label><textarea id="texto">' + esc(m?.texto || "") + "</textarea></div>" + campoImagem("foto", "Foto", m?.foto) +
+        '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar</button></div>';
+      const abrir = m => abrirDialogo(form(m), async f => !!(await salvar("marcos", { ano: val(f, "ano"), ordem: Number(val(f, "ordem")) || 0, local: val(f, "local"), titulo: val(f, "titulo"), texto: val(f, "texto"), foto: val(f, "foto") }, m?.id)), f => ligarImagens(f, "marcos"));
+      v.querySelector("#novo")?.addEventListener("click", () => abrir(null));
+      v.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => abrir(marcos.find(m => m.id === b.dataset.ed)));
+      v.querySelectorAll("[data-ex]").forEach(b => b.onclick = async () => { const m = marcos.find(x => x.id === b.dataset.ex); if (await excluir("marcos", m.id, m.titulo)) render(); });
+    },
+
+    async mvv(v) {
+      const cfg = await carregarConfig();
+      const par = (k, nome) => '<div class="card" style="margin-bottom:1rem"><h2>' + nome + '</h2><div class="grid2"><div class="campo"><label for="' + k + '_atual">Versão atual da empresa (para comparar)</label><textarea id="' + k + '_atual">' + esc(cfg[k + "_atual"] || "") + '</textarea></div><div class="campo"><label for="' + k + '">Proposta (é o que aparece no blog)</label><textarea id="' + k + '">' + esc(cfg[k] || "") + "</textarea></div></div></div>";
+      v.innerHTML = '<div class="topo"><div><h1>Missão, visão e valores</h1><p class="mut">A proposta ainda é um rascunho para validar com a gestão. Nos valores, use uma linha por valor.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" + par("missao", "Missão") + par("visao", "Visão") + par("valores", "Valores");
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["missao", "missao_atual", "visao", "visao_atual", "valores", "valores_atual"]));
+    },
+
+    async paginas(v) {
+      const paginas = await listar("paginas", "titulo", true);
+      v.innerHTML = '<div class="topo"><div><h1>Páginas</h1><p class="mut">Páginas novas do site. Marque “entra no menu” para aparecer no topo do blog.</p></div>' + (pode("editor") ? '<button class="btn" id="novo">+ Nova página</button>' : "") + "</div>" +
+        '<div class="lista">' + (paginas.map(p => '<div class="item"><div class="th"></div><div><div class="t">' + esc(p.titulo) + '</div><div class="s">/?pagina=' + esc(p.slug) + (p.menu ? " · no menu" : "") + '</div></div><div class="acoes"><a class="btn sec" target="_blank" rel="noopener" href="/?pagina=' + encodeURIComponent(p.slug) + '">Ver</a>' +
+          (pode("editor") ? '<button class="btn sec" data-ed="' + esc(p.id) + '">Editar</button><button class="btn perigo" data-ex="' + esc(p.id) + '">Excluir</button>' : "") + "</div></div>").join("") || '<p class="mut">Nenhuma página criada.</p>') + "</div>";
+      const slugify = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const form = p => '<h2>' + (p ? "Editar página" : "Nova página") + '</h2><div class="grid2"><div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(p?.titulo || "") + '"></div><div class="campo"><label for="slug">Endereço</label><input id="slug" required value="' + esc(p?.slug || "") + '" placeholder="quem-somos"></div></div>' +
+        '<div class="campo"><label><input type="checkbox" id="menu" style="width:auto" ' + (p?.menu ? "checked" : "") + '> Entra no menu do blog</label></div><div class="campo"><label for="video">Link de vídeo (opcional)</label><input id="video" value="' + esc(p?.video || "") + '"></div><div class="campo"><label for="texto">Conteúdo (deixe uma linha em branco entre parágrafos)</label><textarea id="texto" style="min-height:220px">' + esc(p?.texto || "") + "</textarea></div>" +
+        '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar</button></div>';
+      const abrir = p => abrirDialogo(form(p), async f => !!(await salvar("paginas", { titulo: val(f, "titulo"), slug: slugify(val(f, "slug")), menu: f.querySelector("#menu").checked, video: val(f, "video"), texto: val(f, "texto") }, p?.id)), f => {
+        const t = f.querySelector("#titulo"), s = f.querySelector("#slug"); if (!p) t.addEventListener("input", () => s.value = slugify(t.value));
+      });
+      v.querySelector("#novo")?.addEventListener("click", () => abrir(null));
+      v.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => abrir(paginas.find(x => x.id === b.dataset.ed)));
+      v.querySelectorAll("[data-ex]").forEach(b => b.onclick = async () => { const x = paginas.find(y => y.id === b.dataset.ex); if (await excluir("paginas", x.id, x.titulo)) render(); });
+    },
+
+    async site(v) {
+      const cfg = await carregarConfig();
+      const c = (k, n, area, ph) => '<div class="campo"><label for="' + k + '">' + n + "</label>" + (area ? '<textarea id="' + k + '">' + esc(cfg[k] || "") + "</textarea>" : '<input id="' + k + '" value="' + esc(cfg[k] || "") + '" placeholder="' + esc(ph || "") + '">') + "</div>";
+      v.innerHTML = '<div class="topo"><div><h1>Site e menu</h1><p class="mut">Textos fixos do blog.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Topo do blog</h2>' + c("hero_titulo", "Título principal") + c("hero_texto", "Texto de apoio", true) + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Destinos: <code>#videos</code>, <code>#leituras</code>, <code>#sobre</code>, <code>#setup</code> ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
+        '<div class="card"><h2>Contato e página Sobre</h2><div class="grid2">' + c("contato_email", "E-mail de contato") + c("contato_tel", "Telefone") + "</div>" + c("video_sobre", "Vídeo da página Sobre (link)", false, "https://www.youtube.com/watch?v=…") + "</div>";
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["hero_titulo", "hero_texto", "menu", "contato_email", "contato_tel", "video_sobre"]));
+    },
+
+    async acessos(v) {
+      if (!pode("admin")) { v.innerHTML = "<h1>Acessos</h1><p class=mut>Só administradores veem esta área.</p>"; return; }
+      const perfis = await listar("perfis", "criado_em", true);
+      v.innerHTML = '<div class="topo"><div><h1>Acessos e equipe</h1><p class="mut">Defina o nível de cada pessoa. Quem é novo entra como Leitor até você mudar.</p></div></div>' +
+        '<div class="card" style="margin-bottom:1.5rem;overflow:auto"><table><thead><tr><th>Pessoa</th><th>Nível</th><th></th></tr></thead><tbody>' + perfis.map(p =>
+          "<tr><td><b>" + esc(p.nome || "") + '</b><br><span class="mut">' + esc(p.email || "") + "</span></td><td>" + (p.id === eu.id ? NIVEL_NOME[p.nivel] + ' <span class="mut">(você)</span>' :
+            '<select data-niv="' + p.id + '">' + Object.keys(RANK).map(n => '<option value="' + n + '"' + (n === p.nivel ? " selected" : "") + ">" + NIVEL_NOME[n] + "</option>").join("") + "</select>") +
+          "</td><td>" + (p.id === eu.id ? "" : '<button class="btn perigo" data-rm="' + p.id + '">Remover acesso</button>') + "</td></tr>").join("") + "</tbody></table></div>" +
+        '<div class="grid2"><div class="card"><h2>O que cada nível pode fazer</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li><b>Leitor:</b> vê tudo, inclusive rascunhos; não altera.</li><li><b>Colaborador:</b> cria e edita posts e vídeos e envia imagens.</li><li><b>Editor:</b> tudo do colaborador, mais excluir, história, páginas, missão e site.</li><li><b>Administrador:</b> tudo, inclusive gerenciar acessos.</li></ul></div>' +
+        '<div class="card"><h2>Como dar acesso a alguém</h2><ol style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>No Supabase, abra <b>Authentication → Users</b>.</li><li>Clique em <b>Add user → Send invitation</b> e informe o e-mail da pessoa.</li><li>Ela cria a senha pelo e-mail e entra aqui como Leitor.</li><li>Volte nesta tela e escolha o nível dela.</li></ol></div></div>';
+      v.querySelectorAll("[data-niv]").forEach(s => s.onchange = async () => { const { error } = await db.from("perfis").update({ nivel: s.value }).eq("id", s.dataset.niv); error ? falhou(error) : toast("Nível atualizado"); });
+      v.querySelectorAll("[data-rm]").forEach(b => b.onclick = async () => { const p = perfis.find(x => x.id === b.dataset.rm); if (await excluir("perfis", p.id, p.email)) { toast("Acesso ao painel removido. Para apagar a conta, use o Supabase."); render(); } });
+    },
+
+    async dev(v) {
+      const cfg = await carregarConfig();
+      v.innerHTML = '<div class="topo"><div><h1>Desenvolvedor</h1><p class="mut">Informações para quem cuida da parte técnica.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar observações</button>' : "") + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Como o blog funciona</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.45rem"><li>Site estático (HTML, CSS e JavaScript puro) publicado na Vercel a partir do GitHub.</li><li>Dados no Supabase: tabelas <code>posts</code>, <code>videos</code>, <code>marcos</code>, <code>paginas</code>, <code>site_config</code> e <code>perfis</code>; imagens no bucket <code>midia</code>.</li><li>Segurança por RLS: o público só lê o que está publicado; escrita exige login e nível.</li><li>Ganchos para plugins: eventos <code>mci:salvo</code> e <code>mci:excluido</code> no <code>window</code>, e o objeto <code>window.MCI</code> com o cliente do banco.</li><li>Detalhes no <code>README.md</code> do repositório.</li></ul></div>' +
+        '<div class="card"><h2>Observações para o desenvolvedor</h2><div class="campo"><textarea id="dev_nota" style="min-height:160px">' + esc(cfg.dev_nota || "") + "</textarea></div></div>";
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["dev_nota"]));
+    }
+  };
+
+  async function carregarConfig() {
+    const { data, error } = await db.from("site_config").select("*").eq("id", "config").maybeSingle();
+    if (error) falhou(error);
+    return data || {};
+  }
+  async function salvarConfig(v, chaves) {
+    const dados = { id: "config" }; chaves.forEach(k => dados[k] = (v.querySelector("#" + k).value || "").trim() || null);
+    const { error } = await db.from("site_config").upsert(dados);
+    if (error) return falhou(error);
+    evento("mci:salvo", { tabela: "site_config", registro: dados }); toast("Salvo");
+  }
+
+  function editarPost(p, videos) {
+    const opts = videos.map(x => '<option value="' + esc(x.id) + '"' + (p?.video_id === x.id ? " selected" : "") + ">" + esc(x.titulo) + " (" + esc(x.tipo) + ")</option>").join("");
+    const checks = videos.filter(x => x.id !== p?.video_id).map(x => '<label><input type="checkbox" value="' + esc(x.id) + '"' + ((p?.cortes || []).includes(x.id) ? " checked" : "") + "> " + esc(x.titulo) + ' <span class="mut">· ' + esc(x.tipo) + "</span></label>").join("");
+    abrirDialogo(
+      "<h2>" + (p ? "Editar post" : "Novo post") + '</h2><div id="avisos"></div>' +
+      '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(p?.titulo || "") + '"></div>' +
+      '<div class="grid3"><div class="campo"><label for="frente">Frente editorial</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (p?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div>' +
+      '<div class="campo"><label for="status">Status</label><select id="status">' + STATUS.map(s => "<option" + ((p?.status || "rascunho") === s ? " selected" : "") + ">" + s + "</option>").join("") + '</select></div>' +
+      '<div class="campo"><label for="data">Data</label><input id="data" type="date" value="' + esc(p?.data || new Date().toISOString().slice(0, 10)) + '"></div></div>' +
+      '<div class="grid2"><div class="campo"><label for="autor">Autor (nome)</label><input id="autor" value="' + esc(p?.autor || perfil.nome || "") + '"></div><div class="campo"><label for="url">Link da matéria original (opcional)</label><input id="url" value="' + esc(p?.url || "") + '"></div></div>' +
+      '<div class="campo"><label for="resumo">Resumo</label><input id="resumo" maxlength="160" value="' + esc(p?.resumo || "") + '"><div class="cont" id="contResumo"></div></div>' +
+      '<div class="campo"><label for="corpo">Texto (uma linha em branco entre parágrafos)</label><textarea id="corpo" style="min-height:200px">' + esc(p?.corpo || "") + "</textarea></div>" +
+      campoImagem("capa", "Capa do post", p?.capa) +
+      '<div class="grid2"><div class="campo"><label for="video_id">Vídeo full (destaque do post)</label><select id="video_id"><option value="">— nenhum —</option>' + opts + '</select></div><div class="campo"><label>Cortes, reels e posts ligados</label><div class="checks" id="cortes">' + (checks || '<span class="mut">Cadastre vídeos em “Vídeos das redes”.</span>') + "</div></div></div>" +
+      '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar post</button></div>',
+      async f => {
+        const d = { titulo: val(f, "titulo"), frente: val(f, "frente"), status: val(f, "status"), data: val(f, "data"), autor: val(f, "autor"), url: val(f, "url"), resumo: val(f, "resumo"), corpo: val(f, "corpo"), capa: val(f, "capa"), video_id: val(f, "video_id"),
+          cortes: [...f.querySelectorAll("#cortes input:checked")].map(i => i.value).filter(x => x !== val(f, "video_id")) };
+        return !!(await salvar("posts", d, p?.id));
+      },
+      f => {
+        ligarImagens(f, "posts");
+        const av = () => {
+          const t = f.querySelector("#titulo").value, a = [];
+          if (!f.querySelector("#frente").value) a.push("Escolha a frente editorial.");
+          if (/@/.test(f.querySelector("#autor").value)) a.push("O autor parece um e-mail. Use o nome da pessoa.");
+          const pal = t.split(/\s+/).filter(w => w.length > 3); if (pal.length >= 3 && pal.every(w => /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(w))) a.push("O título parece estar em Title Case. Em português, só a primeira palavra e nomes próprios vão em maiúscula.");
+          if (f.querySelector("#status").value === "publicado" && !f.querySelector("#capa").value) a.push("Post publicado sem capa.");
+          f.querySelector("#avisos").innerHTML = a.map(x => '<div class="aviso">' + esc(x) + "</div>").join("");
+          f.querySelector("#contResumo").textContent = f.querySelector("#resumo").value.length + "/160";
+        };
+        f.addEventListener("input", av); f.addEventListener("change", av); av();
+      });
+  }
+
+  function editarVideo(x) {
+    abrirDialogo(
+      "<h2>" + (x ? "Editar vídeo" : "Adicionar vídeo") + '</h2><div class="campo"><label for="url">Link do vídeo</label><input id="url" required value="' + esc(x?.url || "") + '" placeholder="https://www.instagram.com/reel/…"><div class="mut" id="rede" style="font-size:.85rem;margin-top:.3rem"></div></div>' +
+      '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(x?.titulo || "") + '"></div>' +
+      '<div class="grid2"><div class="campo"><label for="tipo">Tipo</label><select id="tipo">' + TIPOS.map(t => "<option" + ((x?.tipo || "Corte ou Reels") === t ? " selected" : "") + ">" + t + "</option>").join("") + '</select></div><div class="campo"><label for="frente">Frente</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (x?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + "</select></div></div>" +
+      campoImagem("capa", "Capa do vídeo", x?.capa) + '<div id="prev"></div>' +
+      '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar vídeo</button></div>',
+      async f => {
+        const url = val(f, "url"), e = emb(url);
+        if (!urlSegura(url)) { toast("Link inválido.", true); return false; }
+        return !!(await salvar("videos", { url, rede: e.rede || null, titulo: val(f, "titulo"), tipo: val(f, "tipo"), frente: val(f, "frente"), capa: val(f, "capa") }, x?.id));
+      },
+      f => {
+        ligarImagens(f, "videos");
+        const u = f.querySelector("#url"), mostra = () => { const e = emb(u.value); f.querySelector("#rede").textContent = u.value ? (e.rede ? "Reconhecido: " + e.rede : "Rede não reconhecida") : ""; f.querySelector("#prev").innerHTML = e.src ? '<div class="prev' + (e.vertical ? " v" : "") + '"><iframe src="' + esc(e.src) + '" allowfullscreen></iframe></div>' : ""; };
+        u.addEventListener("change", mostra); mostra();
+      });
+  }
+
+  async function render() {
+    document.querySelectorAll(".lado [data-v]").forEach(b => {
+      b.setAttribute("aria-current", b.dataset.v === vistaAtual ? "page" : "false");
+      b.hidden = b.dataset.min ? !pode(b.dataset.min) : false;
+    });
+    const v = $("#vista"); v.innerHTML = '<p class="mut">Carregando…</p>';
+    try { await VISTAS[vistaAtual](v); } catch (e) { falhou(e); }
+  }
+
+  // ---------- Sessão
+  async function entrar(sessao) {
+    eu = sessao.user;
+    const { data, error } = await db.from("perfis").select("*").eq("id", eu.id).maybeSingle();
+    if (error || !data) {
+      $("#telaLogin").hidden = false; $("#app").hidden = true;
+      $("#msgLogin").innerHTML = '<div class="aviso erro">Sua conta existe, mas ainda não tem perfil no painel. Peça a um administrador para liberar o acesso.</div>';
+      return;
+    }
+    perfil = data;
+    $("#quem").textContent = perfil.nome || eu.email;
+    $("#nivelTxt").textContent = NIVEL_NOME[perfil.nivel];
+    $("#telaLogin").hidden = true; $("#telaNovaSenha").hidden = true; $("#app").hidden = false;
+    vistaAtual = (location.hash.slice(1) in VISTAS) ? location.hash.slice(1) : "painel";
+    render();
+  }
+
+  $("#formLogin").onsubmit = async ev => {
+    ev.preventDefault();
+    const btn = $("#btnEntrar"); btn.disabled = true; $("#msgLogin").innerHTML = "";
+    const { data, error } = await db.auth.signInWithPassword({ email: $("#lEmail").value.trim(), password: $("#lSenha").value });
+    btn.disabled = false;
+    if (error) { $("#msgLogin").innerHTML = '<div class="aviso erro">' + (/invalid/i.test(error.message) ? "E-mail ou senha incorretos." : esc(error.message)) + "</div>"; return; }
+    entrar(data.session);
+  };
+  $("#esqueci").onclick = async ev => {
+    ev.preventDefault();
+    const email = $("#lEmail").value.trim();
+    if (!email) { $("#msgLogin").innerHTML = '<div class="aviso">Digite seu e-mail acima e clique de novo.</div>'; return; }
+    const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: location.origin + "/admin/" });
+    $("#msgLogin").innerHTML = error ? '<div class="aviso erro">' + esc(error.message) + "</div>" : '<div class="aviso ok">Se o e-mail estiver cadastrado, você vai receber um link para criar uma nova senha.</div>';
+  };
+  $("#formNovaSenha").onsubmit = async ev => {
+    ev.preventDefault();
+    const { error } = await db.auth.updateUser({ password: $("#nSenha").value });
+    if (error) return toast(error.message, true);
+    toast("Senha salva"); const { data } = await db.auth.getSession(); if (data.session) entrar(data.session);
+  };
+  $("#sair").onclick = async ev => { ev.preventDefault(); await db.auth.signOut(); location.reload(); };
+  document.querySelectorAll(".lado [data-v]").forEach(b => b.onclick = () => { vistaAtual = b.dataset.v; history.replaceState(null, "", "#" + vistaAtual); $("#lado").classList.remove("aberto"); render(); });
+  $("#abrirMenu").onclick = () => $("#lado").classList.toggle("aberto");
+
+  db.auth.onAuthStateChange((evt, sessao) => {
+    if (evt === "PASSWORD_RECOVERY") { $("#telaLogin").hidden = true; $("#app").hidden = true; $("#telaNovaSenha").hidden = false; }
+  });
+  db.auth.getSession().then(({ data }) => {
+    if (/type=(recovery|invite)/.test(location.hash)) { $("#telaNovaSenha").hidden = false; return; }
+    if (data.session) entrar(data.session); else $("#telaLogin").hidden = false;
+  });
+})();
+</script>
+</body>
+</html>
