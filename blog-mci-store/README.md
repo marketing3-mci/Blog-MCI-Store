@@ -54,7 +54,7 @@ O player só carrega quando a pessoa clica na capa (página mais leve). Posts pr
 
 ## Configuração no Supabase (uma vez)
 
-1. **Authentication → URL Configuration**: Site URL = `https://blog-mci-store.vercel.app/admin/`. Em Redirect URLs, adicione `https://blog-mci-store.vercel.app/admin/`.
+1. **Authentication → URL Configuration**: Site URL = `https://blog-mci-store.vercel.app/admin`. Em Redirect URLs, adicione `https://blog-mci-store.vercel.app/admin`.
 2. **Authentication → Users → Add user → Create new user**: e-mail e senha do primeiro administrador, marcando *Auto Confirm User*.
 3. **Authentication → Sign In / Providers**: desligue *Allow new users to sign up*. Novas pessoas entram só por convite (*Add user → Send invitation*).
 

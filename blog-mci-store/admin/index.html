@@ -464,7 +464,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     ev.preventDefault();
     const email = $("#lEmail").value.trim();
     if (!email) { $("#msgLogin").innerHTML = '<div class="aviso">Digite seu e-mail acima e clique de novo.</div>'; return; }
-    const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: location.origin + "/admin/" });
+    const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: location.origin + "/admin" });
     $("#msgLogin").innerHTML = error ? '<div class="aviso erro">' + esc(error.message) + "</div>" : '<div class="aviso ok">Se o e-mail estiver cadastrado, você vai receber um link para criar uma nova senha.</div>';
   };
   $("#formNovaSenha").onsubmit = async ev => {
