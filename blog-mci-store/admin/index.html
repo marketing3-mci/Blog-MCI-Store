@@ -37,11 +37,13 @@ h2{font-size:1.1rem;margin:0 0 1rem}
 /* Login */
 .login{min-height:100vh;display:grid;place-items:center;padding:1.5rem;background:radial-gradient(60% 60% at 100% 0%,rgba(28,166,141,.3),transparent 60%),var(--ink)}
 .login form{width:min(380px,100%);background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:2rem}
-.login img{height:40px;margin-bottom:1.2rem}
+.marca{display:block;height:auto;width:auto;max-width:100%;object-fit:contain;flex:none;align-self:flex-start}
+.login .marca{height:44px;margin-bottom:1.2rem}
 /* App */
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
 .lado{background:var(--ink2);border-right:1px solid var(--line);padding:1.2rem 1rem;display:flex;flex-direction:column;gap:.2rem;position:sticky;top:0;height:100vh;overflow:auto}
-.lado img{height:32px;margin:0 .5rem 1.2rem}
+.lado .marca{height:40px;margin:.2rem .5rem 1.4rem}
+.topoMob{display:none}
 .lado button,.lado a.it{display:block;width:100%;text-align:left;background:none;border:0;padding:.55rem .75rem;border-radius:8px;color:var(--mut);cursor:pointer;text-decoration:none;font-weight:500}
 .lado button:hover,.lado a.it:hover{background:var(--ink3);color:var(--txt)}
 .lado button[aria-current="page"]{background:rgba(28,166,141,.16);color:var(--mint)}
@@ -85,15 +87,14 @@ table{width:100%;border-collapse:collapse}
 td,th{text-align:left;padding:.6rem;border-bottom:1px solid var(--line);vertical-align:middle}
 th{color:var(--mut);font-weight:500;font-size:.85rem}
 code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88em}
-.menuMob{display:none}
-@media (max-width:860px){.app{grid-template-columns:1fr}.lado{position:fixed;inset:0 30% 0 0;z-index:40;transform:translateX(-102%);transition:transform .2s}.lado.aberto{transform:none}.menuMob{display:inline-flex}.grid2,.grid3{grid-template-columns:1fr}.item{grid-template-columns:48px 1fr}.item .acoes{grid-column:1/-1;justify-content:flex-start}}
+@media (max-width:860px){.topoMob{display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;top:0;z-index:30;background:var(--ink2);border-bottom:1px solid var(--line);padding:.7rem 1rem}.topoMob .marca{height:28px}.lado .marca{height:30px}.app{grid-template-columns:1fr}.lado{position:fixed;inset:0 30% 0 0;z-index:40;transform:translateX(-102%);transition:transform .2s}.lado.aberto{transform:none}.grid2,.grid3{grid-template-columns:1fr}.item{grid-template-columns:48px 1fr}.item .acoes{grid-column:1/-1;justify-content:flex-start}}
 </style>
 </head>
 <body>
 
 <div class="login" id="telaLogin" hidden>
   <form id="formLogin">
-    <img src="/assets/logo-principal.png" alt="MCI">
+    <img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store">
     <h1>Back-office do blog</h1>
     <p class="mut" style="margin:0 0 1.4rem">Entre com o e-mail e a senha cadastrados.</p>
     <div id="msgLogin"></div>
@@ -106,7 +107,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
 <div class="login" id="telaNovaSenha" hidden>
   <form id="formNovaSenha">
-    <img src="/assets/logo-principal.png" alt="MCI">
+    <img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store">
     <h1>Criar nova senha</h1>
     <div class="campo"><label for="nSenha">Nova senha (mínimo 8 caracteres)</label><input id="nSenha" type="password" minlength="8" autocomplete="new-password" required></div>
     <button class="btn" type="submit" style="width:100%;justify-content:center">Salvar senha</button>
@@ -114,8 +115,9 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 </div>
 
 <div class="app" id="app" hidden>
+  <header class="topoMob"><img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store"><button class="btn sec" id="abrirMenu" aria-controls="lado" aria-expanded="false">☰ Menu</button></header>
   <aside class="lado" id="lado">
-    <img src="/assets/logo-principal.png" alt="MCI">
+    <img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store">
     <button data-v="painel">Painel</button>
     <button data-v="posts">Posts</button>
     <button data-v="videos">Vídeos das redes</button>
@@ -130,7 +132,6 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     <div class="rod"><b id="quem"></b><span id="nivelTxt"></span><br><a href="#" id="sair">Sair</a></div>
   </aside>
   <main class="conteudo">
-    <button class="btn sec menuMob" id="abrirMenu" style="margin-bottom:1rem">☰ Menu</button>
     <div id="vista"></div>
   </main>
 </div>
@@ -475,7 +476,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
   };
   $("#sair").onclick = async ev => { ev.preventDefault(); await db.auth.signOut(); location.reload(); };
   document.querySelectorAll(".lado [data-v]").forEach(b => b.onclick = () => { vistaAtual = b.dataset.v; history.replaceState(null, "", "#" + vistaAtual); $("#lado").classList.remove("aberto"); render(); });
-  $("#abrirMenu").onclick = () => $("#lado").classList.toggle("aberto");
+  $("#abrirMenu").onclick = () => { const a = $("#lado").classList.toggle("aberto"); $("#abrirMenu").setAttribute("aria-expanded", a); };
 
   db.auth.onAuthStateChange((evt, sessao) => {
     if (evt === "PASSWORD_RECOVERY") { $("#telaLogin").hidden = true; $("#app").hidden = true; $("#telaNovaSenha").hidden = false; }
