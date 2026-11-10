@@ -163,7 +163,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
   const NIVEL_NOME = { leitor: "Leitor", colaborador: "Colaborador", editor: "Editor", admin: "Administrador (acesso total)" };
   const TIPOS = ["Vídeo full", "Corte ou Reels", "Post"];
   const STATUS = ["rascunho", "agendado", "publicado"];
-  let eu = null, perfil = null, vistaAtual = "painel";
+  let eu = null, perfil = null, vistaAtual = "painel", cinemaPublicado = false;
   const pode = n => perfil && RANK[perfil.nivel] >= RANK[n];
 
   // Avisa plugins/integrações (mesmo contrato da versão anterior).
@@ -305,7 +305,8 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     },
 
     async posts(v) {
-      const [posts, videos] = await Promise.all([listar("posts", "data"), listar("videos", "criado_em")]);
+      const [posts, videos, cfgPosts] = await Promise.all([listar("posts", "data"), listar("videos", "criado_em"), carregarConfig()]);
+      cinemaPublicado = !!cfgPosts.mostrar_cinema;
       const vid = Object.fromEntries(videos.map(x => [x.id, x]));
       const filtro = sessionStorage.getItem("mciFiltro") || "todos";
       const lista = posts.filter(p => filtro === "todos" || p.status === filtro);
@@ -329,12 +330,13 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const videos = await listar("videos", "criado_em");
       v.innerHTML = '<div class="topo"><div><h1>Vídeos das redes</h1><p class="mut">Cole o link do Instagram, YouTube, TikTok ou Facebook. O vídeo continua na rede; o blog mostra o player. “Corte ou Reels” aparece nas trilhas; “Vídeo full” vira o destaque do topo; marque “no rodapé” para entrar no feed das redes.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
         '<div class="card" style="margin-bottom:1.5rem"><h2>Testar um link agora</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="teste">Link do vídeo</label><input id="teste" placeholder="https://www.instagram.com/reel/…"></div><div><button class="btn sec" id="btnTeste">Testar</button></div></div><div id="testeRes"></div></div>' +
-        '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + ((urlSegura(x.capa) || emb(x.url).miniatura) ? "url('" + esc(urlSegura(x.capa) || emb(x.url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + (x.no_rodape ? '<span class="tag publicado">no rodapé</span>' : "") + esc(emb(x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
+        '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + ((urlSegura(x.capa) || emb(x.url).miniatura) ? "url('" + esc(urlSegura(x.capa) || emb(x.url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + (x.no_rodape ? '<span class="tag publicado">no rodapé</span>' : "") + (emb(x.url).rede === "Instagram" ? '<span class="tag">' + (x.exibicao === "completo" ? "completo" : "só o vídeo") + "</span>" : "") + esc(emb(x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
           (pode("colaborador") ? '<button class="btn sec" data-ed="' + esc(x.id) + '">Editar</button>' : "") + (pode("editor") ? '<button class="btn perigo" data-ex="' + esc(x.id) + '">Excluir</button>' : "") + "</div></div>").join("") || '<p class="mut">Nenhum vídeo cadastrado. O blog mostra as trilhas de exemplo enquanto isso.</p>') + "</div>";
       const testar = (url, alvo) => {
         const e = emb(url);
         alvo.innerHTML = e.tipo ? '<p class="mut" style="margin:.8rem 0 0">Rede: <b>' + e.rede + '</b>. É assim que ele aparece no blog.</p>' : '<div class="aviso" style="margin-top:.8rem">Não reconheci esse link. Use o endereço do post/vídeo (não o do perfil).</div>';
-        if (e.tipo) { alvo.appendChild(player(url, {})); alvo.insertAdjacentHTML("beforeend", '<p class="mut" style="font-size:.85rem">Se o quadro ficar vazio, o post pode ser privado ou a rede bloqueou a incorporação. O link continua válido.</p>'); }
+        if (e.tipo === "iframe" && e.rede === "Instagram") { const g = document.createElement("div"); g.style.cssText = "display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start"; [["Só o vídeo", true], ["Completo", false]].forEach(([t, l]) => { const c = document.createElement("div"); c.style.cssText = "width:240px"; c.innerHTML = '<p class="mut" style="margin:.8rem 0 0;font-size:.85rem">' + t + "</p>"; c.appendChild(player(url, { limpo: l })); g.appendChild(c); }); alvo.appendChild(g); alvo.insertAdjacentHTML("beforeend", '<p class="mut" style="font-size:.85rem">Se o quadro ficar vazio, o post pode ser privado ou a rede bloqueou a incorporação. O link continua válido.</p>'); }
+        else if (e.tipo) { alvo.appendChild(player(url, {})); alvo.insertAdjacentHTML("beforeend", '<p class="mut" style="font-size:.85rem">Se o quadro ficar vazio, o post pode ser privado ou a rede bloqueou a incorporação. O link continua válido.</p>'); }
       };
       v.querySelector("#btnTeste").onclick = () => testar(v.querySelector("#teste").value, v.querySelector("#testeRes"));
       v.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { const x = videos.find(y => y.id === b.dataset.ver); v.querySelector("#teste").value = x.url; testar(x.url, v.querySelector("#testeRes")); v.querySelector("#teste").scrollIntoView({ behavior: "smooth" }); });
@@ -426,8 +428,9 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       v.innerHTML = '<div class="topo"><div><h1>Site e menu</h1><p class="mut">Textos fixos do blog.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Topo do blog</h2>' + c("hero_titulo", "Título principal") + c("hero_texto", "Texto de apoio", true) + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Destinos: <code>#videos</code>, <code>#leituras</code>, <code>#sobre</code>, <code>#setup</code> ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Seções opcionais</h2><label style="display:flex;gap:.6rem;align-items:flex-start;color:var(--txt)"><input type="checkbox" id="mostrar_cinema" style="width:auto;margin-top:.3rem" ' + (cfg.mostrar_cinema ? "checked" : "") + '><span><b>Publicar a seção “Cinema em alta”</b><br><span class="mut">Enquanto estiver desmarcado, a seção e o item “Cinema” do menu ficam escondidos, e os posts da seção Cinema não aparecem no blog. Prepare os posts com calma e marque aqui quando quiser lançar.</span></span></label></div>' +
         '<div class="card"><h2>Contato e página Sobre</h2><div class="grid2">' + c("contato_email", "E-mail de contato") + c("contato_tel", "Telefone") + "</div>" + c("video_sobre", "Vídeo da página Sobre (link)", false, "https://www.youtube.com/watch?v=…") + "</div>";
-      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["hero_titulo", "hero_texto", "menu", "contato_email", "contato_tel", "video_sobre"]));
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["hero_titulo", "hero_texto", "menu", "contato_email", "contato_tel", "video_sobre"], { mostrar_cinema: v.querySelector("#mostrar_cinema").checked }));
     },
 
     async acessos(v) {
@@ -458,8 +461,8 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     if (error) falhou(error);
     return data || {};
   }
-  async function salvarConfig(v, chaves) {
-    const dados = { id: "config" }; chaves.forEach(k => dados[k] = (v.querySelector("#" + k).value || "").trim() || null);
+  async function salvarConfig(v, chaves, extra) {
+    const dados = Object.assign({ id: "config" }, extra || {}); chaves.forEach(k => dados[k] = (v.querySelector("#" + k).value || "").trim() || null);
     const { error } = await db.from("site_config").upsert(dados);
     if (error) return falhou(error);
     evento("mci:salvo", { tabela: "site_config", registro: dados }); toast("Salvo");
@@ -491,6 +494,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         ligarImagens(f, "posts"); ligarVideos(f, "posts");
         const av = () => {
           const t = f.querySelector("#titulo").value, a = [];
+          if (f.querySelector("#secao").value === "cinema" && !cinemaPublicado) a.push("A seção Cinema ainda não está publicada: este post só aparece no blog depois que você marcar “Publicar a seção Cinema em alta” em Site e menu.");
           if (!f.querySelector("#secao").value) a.push("Escolha a seção do blog (matéria, vídeo educativo, evento, produto ou cinema).");
           if (/@/.test(f.querySelector("#autor").value)) a.push("O autor parece um e-mail. Use o nome da pessoa.");
           const pal = t.split(/\s+/).filter(w => w.length > 3); if (pal.length >= 3 && pal.every(w => /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(w))) a.push("O título parece estar em Title Case. Em português, só a primeira palavra e nomes próprios vão em maiúscula.");
@@ -504,21 +508,24 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
   function editarVideo(x) {
     abrirDialogo(
-      "<h2>" + (x ? "Editar vídeo" : "Adicionar vídeo") + '</h2><div class="campo"><label for="url">Link do vídeo</label><input id="url" required value="' + esc(x?.url || "") + '" placeholder="https://www.instagram.com/reel/…"><div class="mut" id="rede" style="font-size:.85rem;margin-top:.3rem"></div></div>' +
+      "<h2>" + (x ? "Editar vídeo" : "Adicionar vídeo") + '</h2>' + campoVideo("url", "Link do vídeo ou arquivo", x?.url, "Cole o link do Instagram, YouTube, TikTok ou Facebook, ou envie um MP4 de até 50 MB. Para o topo do blog, um vídeo horizontal funciona melhor.") +
       '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(x?.titulo || "") + '"></div>' +
       '<div class="grid2"><div class="campo"><label for="tipo">Tipo</label><select id="tipo">' + TIPOS.map(t => "<option" + ((x?.tipo || "Corte ou Reels") === t ? " selected" : "") + ">" + t + "</option>").join("") + '</select></div><div class="campo"><label for="frente">Frente</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (x?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + "</select></div></div>" +
+      '<div class="campo"><label for="exibicao">Como mostrar (Instagram)</label><select id="exibicao"><option value="limpo"' + ((x?.exibicao || "limpo") === "limpo" ? " selected" : "") + '>Só o vídeo, em tela cheia (sem os detalhes do Instagram)</option><option value="completo"' + (x?.exibicao === "completo" ? " selected" : "") + '>Completo, com perfil, curtidas e “Ver mais no Instagram”</option></select><div class="mut" style="font-size:.85rem;margin-top:.3rem">Use “Completo” para posts de foto ou carrossel, que não são verticais.</div></div>' +
       '<div class="campo"><label><input type="checkbox" id="no_rodape" style="width:auto" ' + (x?.no_rodape ? "checked" : "") + '> Mostrar no feed das redes, no rodapé do blog</label></div>' +
-      campoImagem("capa", "Capa (opcional; o Instagram e o TikTok já mostram a capa do próprio vídeo)", x?.capa) + '<div id="prev"></div>' +
+      campoImagem("capa", "Capa (opcional; o Instagram e o TikTok já mostram a capa do próprio vídeo)", x?.capa) +
       '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar vídeo</button></div>',
       async f => {
         const url = val(f, "url"), e = emb(url);
         if (!urlSegura(url)) { toast("Link inválido.", true); return false; }
-        return !!(await salvar("videos", { url, rede: e.rede || null, titulo: val(f, "titulo"), tipo: val(f, "tipo"), frente: val(f, "frente"), capa: val(f, "capa"), no_rodape: f.querySelector("#no_rodape").checked }, x?.id));
+        return !!(await salvar("videos", { url, rede: e.rede || null, titulo: val(f, "titulo"), tipo: val(f, "tipo"), frente: val(f, "frente"), capa: val(f, "capa"), no_rodape: f.querySelector("#no_rodape").checked, exibicao: val(f, "exibicao") || "limpo" }, x?.id));
       },
       f => {
-        ligarImagens(f, "videos");
-        const u = f.querySelector("#url"), mostra = () => { const e = emb(u.value); f.querySelector("#rede").textContent = u.value ? (e.rede ? "Reconhecido: " + e.rede : "Rede não reconhecida") : ""; const pv = f.querySelector("#prev"); pv.innerHTML = ""; if (e.tipo) pv.appendChild(player(u.value, {})); };
-        u.addEventListener("change", mostra); mostra();
+        ligarImagens(f, "videos"); ligarVideos(f, "videos");
+        // Prévia respeita o modo de exibição escolhido
+        const u = f.querySelector("#url"), ex = f.querySelector("#exibicao"), pv = f.querySelector("#urlPrev");
+        const mostra = () => { pv.innerHTML = ""; if (emb(u.value).tipo) pv.appendChild(player(u.value, { limpo: ex.value === "limpo" })); };
+        ex.addEventListener("change", mostra); u.addEventListener("change", () => setTimeout(mostra)); mostra();
       });
   }
 

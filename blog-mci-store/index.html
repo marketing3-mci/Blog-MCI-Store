@@ -53,7 +53,9 @@ h1{font:500 clamp(2rem,4.6vw,3.6rem)/1.1 var(--disp);letter-spacing:-.03em;margi
 .p-iframe iframe,.p-facade iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .p-arquivo video{display:block;width:100%;max-height:80vh;background:#000}
 .facade{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;cursor:pointer;color:#fff;text-align:left;font:inherit;background:radial-gradient(70% 90% at 80% 10%,rgba(171,217,126,.5),transparent 60%),linear-gradient(135deg,#0B3A33,#1CA68D 70%,#4EBF8B);background-size:cover;background-position:center}
-.hero .p-iframe{max-width:380px;margin-inline:auto}
+.hero .p-iframe,.hero .p-limpo{max-width:340px;margin-inline:auto}
+.artigo .bloco-video .p-limpo{max-width:380px;margin-inline:auto}
+.midia-destaque .p-limpo{max-width:340px;margin-inline:auto}
 .play{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:rgba(14,17,16,.62);border:2px solid #fff}
 .play::after{content:"";position:absolute;left:30px;top:22px;border-left:22px solid #fff;border-top:15px solid transparent;border-bottom:15px solid transparent}
 .facade:hover .play{background:var(--teal)}
@@ -149,7 +151,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
 <header class="dark hero">
   <div class="wrap top">
     <a href="/" aria-label="Início"><img src="/assets/logo-principal.png" alt="MCI"></a>
-    <nav id="nav"><a href="#videos">Vídeos</a><a href="#leituras">Leituras</a><a href="#cinema">Cinema</a><a href="#sobre">Sobre a MCI</a><a class="btn ghost" href="https://www.mci.tv/">Loja</a></nav>
+    <nav id="nav"><a href="#videos">Vídeos</a><a href="#leituras">Leituras</a><a href="#sobre">Sobre a MCI</a><a class="btn ghost" href="https://www.mci.tv/">Loja</a></nav>
   </div>
   <div class="wrap hero-body" id="hero">
     <div>
@@ -179,7 +181,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   </div>
 </section>
 
-<section class="cinema" id="cinema">
+<section class="cinema" id="cinema" hidden>
   <div class="wrap">
     <h2>Cinema em alta</h2>
     <p class="lead">Filmes e séries que estão dando o que falar, e o equipamento por trás de cada cena.</p>
@@ -267,6 +269,8 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   const paginas = paginasR.data || [];
   const destaque = destR.data || null;
   const videoPorId = Object.fromEntries(videos.map(v => [v.id, v]));
+  // Opções do player para um vídeo cadastrado (Instagram "limpo" = só o vídeo, sem os detalhes da rede)
+  const op = (v, extra) => Object.assign({ titulo: v.titulo, capa: v.capa, limpo: v.exibicao !== "completo" }, extra || {});
 
   // Miniatura de um post: capa > miniatura do vídeo do post > miniatura do vídeo full ligado
   function miniaturaPost(p) {
@@ -277,7 +281,11 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   const linkPost = p => ((p.corpo && p.corpo.trim()) || temVideo(p) || p.capa) ? "?post=" + encodeURIComponent(p.id) : (urlSegura(p.url) || "?post=" + encodeURIComponent(p.id));
 
   // ---- Menu
-  const itens = menu(cfg.menu);
+  const itens = menu(cfg.menu).filter(i => cfg.mostrar_cinema || i.destino !== "#cinema");
+  if (cfg.mostrar_cinema && !itens.some(i => i.destino === "#cinema")) {
+    const pos = itens.findIndex(i => i.destino === "#sobre");
+    itens.splice(pos < 0 ? Math.max(itens.length - 1, 0) : pos, 0, { rotulo: "Cinema", destino: "#cinema" });
+  }
   paginas.filter(p => p.menu).forEach(p => itens.splice(Math.max(itens.length - 1, 0), 0, { rotulo: p.titulo, destino: "?pagina=" + p.slug }));
   if (itens.length) {
     $("nav").innerHTML = itens.map(i => {
@@ -293,7 +301,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   if (cfg.hero_titulo) $("heroTitulo").textContent = cfg.hero_titulo;
   if (cfg.hero_texto) $("heroTexto").textContent = cfg.hero_texto;
   const full = videos.find(v => v.tipo === "Vídeo full");
-  if (full) $("destaque").appendChild(player(full.url, { titulo: full.titulo, capa: full.capa }));
+  if (full) $("destaque").appendChild(player(full.url, op(full, { fundo: emb(full.url).tipo === "arquivo" })));
   else {
     const a = document.createElement("a");
     a.className = "screen"; a.href = C.CANAL_YOUTUBE;
@@ -307,7 +315,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
     cortes.forEach(v => {
       const d = document.createElement("div"); d.className = "reel";
       const moldura = document.createElement("div"); moldura.className = "vf";
-      moldura.appendChild(player(v.url, { titulo: v.titulo, capa: v.capa }));
+      moldura.appendChild(player(v.url, op(v)));
       d.appendChild(moldura);
       d.insertAdjacentHTML("beforeend", "<h3>" + esc(FRENTES[v.frente] || v.tipo) + "</h3><p>" + esc(v.titulo) + "</p>");
       $("reels").appendChild(d);
@@ -334,7 +342,8 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   }
   desenharLeituras();
 
-  // ---- Cinema
+  // ---- Cinema (só aparece quando publicada em "Site e menu")
+  if (cfg.mostrar_cinema) $("cinema").hidden = false;
   const cinema = posts.filter(p => p.secao === "cinema");
   $("cinemaCards").innerHTML = cinema.length ? cinema.slice(0, 6).map(p => {
     const th = miniaturaPost(p);
@@ -348,7 +357,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
       (destaque.titulo ? "<h3>" + esc(destaque.titulo) + "</h3>" : "") + (destaque.texto ? "<p>" + esc(destaque.texto) + "</p>" : "") + "</div>";
     const alvo = $("setupMidia"); alvo.innerHTML = "";
     const caixa = document.createElement("div"); caixa.className = "midia-destaque vf";
-    if (destaque.midia_url && emb(destaque.midia_url).tipo) caixa.appendChild(player(destaque.midia_url, { titulo: destaque.titulo || destaque.nome, capa: destaque.foto }));
+    if (destaque.midia_url && emb(destaque.midia_url).tipo) caixa.appendChild(player(destaque.midia_url, { titulo: destaque.titulo || destaque.nome, capa: destaque.foto, limpo: true }));
     else if (urlSegura(destaque.foto)) caixa.innerHTML = '<img src="' + esc(urlSegura(destaque.foto)) + '" alt="' + esc(destaque.nome) + '">';
     else caixa.innerHTML = '<img class="adesivo" src="/assets/adesivo-caixa.jpg" alt="Adesivo da caixa MCI">';
     alvo.appendChild(caixa);
@@ -375,7 +384,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   const feed = videos.filter(v => v.no_rodape).slice(0, 8);
   if (feed.length) {
     $("feed").hidden = false;
-    feed.forEach(v => $("feedGrade").appendChild(player(v.url, { titulo: v.titulo, capa: v.capa })));
+    feed.forEach(v => $("feedGrade").appendChild(player(v.url, op(v))));
   }
   const em = cfg.contato_email || "marketing@mcistore.com.br";
   $("contatos").innerHTML = '<a href="mailto:' + esc(em) + '">' + esc(em) + "</a>" + (cfg.contato_tel ? "<br>" + esc(cfg.contato_tel) : "") + '<br><a href="https://www.mci.tv/">mci.tv</a>';
@@ -407,9 +416,9 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
         '<div class="corpo">' + (p.corpo ? paragrafos(p.corpo) : "<p>" + esc(p.resumo || "") + "</p>") + "</div>" +
         (capa && p.video_url ? '<img class="capa" src="' + esc(capa) + '" alt="">' : "") +
         '<div class="cortes" id="pCortes"></div>' + (orig ? '<p><a class="voltar" href="' + esc(orig) + '">Ver a matéria original →</a></p>' : "") + "</article>", p.titulo);
-      if (p.video_url && emb(p.video_url).tipo) $("pVideo").appendChild(player(p.video_url, { titulo: p.titulo, capa: p.capa })); else $("pVideo").remove();
-      const vf = videoPorId[p.video_id]; if (vf && vf.url !== p.video_url) $("pFull").appendChild(player(vf.url, { titulo: vf.titulo, capa: vf.capa })); else $("pFull").remove();
-      (p.cortes || []).map(id => videoPorId[id]).filter(Boolean).forEach(v => { const d = document.createElement("div"); d.className = "vf"; d.style.setProperty("--o", "-8px"); d.appendChild(player(v.url, { titulo: v.titulo, capa: v.capa })); $("pCortes").appendChild(d); });
+      if (p.video_url && emb(p.video_url).tipo) $("pVideo").appendChild(player(p.video_url, { titulo: p.titulo, capa: p.capa, limpo: true })); else $("pVideo").remove();
+      const vf = videoPorId[p.video_id]; if (vf && vf.url !== p.video_url) $("pFull").appendChild(player(vf.url, op(vf))); else $("pFull").remove();
+      (p.cortes || []).map(id => videoPorId[id]).filter(Boolean).forEach(v => { const d = document.createElement("div"); d.className = "vf"; d.style.setProperty("--o", "-8px"); d.appendChild(player(v.url, op(v))); $("pCortes").appendChild(d); });
     }
   } else if (q.get("pagina")) {
     const pg = paginas.find(x => x.slug === q.get("pagina"));
@@ -420,7 +429,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
     }
   } else if (q.get("video")) {
     const v = videoPorId[q.get("video")];
-    if (v) { mostrarLeitura('<div class="artigo">' + voltar + "<h2>" + esc(v.titulo) + '</h2><div class="bloco-video vf" id="vAbrir"></div></div>', v.titulo); $("vAbrir").appendChild(player(v.url, { titulo: v.titulo, capa: v.capa })); }
+    if (v) { mostrarLeitura('<div class="artigo">' + voltar + "<h2>" + esc(v.titulo) + '</h2><div class="bloco-video vf" id="vAbrir"></div></div>', v.titulo); $("vAbrir").appendChild(player(v.url, op(v))); }
   } else if (location.hash) aplicarHash();
 })();
 </script>

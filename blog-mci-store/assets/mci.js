@@ -53,18 +53,35 @@
     return { rede: "", tipo: "", src: "", vertical: false };
   }
 
-  // Monta o player de um vídeo. opcoes: { titulo, capa, legenda, classe }
+  // Monta o player de um vídeo. opcoes: { titulo, capa, legenda, classe, limpo, fundo }
   // Instagram/TikTok aparecem direto (a própria rede mostra a capa); YouTube mostra a miniatura e toca ao clicar.
+  // limpo: no Instagram, mostra só o vídeo em 9:16, sem cabeçalho, legenda e botões do Instagram.
+  // fundo: vídeo enviado toca sozinho, sem som e em repetição (para o topo do blog).
   function player(url, opcoes) {
     const o = opcoes || {}, e = emb(url), caixa = document.createElement("div");
     caixa.className = "player-midia " + (o.classe || "") + " p-" + (e.tipo || "link");
+    if (e.tipo === "iframe" && e.rede === "Instagram" && o.limpo) {
+      // O player do Instagram tem cabeçalho de 54 px e mídia em 4:5 com o reel (9:16) centralizado.
+      // Ampliando o quadro 142,2% e escondendo o cabeçalho, o reel preenche um cartão 9:16 sem bordas.
+      caixa.classList.add("p-limpo");
+      caixa.innerHTML = '<iframe src="' + esc(e.src) + '" title="' + esc(o.titulo || "Vídeo") + '" loading="lazy" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+      return caixa;
+    }
     if (e.tipo === "iframe") {
       caixa.style.setProperty("--prop", e.proporcao || 0.56);
       caixa.innerHTML = '<iframe src="' + esc(e.src) + '" title="' + esc(o.titulo || "Vídeo") + '" loading="lazy" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
       return caixa;
     }
     if (e.tipo === "arquivo") {
-      caixa.innerHTML = '<video controls playsinline preload="metadata"' + (urlSegura(o.capa) ? ' poster="' + esc(urlSegura(o.capa)) + '"' : "") + ' src="' + esc(e.src) + '"></video>';
+      const poster = urlSegura(o.capa) ? ' poster="' + esc(urlSegura(o.capa)) + '"' : "";
+      if (o.fundo) {
+        caixa.classList.add("p-fundo");
+        caixa.innerHTML = '<video autoplay muted loop playsinline preload="auto"' + poster + ' src="' + esc(e.src) + '"></video><button type="button" class="som" aria-label="Ativar som">Ativar som</button>';
+        const v = caixa.querySelector("video"), b = caixa.querySelector(".som");
+        b.onclick = () => { v.muted = !v.muted; v.controls = !v.muted; b.textContent = v.muted ? "Ativar som" : "Sem som"; b.setAttribute("aria-label", b.textContent); if (!v.muted) v.play(); };
+        return caixa;
+      }
+      caixa.innerHTML = '<video controls playsinline preload="metadata"' + poster + ' src="' + esc(e.src) + '"></video>';
       return caixa;
     }
     const capa = urlSegura(o.capa) || e.miniatura || "";
@@ -101,6 +118,15 @@
         .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>') + "</p>"
     ).join("");
   }
+
+  (function estilos() {
+    const st = document.createElement("style");
+    st.textContent = ".p-limpo{aspect-ratio:9/16;container-type:inline-size;background:#000}" +
+      ".p-limpo iframe{position:absolute;border:0;width:142.23%;left:-21.12%;top:-54px;height:calc(54px + 177.78cqw + 200px);max-width:none}" +
+      ".p-fundo{background:#000}.p-fundo video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}" +
+      ".p-fundo .som{position:absolute;right:.8rem;bottom:.8rem;z-index:3;font:600 .8rem/1 Poppins,Helvetica,Arial,sans-serif;padding:.5rem .8rem;border-radius:999px;border:1px solid rgba(255,255,255,.6);background:rgba(14,17,16,.6);color:#fff;cursor:pointer}";
+    document.head.appendChild(st);
+  })();
 
   const db = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_KEY);
 
