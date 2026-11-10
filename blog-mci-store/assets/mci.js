@@ -122,7 +122,7 @@
   (function estilos() {
     const st = document.createElement("style");
     st.textContent = ".p-limpo{aspect-ratio:9/16;container-type:inline-size;background:#000}" +
-      ".p-limpo iframe{position:absolute;border:0;width:142.23%;left:-21.12%;top:-54px;height:calc(54px + 177.78cqw + 200px);max-width:none}" +
+      ".p-limpo iframe{position:absolute;border:0;width:142.23%;left:-21.12%;top:-56px;height:calc(56px + 177.78cqw + 200px);max-width:none}" +
       ".p-fundo{background:#000}.p-fundo video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}" +
       ".p-fundo .som{position:absolute;right:.8rem;bottom:.8rem;z-index:3;font:600 .8rem/1 Poppins,Helvetica,Arial,sans-serif;padding:.5rem .8rem;border-radius:999px;border:1px solid rgba(255,255,255,.6);background:rgba(14,17,16,.6);color:#fff;cursor:pointer}";
     document.head.appendChild(st);
