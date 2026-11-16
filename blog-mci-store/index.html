@@ -153,6 +153,16 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
 .hero-cheia .hero-body{grid-template-columns:1fr;margin-top:auto;padding-bottom:clamp(2.5rem,8vh,5rem)}
 .hero-cheia .hero-body h1{max-width:15ch;text-shadow:0 2px 24px rgba(0,0,0,.45)}
 .hero-cheia #destaque{display:none}
+.fundo-luz{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 120%,#0B3A33 0%,#0E1110 60%);overflow:hidden}
+.fundo-luz span{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;mix-blend-mode:screen;will-change:transform}
+.fundo-luz span:nth-child(1){width:60vmax;height:60vmax;left:-10vmax;top:-20vmax;background:#1CA68D;animation:luz1 18s ease-in-out infinite alternate}
+.fundo-luz span:nth-child(2){width:45vmax;height:45vmax;right:-12vmax;top:10vh;background:#4EBF8B;opacity:.35;animation:luz2 22s ease-in-out infinite alternate}
+.fundo-luz span:nth-child(3){width:35vmax;height:35vmax;left:30vw;bottom:-15vmax;background:#ABD97E;opacity:.18;animation:luz3 26s ease-in-out infinite alternate}
+.fundo-luz::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);pointer-events:none}
+@keyframes luz1{to{transform:translate(18vw,14vh) scale(1.15)}}
+@keyframes luz2{to{transform:translate(-22vw,18vh) scale(.9)}}
+@keyframes luz3{to{transform:translate(-14vw,-12vh) scale(1.2)}}
+@media (prefers-reduced-motion:reduce){.fundo-luz span{animation:none}}
 .som-topo{position:absolute;right:clamp(1rem,3vw,2.5rem);bottom:clamp(1rem,4vh,2.5rem);z-index:3;font:600 .85rem/1 var(--sans);padding:.65rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.55);background:rgba(14,17,16,.55);color:#fff;cursor:pointer;backdrop-filter:blur(6px)}
 .p-fundo.vertical{max-width:340px;margin-inline:auto}.p-fundo.vertical video{aspect-ratio:9/16}
 /* Celular: ajustes vindos de "Versão celular" no painel */
@@ -330,7 +340,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
     const fundo = $("fundoTopo"), destaque = $("destaque");
     fundo.innerHTML = ""; destaque.innerHTML = ""; $("topo").querySelector(".som-topo")?.remove();
     const e = emb(url);
-    if (topo.modo === "tela_cheia" && (url || poster)) {
+    if (topo.modo === "tela_cheia") {
       $("topo").classList.add("hero-cheia"); fundo.hidden = false;
       if (e.tipo === "arquivo" && !semMovimento) {
         fundo.innerHTML = '<video autoplay muted loop playsinline preload="auto"' + (urlSegura(poster) ? ' poster="' + esc(urlSegura(poster)) + '"' : "") + ' src="' + esc(e.src) + '"></video>';
@@ -342,6 +352,9 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
         fundo.innerHTML = '<iframe tabindex="-1" aria-hidden="true" src="https://www.youtube-nocookie.com/embed/' + esc(id) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(id) + '&controls=0&modestbranding=1&playsinline=1&rel=0&disablekb=1" allow="autoplay; encrypted-media"></iframe>';
       } else if (urlSegura(poster)) {
         fundo.innerHTML = '<img src="' + esc(urlSegura(poster)) + '" alt="">';
+      } else {
+        // Sem vídeo nem foto ainda: fundo de luz com a identidade da MCI
+        fundo.innerHTML = '<div class="fundo-luz" aria-hidden="true"><span></span><span></span><span></span></div>';
       }
       return;
     }
