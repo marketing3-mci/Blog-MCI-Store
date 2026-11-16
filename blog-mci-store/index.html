@@ -143,12 +143,28 @@ h2{font:500 clamp(1.5rem,3vw,2.2rem)/1.15 var(--disp);letter-spacing:-.02em;marg
 footer{padding:2.2rem 0 2.6rem;font-size:.92rem;color:#b9d1ca}
 footer .cols{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.5rem;padding-top:2rem}
 footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
+/* Topo em tela cheia (Site e menu → Topo do blog) */
+.hero.hero-cheia{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;background:#000;overflow:hidden}
+.fundo-topo{position:absolute;inset:0;z-index:0;overflow:hidden}
+.fundo-topo video,.fundo-topo img{display:block;width:100%;height:100%;object-fit:cover}
+.fundo-topo iframe{position:absolute;top:50%;left:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%);border:0;pointer-events:none}
+.hero-cheia::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(14,17,16,.6) 0%,rgba(14,17,16,0) 28%,rgba(14,17,16,.1) 55%,rgba(14,17,16,.92) 100%)}
+.hero-cheia .top,.hero-cheia .hero-body{position:relative;z-index:2}
+.hero-cheia .hero-body{grid-template-columns:1fr;margin-top:auto;padding-bottom:clamp(2.5rem,8vh,5rem)}
+.hero-cheia .hero-body h1{max-width:15ch;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.hero-cheia #destaque{display:none}
+.som-topo{position:absolute;right:clamp(1rem,3vw,2.5rem);bottom:clamp(1rem,4vh,2.5rem);z-index:3;font:600 .85rem/1 var(--sans);padding:.65rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.55);background:rgba(14,17,16,.55);color:#fff;cursor:pointer;backdrop-filter:blur(6px)}
+.p-fundo.vertical{max-width:340px;margin-inline:auto}.p-fundo.vertical video{aspect-ratio:9/16}
+/* Celular: ajustes vindos de "Versão celular" no painel */
+@media (max-width:700px){.so-pc{display:none!important}.hero-cheia .hero-body h1{font-size:clamp(2rem,9vw,2.6rem)}}
+@media (max-width:700px){.cel-carrossel .reels{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:76%;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;padding:0 0 .8rem;margin-inline:-1.25rem;padding-inline:1.25rem;scrollbar-width:thin}.cel-carrossel .reel{scroll-snap-align:center}.cel-carrossel .reels .p-iframe{max-width:none}}
 @media (max-width:900px){.hero-body,.setup .wrap,.sobre-grid{grid-template-columns:1fr}.reels{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}.top nav a:not(.btn){display:none}.row{grid-template-columns:80px 1fr auto}.row .th{width:80px}.row b{display:none}}
 @media (max-width:560px){.reels,.cards{grid-template-columns:1fr}.reels .p-iframe{max-width:340px;margin-inline:auto}.cine{flex-direction:column;align-items:flex-start}.row{grid-template-columns:72px 1fr}.row .th{width:72px}.row time{grid-column:2}}
 </style>
 </head>
 <body>
-<header class="dark hero">
+<header class="dark hero" id="topo">
+  <div class="fundo-topo" id="fundoTopo" hidden></div>
   <div class="wrap top">
     <a href="/" aria-label="Início"><img src="/assets/logo-principal.png" alt="MCI"></a>
     <nav id="nav"><a href="#videos">Vídeos</a><a href="#leituras">Leituras</a><a href="#sobre">Sobre a MCI</a><a class="btn ghost" href="https://www.mci.tv/">Loja</a></nav>
@@ -297,23 +313,61 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
     }).join("");
   }
 
-  // ---- Hero
-  if (cfg.hero_titulo) $("heroTitulo").textContent = cfg.hero_titulo;
-  if (cfg.hero_texto) $("heroTexto").textContent = cfg.hero_texto;
+  // ---- Topo (computador e celular)
+  // topo: { modo: "lado" | "tela_cheia", video, poster }  · celular: { video, poster, titulo, texto, ... }
+  const topo = cfg.topo || {};
+  const cel = Object.assign({ trilhas_carrossel: true, trilhas_qtd: 4, mostrar_feed: true, mostrar_cinepro: true, mostrar_adesivo: true }, cfg.celular || {});
+  const mqCel = window.matchMedia("(max-width: 700px)");
+  const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const full = videos.find(v => v.tipo === "Vídeo full");
-  if (full) $("destaque").appendChild(player(full.url, op(full, { fundo: emb(full.url).tipo === "arquivo" })));
-  else {
-    const a = document.createElement("a");
-    a.className = "screen"; a.href = C.CANAL_YOUTUBE;
-    a.innerHTML = '<span class="play"></span><span class="cap"><b>Unboxing DZOFilm Linglung</b><span>Com Diogo Bezerra, direto da bancada</span></span>';
-    $("destaque").appendChild(a);
+  function desenharTopo() {
+    const noCel = mqCel.matches;
+    $("heroTitulo").textContent = (noCel && cel.titulo) || cfg.hero_titulo || "Tecnologia para contar histórias";
+    $("heroTexto").textContent = (noCel && cel.texto) || cfg.hero_texto || "Vídeos, bastidores e técnica de set com quem cria imagem em movimento.";
+    const url = (noCel && cel.video) || topo.video || (full && full.url) || "";
+    const poster = (noCel && cel.poster) || topo.poster || (full && full.capa) || "";
+    const usaVertical = noCel && !!cel.video;
+    const fundo = $("fundoTopo"), destaque = $("destaque");
+    fundo.innerHTML = ""; destaque.innerHTML = ""; $("topo").querySelector(".som-topo")?.remove();
+    const e = emb(url);
+    if (topo.modo === "tela_cheia" && (url || poster)) {
+      $("topo").classList.add("hero-cheia"); fundo.hidden = false;
+      if (e.tipo === "arquivo" && !semMovimento) {
+        fundo.innerHTML = '<video autoplay muted loop playsinline preload="auto"' + (urlSegura(poster) ? ' poster="' + esc(urlSegura(poster)) + '"' : "") + ' src="' + esc(e.src) + '"></video>';
+        const b = document.createElement("button"); b.type = "button"; b.className = "som-topo"; b.textContent = "Ativar som";
+        b.onclick = () => { const v = fundo.querySelector("video"); v.muted = !v.muted; b.textContent = v.muted ? "Ativar som" : "Sem som"; v.play(); };
+        $("topo").appendChild(b);
+      } else if (e.rede === "YouTube" && !semMovimento) {
+        const id = (url.match(/(?:youtu\.be\/|v=|shorts\/|live\/|embed\/)([\w-]{11})/) || [])[1];
+        fundo.innerHTML = '<iframe tabindex="-1" aria-hidden="true" src="https://www.youtube-nocookie.com/embed/' + esc(id) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(id) + '&controls=0&modestbranding=1&playsinline=1&rel=0&disablekb=1" allow="autoplay; encrypted-media"></iframe>';
+      } else if (urlSegura(poster)) {
+        fundo.innerHTML = '<img src="' + esc(urlSegura(poster)) + '" alt="">';
+      }
+      return;
+    }
+    $("topo").classList.remove("hero-cheia"); fundo.hidden = true;
+    if (url) {
+      const pl = player(url, { titulo: full && url === full.url ? full.titulo : "", capa: poster, limpo: !full || full.exibicao !== "completo", fundo: e.tipo === "arquivo" });
+      if (usaVertical && e.tipo === "arquivo") pl.classList.add("vertical");
+      destaque.appendChild(pl);
+    } else {
+      const a = document.createElement("a");
+      a.className = "screen"; a.href = C.CANAL_YOUTUBE;
+      a.innerHTML = '<span class="play"></span><span class="cap"><b>Unboxing DZOFilm Linglung</b><span>Com Diogo Bezerra, direto da bancada</span></span>';
+      destaque.appendChild(a);
+    }
   }
+  desenharTopo();
+  // Troca de vídeo/textos ao girar o celular ou redimensionar a janela entre celular e computador
+  mqCel.addEventListener ? mqCel.addEventListener("change", desenharTopo) : mqCel.addListener(desenharTopo);
+  // Ajustes de celular
+  if (cel.trilhas_carrossel) document.body.classList.add("cel-carrossel");
 
   // ---- Trilhas: o vídeo aparece direto no cartão
   const cortes = videos.filter(v => v.tipo !== "Vídeo full").slice(0, 8);
   if (cortes.length) {
-    cortes.forEach(v => {
-      const d = document.createElement("div"); d.className = "reel";
+    cortes.forEach((v, i) => {
+      const d = document.createElement("div"); d.className = "reel" + (i >= Number(cel.trilhas_qtd || 4) ? " so-pc" : "");
       const moldura = document.createElement("div"); moldura.className = "vf";
       moldura.appendChild(player(v.url, op(v)));
       d.appendChild(moldura);
@@ -382,6 +436,9 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
 
   // ---- Rodapé: feed das redes (vídeos e posts marcados no painel)
   const feed = videos.filter(v => v.no_rodape).slice(0, 8);
+  if (!cel.mostrar_feed) $("feed").classList.add("so-pc");
+  if (!cel.mostrar_cinepro) document.querySelector(".cine").classList.add("so-pc");
+  if (!destaque && !cel.mostrar_adesivo) $("setupMidia").classList.add("so-pc");
   if (feed.length) {
     $("feed").hidden = false;
     feed.forEach(v => $("feedGrade").appendChild(player(v.url, op(v))));

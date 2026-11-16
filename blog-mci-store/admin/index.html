@@ -48,6 +48,13 @@ h2{font-size:1.1rem;margin:0 0 1rem}
 .lado{background:var(--ink2);border-right:1px solid var(--line);padding:1.2rem 1rem;display:flex;flex-direction:column;gap:.2rem;position:sticky;top:0;height:100vh;overflow:auto}
 .lado .marca{height:40px;margin:.2rem .5rem 1.4rem}
 .topoMob{display:none}
+.celGrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:1.5rem;align-items:start}
+.celPrev{position:sticky;top:1rem;text-align:center}
+.celPrev .aparelho{width:358px;height:744px;margin:0 auto;border-radius:38px;border:10px solid #2a3330;background:#000;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.celPrev iframe{width:390px;height:844px;border:0;transform:scale(.865);transform-origin:0 0;background:#fff}
+.opcao{display:flex;gap:.6rem;align-items:flex-start;color:var(--txt);margin:0 0 .9rem;font-size:.95rem}
+.opcao input{width:auto;margin-top:.3rem}
+@media (max-width:1200px){.celGrid{grid-template-columns:1fr}.celPrev{position:static}}
 .lado button,.lado a.it{display:block;width:100%;text-align:left;background:none;border:0;padding:.55rem .75rem;border-radius:8px;color:var(--mut);cursor:pointer;text-decoration:none;font-weight:500}
 .lado button:hover,.lado a.it:hover{background:var(--ink3);color:var(--txt)}
 .lado button[aria-current="page"]{background:rgba(28,166,141,.16);color:var(--mint)}
@@ -139,6 +146,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     <button data-v="mvv">Missão, visão e valores</button>
     <button data-v="paginas">Páginas</button>
     <button data-v="site">Site e menu</button>
+    <button data-v="celular">Versão celular</button>
     <button data-v="acessos" data-min="admin">Acessos e equipe</button>
     <button data-v="dev">Desenvolvedor</button>
     <a class="it" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>
@@ -426,11 +434,54 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const cfg = await carregarConfig();
       const c = (k, n, area, ph) => '<div class="campo"><label for="' + k + '">' + n + "</label>" + (area ? '<textarea id="' + k + '">' + esc(cfg[k] || "") + "</textarea>" : '<input id="' + k + '" value="' + esc(cfg[k] || "") + '" placeholder="' + esc(ph || "") + '">') + "</div>";
       v.innerHTML = '<div class="topo"><div><h1>Site e menu</h1><p class="mut">Textos fixos do blog.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
-        '<div class="card" style="margin-bottom:1rem"><h2>Topo do blog</h2>' + c("hero_titulo", "Título principal") + c("hero_texto", "Texto de apoio", true) + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Topo do blog (computador)</h2>' + c("hero_titulo", "Título principal") + c("hero_texto", "Texto de apoio", true) +
+        '<div class="campo"><label for="topo_modo">Formato do topo</label><select id="topo_modo"><option value="lado"' + ((cfg.topo || {}).modo !== "tela_cheia" ? " selected" : "") + '>Vídeo ao lado do título (atual)</option><option value="tela_cheia"' + ((cfg.topo || {}).modo === "tela_cheia" ? " selected" : "") + '>Vídeo em tela cheia, ocupando todo o início da página</option></select>' +
+        '<div class="mut" style="font-size:.85rem;margin-top:.3rem">Em tela cheia, o vídeo toca sozinho, sem som e em repetição, com o título por cima. Funciona com MP4 enviado ou link do YouTube. Para o celular, configure a versão vertical em “Versão celular”.</div></div>' +
+        campoVideo("topo_video", "Vídeo do topo (horizontal)", (cfg.topo || {}).video, "Deixe vazio para usar o vídeo marcado como “Vídeo full” em Vídeos das redes. Ideal: MP4 de 10 a 20 segundos, 1920×1080, até 10 MB.") +
+        campoImagem("topo_poster", "Foto de capa do topo (aparece enquanto o vídeo carrega e para quem desativou animações)", (cfg.topo || {}).poster) + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Destinos: <code>#videos</code>, <code>#leituras</code>, <code>#sobre</code>, <code>#setup</code> ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Seções opcionais</h2><label style="display:flex;gap:.6rem;align-items:flex-start;color:var(--txt)"><input type="checkbox" id="mostrar_cinema" style="width:auto;margin-top:.3rem" ' + (cfg.mostrar_cinema ? "checked" : "") + '><span><b>Publicar a seção “Cinema em alta”</b><br><span class="mut">Enquanto estiver desmarcado, a seção e o item “Cinema” do menu ficam escondidos, e os posts da seção Cinema não aparecem no blog. Prepare os posts com calma e marque aqui quando quiser lançar.</span></span></label></div>' +
         '<div class="card"><h2>Contato e página Sobre</h2><div class="grid2">' + c("contato_email", "E-mail de contato") + c("contato_tel", "Telefone") + "</div>" + c("video_sobre", "Vídeo da página Sobre (link)", false, "https://www.youtube.com/watch?v=…") + "</div>";
-      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["hero_titulo", "hero_texto", "menu", "contato_email", "contato_tel", "video_sobre"], { mostrar_cinema: v.querySelector("#mostrar_cinema").checked }));
+      ligarImagens(v, "topo"); ligarVideos(v, "topo");
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["hero_titulo", "hero_texto", "menu", "contato_email", "contato_tel", "video_sobre"], {
+        mostrar_cinema: v.querySelector("#mostrar_cinema").checked,
+        topo: Object.assign({}, cfg.topo || {}, { modo: v.querySelector("#topo_modo").value, video: val(v, "topo_video"), poster: val(v, "topo_poster") })
+      }));
+    },
+
+    async celular(v) {
+      const cfg = await carregarConfig();
+      const cel = Object.assign({ trilhas_carrossel: true, trilhas_qtd: 4, mostrar_feed: true, mostrar_cinepro: true, mostrar_adesivo: true }, cfg.celular || {});
+      const chk = (id, txt, ajuda) => '<label class="opcao"><input type="checkbox" id="' + id + '" ' + (cel[id] ? "checked" : "") + '><span><b>' + txt + "</b>" + (ajuda ? '<br><span class="mut">' + ajuda + "</span>" : "") + "</span></label>";
+      v.innerHTML = '<div class="topo"><div><h1>Versão celular</h1><p class="mut">O que muda quando o blog é aberto no celular. Campos vazios usam o mesmo conteúdo do computador.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar e atualizar prévia</button>' : "") + "</div>" +
+        '<div class="celGrid"><div>' +
+        '<div class="card" style="margin-bottom:1rem"><h2>Topo no celular</h2>' +
+        campoVideo("cel_video", "Vídeo vertical do topo (9:16)", cel.video, "Ideal: MP4 de 10 a 20 segundos, 1080×1920, até 10 MB, com a ação no centro do quadro. Também aceita link de Reels, TikTok ou YouTube Shorts.") +
+        campoImagem("cel_poster", "Foto de capa vertical (aparece enquanto o vídeo carrega)", cel.poster) +
+        '<div class="campo"><label for="cel_titulo">Título no celular (opcional, mais curto)</label><input id="cel_titulo" maxlength="60" value="' + esc(cel.titulo || "") + '" placeholder="' + esc(cfg.hero_titulo || "Tecnologia para contar histórias") + '"></div>' +
+        '<div class="campo"><label for="cel_texto">Texto de apoio no celular (opcional)</label><textarea id="cel_texto" maxlength="160" style="min-height:80px" placeholder="' + esc(cfg.hero_texto || "") + '">' + esc(cel.texto || "") + "</textarea></div></div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Seções no celular</h2>' +
+        chk("trilhas_carrossel", "Trilhas de vídeo em carrossel", "Os vídeos ficam lado a lado e a pessoa arrasta para o lado, em vez de um embaixo do outro.") +
+        '<div class="campo"><label for="trilhas_qtd">Quantos vídeos das trilhas mostrar no celular</label><select id="trilhas_qtd">' + [2, 3, 4, 6, 8].map(n => '<option value="' + n + '"' + (Number(cel.trilhas_qtd) === n ? " selected" : "") + ">" + n + "</option>").join("") + "</select></div>" +
+        chk("mostrar_feed", "Mostrar o feed das redes no rodapé", "Desmarque para deixar a página mais leve no celular.") +
+        chk("mostrar_cinepro", "Mostrar a faixa CinePro no rodapé") +
+        chk("mostrar_adesivo", "Mostrar o adesivo da caixa quando não houver destaque da semana") + "</div>" +
+        '<div class="card"><h2>Dicas para imagens no celular</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>Capas de post: horizontais (16:9), com o assunto no centro. No celular elas aparecem pequenas na lista.</li><li>Vídeos e fotos do topo: versão vertical própria, em vez de cortar a horizontal.</li><li>Evite texto escrito dentro das imagens: fica ilegível na tela pequena.</li></ul></div>' +
+        '</div><div class="celPrev"><p class="mut" style="margin:0 0 .6rem;font-size:.85rem">Prévia ao vivo (390 × 844, como um iPhone)</p><div class="aparelho"><iframe id="celFrame" title="Prévia do blog no celular" src="/?previa=celular"></iframe></div>' +
+        '<div class="acoes" style="justify-content:center;margin-top:.8rem"><button class="btn sec" id="recarregar">Recarregar prévia</button></div></div></div>';
+      ligarImagens(v, "celular"); ligarVideos(v, "celular");
+      v.querySelector("#recarregar").onclick = () => { v.querySelector("#celFrame").src = "/?previa=celular&t=" + Date.now(); };
+      v.querySelector("#salvar")?.addEventListener("click", async () => {
+        const novo = Object.assign({}, cfg.celular || {}, {
+          video: val(v, "cel_video"), poster: val(v, "cel_poster"), titulo: val(v, "cel_titulo"), texto: val(v, "cel_texto"),
+          trilhas_carrossel: v.querySelector("#trilhas_carrossel").checked, trilhas_qtd: Number(v.querySelector("#trilhas_qtd").value),
+          mostrar_feed: v.querySelector("#mostrar_feed").checked, mostrar_cinepro: v.querySelector("#mostrar_cinepro").checked, mostrar_adesivo: v.querySelector("#mostrar_adesivo").checked
+        });
+        const { error } = await db.from("site_config").update({ celular: novo }).eq("id", "config");
+        if (error) return falhou(error);
+        cfg.celular = novo; evento("mci:salvo", { tabela: "site_config", registro: { celular: novo } }); toast("Salvo");
+        v.querySelector("#celFrame").src = "/?previa=celular&t=" + Date.now();
+      });
     },
 
     async acessos(v) {
