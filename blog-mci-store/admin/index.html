@@ -61,7 +61,7 @@ pre.ex{background:var(--ink);border:1px solid var(--line);border-radius:8px;padd
 /* App */
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
 .lado{background:var(--ink2);border-right:1px solid var(--line);padding:1.2rem 1rem;display:flex;flex-direction:column;gap:.2rem;position:sticky;top:0;height:100vh;overflow:auto}
-.lado .marca{height:40px;margin:.2rem .5rem 1.4rem}
+.lado .marca{height:36px;margin:.2rem .5rem 1rem}
 .topoMob{display:none}
 .celGrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:1.5rem;align-items:start}
 .celPrev{position:sticky;top:1rem;text-align:center}
@@ -70,9 +70,19 @@ pre.ex{background:var(--ink);border:1px solid var(--line);border-radius:8px;padd
 .opcao{display:flex;gap:.6rem;align-items:flex-start;color:var(--txt);margin:0 0 .9rem;font-size:.95rem}
 .opcao input{width:auto;margin-top:.3rem}
 @media (max-width:1200px){.celGrid{grid-template-columns:1fr}.celPrev{position:static}}
-.lado button,.lado a.it{display:block;width:100%;text-align:left;background:none;border:0;padding:.55rem .75rem;border-radius:8px;color:var(--mut);cursor:pointer;text-decoration:none;font-weight:500}
+.lado button,.lado a.it{display:block;width:100%;text-align:left;background:none;border:0;padding:.4rem .75rem;font-size:.95rem;border-radius:8px;color:var(--mut);cursor:pointer;text-decoration:none;font-weight:500}
 .lado button:hover,.lado a.it:hover{background:var(--ink3);color:var(--txt)}
 .lado button[aria-current="page"]{background:rgba(28,166,141,.16);color:var(--mint)}
+.bt-cab,.bt-linha{display:grid;grid-template-columns:minmax(170px,1.1fr) 1.2fr 1.2fr;gap:.7rem;align-items:center}
+.bt-cab{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);padding:0 0 .4rem;border-bottom:1px solid var(--line)}
+.bt-linha{padding:.55rem 0;border-bottom:1px solid var(--line)}.bt-linha b{font-weight:500;font-size:.9rem}
+@media (max-width:900px){.bt-cab{display:none}.bt-linha{grid-template-columns:1fr}}
+.atalhos{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.7rem;margin-bottom:1.5rem}
+.atalhos button{display:flex;align-items:center;gap:.7rem;text-align:left;padding:.85rem 1rem;border-radius:12px;border:1px solid var(--line);background:var(--ink2);cursor:pointer;font-weight:500}
+.atalhos button:hover{border-color:var(--teal);color:var(--mint)}
+.atalhos i{font-style:normal;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(28,166,141,.16);color:var(--mint);flex:none;font-size:.95rem}
+.lado .grupo{margin:.9rem .75rem .2rem;font:600 .68rem var(--sans,inherit);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);opacity:.75}
+.lado a.it.ver{margin-top:1rem;color:var(--mint)}
 .lado .rod{margin-top:auto;padding:.8rem .5rem 0;border-top:1px solid var(--line);font-size:.82rem;color:var(--mut)}
 .lado .rod b{color:var(--txt);font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis}
 .conteudo{padding:1.8rem clamp(1rem,3vw,2.5rem) 4rem;min-width:0}
@@ -182,25 +192,28 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
   <header class="topoMob"><img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store"><button class="btn sec" id="abrirMenu" aria-controls="lado" aria-expanded="false">☰ Menu</button></header>
   <aside class="lado" id="lado">
     <img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store">
-    <button data-v="painel">Painel</button>
+    <button data-v="painel">Início</button>
+    <p class="grupo">Conteúdo</p>
     <button data-v="posts">Posts</button>
-    <button data-v="videos">Vídeos das redes</button>
+    <button data-v="videos">Vídeos e Reels</button>
     <button data-v="destaques">Destaque da semana</button>
-    <button data-v="historia">História da MCI</button>
-    <button data-v="mvv">Sobre a MCI</button>
     <button data-v="paginas">Páginas</button>
-    <button data-v="site">Site e menu</button>
-    <button data-v="textos">Textos do blog</button>
-    <button data-v="secoes">Seções do blog</button>
-    <button data-v="visual">Fontes e visual</button>
-    <button data-v="celular">Versão celular</button>
+    <p class="grupo">Aparência do blog</p>
+    <button data-v="textos">Textos e botões</button>
+    <button data-v="site">Menu e topo</button>
+    <button data-v="secoes">Seções</button>
+    <button data-v="mvv">Página Sobre</button>
+    <button data-v="historia">Linha do tempo</button>
+    <button data-v="visual">Fontes e cores</button>
+    <button data-v="celular">Celular</button>
+    <p class="grupo">Público</p>
     <button data-v="analises">Análises</button>
     <button data-v="notificacoes" data-min="editor">Notificações</button>
-    <button data-v="acessos" data-min="admin">Acessos e equipe</button>
+    <p class="grupo" data-min="admin">Configurações</p>
+    <button data-v="acessos" data-min="admin">Equipe e acessos</button>
     <button data-v="chaves" data-min="admin">Chaves de API</button>
-    <button data-v="dev">Desenvolvedor</button>
-    <a class="it" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>
-    <a class="it" href="https://mcistore.blog" target="_blank" rel="noopener">Blog atual (WordPress) ↗</a>
+    <button data-v="dev" data-min="admin">Desenvolvedor</button>
+    <a class="it ver" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>
     <div class="rod"><b id="quem"></b><span id="nivelTxt"></span><br><a href="#" id="sair">Sair</a></div>
   </aside>
   <main class="conteudo">
@@ -359,6 +372,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const c = s => posts.filter(p => p.status === s).length;
       const recentes = posts.slice(0, 5);
       v.innerHTML = '<div class="topo"><div><h1>Olá' + (perfil.nome ? ", " + esc(perfil.nome) : "") + '</h1><p class="mut">Tudo o que aparece no blog é editado por aqui.</p></div><a class="btn" href="/" target="_blank" rel="noopener">Ver o blog ↗</a></div>' +
+        '<div class="atalhos">' + [["posts", "✎", "Escrever um post"], ["videos", "▶", "Adicionar vídeo ou Reel"], ["textos", "Aa", "Editar textos e botões"], ["notificacoes", "🔔", "Avisar sobre post novo"], ["analises", "↗", "Ver as análises"]].filter(([k]) => { const b = document.querySelector('.lado [data-v="' + k + '"]'); return b && !b.hidden; }).map(([k, i, n]) => '<button data-ir="' + k + '"><i aria-hidden="true">' + i + "</i>" + n + "</button>").join("") + "</div>" +
         '<div class="cards"><div class="card"><div class="num">' + c("publicado") + '</div>publicados</div><div class="card"><div class="num">' + c("agendado") + '</div>agendados</div><div class="card"><div class="num">' + c("rascunho") + '</div>rascunhos</div><div class="card"><div class="num">' + videos.length + '</div>vídeos</div><div class="card"><div class="num">' + marcos.filter(m => /definir/i.test(m.ano || "") || !m.ano).length + '</div>marcos sem ano</div></div>' +
         '<div class="grid2"><div class="card"><h2>Posts recentes</h2><div class="lista">' + (recentes.map(p => '<div><span class="tag ' + p.status + '">' + p.status + "</span>" + esc(p.titulo) + ' <span class="mut">· ' + dataBR(p.data) + "</span></div>").join("") || '<p class="mut">Nenhum post.</p>') + "</div></div>" +
         '<div class="card"><h2>Antes de publicar</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>Título com só a primeira letra maiúscula.</li><li>Seção do blog escolhida.</li><li>Autor com nome (nunca e-mail).</li><li>Foto de capa e, se houver, o vídeo do post.</li><li>Autorização de imagem de quem aparece.</li></ul></div></div>';
@@ -389,7 +403,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     async videos(v) {
       const videos = await listar("videos", "criado_em");
       const semMp4 = x => x.tipo !== "Vídeo full" && ["Instagram", "TikTok", "Facebook"].includes(emb(x.url).rede);
-      v.innerHTML = '<div class="topo"><div><h1>Vídeos das redes</h1><p class="mut">“Corte ou Reels” aparece nas trilhas; “Vídeo full” vira o destaque do topo; marque “no rodapé” para entrar no feed das redes.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Vídeos e Reels</h1><p class="mut">“Corte ou Reels” aparece nas trilhas; “Vídeo full” vira o destaque do topo; marque “no rodapé” para entrar no feed das redes.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
         (videos.some(semMp4) ? '<div class="aviso">Reels sem arquivo MP4: ' + videos.filter(semMp4).length + '. O Safari e o Android bloqueiam o player do Instagram, então esses vídeos podem não aparecer. Clique em “Editar” e envie o MP4 do Reels (até 50 MB): ele passa a tocar em qualquer aparelho, com o botão “Ver no Instagram”.</div>' : "") +
         '<div class="card" style="margin-bottom:1.5rem"><h2>Testar um link agora</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="teste">Link do vídeo</label><input id="teste" placeholder="https://www.instagram.com/reel/…"></div><div><button class="btn sec" id="btnTeste">Testar</button></div></div><div id="testeRes"></div></div>' +
         '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + ((urlSegura(x.capa) || emb(x.url).miniatura) ? "url('" + esc(urlSegura(x.capa) || emb(x.url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + (x.no_rodape ? '<span class="tag publicado">no rodapé</span>' : "") + (semMp4(x) ? '<span class="tag agendado">sem MP4</span>' : emb(x.url).tipo === "arquivo" ? '<span class="tag publicado">MP4</span>' : "") + esc(emb(x.link_rede || x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
@@ -448,7 +462,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
     async historia(v) {
       const marcos = await listar("marcos", "ordem", true);
-      v.innerHTML = '<div class="topo"><div><h1>História da MCI</h1><p class="mut">O mural de marcos da página “Sobre a MCI”. No blog, os marcos aparecem numa linha do tempo horizontal, na ordem do campo “Ordem”.</p></div>' + (pode("editor") ? '<button class="btn" id="novo">+ Novo marco</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Linha do tempo</h1><p class="mut">O mural de marcos da página “Sobre a MCI”. No blog, os marcos aparecem numa linha do tempo horizontal, na ordem do campo “Ordem”.</p></div>' + (pode("editor") ? '<button class="btn" id="novo">+ Novo marco</button>' : "") + "</div>" +
         '<div class="lista">' + marcos.map(m => '<div class="item"><div class="th" style="background-image:' + (urlSegura(m.foto) ? "url('" + esc(m.foto) + "')" : "") + '"></div><div><div class="t">' + esc(m.ano || "a definir") + " · " + esc(m.titulo) + '</div><div class="s">' + esc(m.local || "") + "</div></div><div class=\"acoes\">" +
           (pode("editor") ? '<button class="btn sec" data-ed="' + esc(m.id) + '">Editar</button><button class="btn perigo" data-ex="' + esc(m.id) + '">Excluir</button>' : "") + "</div></div>").join("") + "</div>";
       const form = m => '<h2>' + (m ? "Editar marco" : "Novo marco") + '</h2><div class="grid3"><div class="campo"><label for="ano">Ano</label><input id="ano" value="' + esc(m?.ano || "") + '" placeholder="2003"></div><div class="campo"><label for="ordem">Ordem na linha do tempo</label><input id="ordem" type="number" value="' + esc(m?.ordem ?? marcos.length + 1) + '"></div><div class="campo"><label for="local">Local</label><input id="local" value="' + esc(m?.local || "") + '"></div></div>' +
@@ -464,10 +478,10 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const cfg = await carregarConfig();
       const c = (k, n, area, dica) => '<div class="campo"><label for="' + k + '">' + n + "</label>" + (area ? '<textarea id="' + k + '" style="min-height:80px">' + esc(cfg[k] || "") + "</textarea>" : '<input id="' + k + '" value="' + esc(cfg[k] || "") + '">') + (dica ? '<div class="mut" style="font-size:.82rem;margin-top:.3rem">' + dica + "</div>" : "") + "</div>";
       const par = (k, nome) => '<div class="card" style="margin-bottom:1rem"><h2>' + nome + '</h2><div class="grid2"><div class="campo"><label for="' + k + '_atual">Versão atual da empresa (para comparar)</label><textarea id="' + k + '_atual">' + esc(cfg[k + "_atual"] || "") + '</textarea></div><div class="campo"><label for="' + k + '">Proposta (é o que aparece no blog)</label><textarea id="' + k + '">' + esc(cfg[k] || "") + "</textarea></div></div></div>";
-      v.innerHTML = '<div class="topo"><div><h1>Sobre a MCI</h1><p class="mut">Todos os textos da seção “Sobre” do blog. A linha do tempo é editada em “História da MCI”.</p></div><div class="acoes"><a class="btn sec" href="/#sobre" target="_blank" rel="noopener">Ver no blog ↗</a>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div></div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Página Sobre</h1><p class="mut">Todos os textos da seção “Sobre” do blog. A linha do tempo é editada em “História da MCI”.</p></div><div class="acoes"><a class="btn sec" href="/#sobre" target="_blank" rel="noopener">Ver no blog ↗</a>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div></div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Abertura da seção</h2><div class="grid2">' + c("sobre_olho", "Chamada pequena (acima do título)") + c("sobre_trilha_titulo", "Título da linha do tempo") + "</div>" +
         c("sobre_titulo", "Título", true) + c("sobre_texto", "Descrição", true) +
-        c("sobre_frase", "Frase manuscrita", false, "Aparece logo abaixo do título, na fonte manuscrita escolhida em “Fontes e visual”. Deixe vazio para não mostrar.") +
+        c("sobre_frase", "Frase manuscrita", false, "Aparece logo abaixo do título, na fonte manuscrita escolhida em “Fontes e cores”. Deixe vazio para não mostrar.") +
         c("sobre_numeros", "Números de destaque", true, "Uma linha por número, no formato <code>Número | legenda</code>. Ex.: <code>23+ | anos de mercado</code>. Deixe vazio para não mostrar.") + "</div>" +
         par("missao", "Missão") + par("visao", "Visão") + par("valores", "Valores") +
         '<p class="mut" style="font-size:.85rem">Nos valores, uma linha por valor vira uma lista com marcadores.</p>';
@@ -476,21 +490,51 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
     async textos(v) {
       const cfg = await carregarConfig(), t = cfg.textos || {};
-      const GRUPOS = [
-        ["Topo da página inicial", "O título e o texto do topo ficam em “Site e menu”.", [["botao_videos", "Botão 1", "Ver os vídeos"], ["botao_setup", "Botão 2", "Mostrar meu setup"]]],
-        ["Trilhas de vídeo", "", [["videos_titulo", "Título", "Quatro jeitos de aprender no set"], ["videos_lead", "Texto de apoio", "Cada trilha tem um ritmo diferente, porque ninguém grava do mesmo jeito. Escolha a sua.", 1]]],
-        ["Leituras (lista de posts)", "", [["leituras_titulo", "Título", "Para ler com calma"], ["leituras_lead", "Texto de apoio", "Matérias, vídeos educativos, eventos e lançamentos, organizados por quem vai usar.", 1]]],
-        ["Cinema em alta", "", [["cinema_titulo", "Título", "Cinema em alta"], ["cinema_lead", "Texto de apoio", "Filmes e séries que estão dando o que falar, e o equipamento por trás de cada cena.", 1]]],
-        ["Faixa turquesa (próximo take)", "", [["setup_titulo", "Título", "Qual será o nosso próximo take?"], ["setup_texto", "Texto", "Recebeu sua caixa? Poste, marque a gente e bora inovar nesse setup! Os melhores setups, bastidores e perguntas da galera viram vídeo aqui no blog.", 1], ["setup_botao", "Texto do botão", "Marcar @mcistore"], ["setup_link", "Link do botão", "https://www.instagram.com/mcistore/"]]],
-        ["Avisos do blog (notificações)", "Ligar ou desligar a faixa e enviar avisos: em “Notificações”.", [["avisos_olho", "Chamada pequena", "Avisos do blog"], ["avisos_titulo", "Título", "Saiu post novo? Você fica sabendo na hora"], ["avisos_texto", "Texto", "Ative as notificações e receba um aviso no computador ou no celular quando publicarmos lançamentos, dicas de set e eventos. Sem cadastro, sem e-mail.", 1], ["avisos_frase", "Frase manuscrita", "bora contar histórias juntos"], ["avisos_botao", "Texto do botão", "Ativar notificações"], ["avisos_email", "Texto do link para e-mail", "Prefere receber por e-mail? Inscreva-se no mci.tv"], ["avisos_email_link", "Link da inscrição por e-mail", "https://www.mci.tv/"]]],
-        ["Rodapé", "", [["cinepro_texto", "Texto da faixa CinePro", "CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.", 1], ["rodape_locais", "Onde a MCI está", "Ceará, Santa Catarina, São Paulo e Miami"]]]
+      const aba = sessionStorage.getItem("mciTextosAba") || "botoes";
+      // [onde aparece, chave do texto, texto padrão, chave do link, link padrão]
+      const BOTOES = [
+        ["Topo · botão principal", "botao_videos", "Ver os vídeos", "botao_videos_link", "#videos"],
+        ["Topo · botão secundário", "botao_setup", "Mostrar meu setup", "botao_setup_link", "#setup"],
+        ["Faixa turquesa (próximo take)", "setup_botao", "Marcar @mcistore", "setup_link", "https://www.instagram.com/mcistore/"],
+        ["Notificações · ativar", "avisos_botao", "Ativar notificações"],
+        ["Notificações · link para e-mail", "avisos_email", "Prefere receber por e-mail? Inscreva-se no mci.tv", "avisos_email_link", "https://www.mci.tv/"],
+        ["Rodapé · Instagram", "botao_instagram", "Seguir no Instagram", "botao_instagram_link", "https://www.instagram.com/mcistore/"],
+        ["Rodapé · TikTok", "botao_tiktok", "Seguir no TikTok", "botao_tiktok_link", "https://www.tiktok.com/@mcistore_"],
+        ["Reels · abrir na rede (+ nome da rede)", "botao_reels", "Ver no"],
+        ["Lista de posts · abrir seção (+ nome da seção)", "botao_secao", "Abrir a página de"],
+        ["Post · voltar", "botao_voltar", "← Voltar ao blog"],
+        ["Post · mais da seção (+ nome da seção)", "botao_mais_secao", "Mais de"],
+        ["Post · matéria original", "botao_original", "Ver a matéria original →"],
+        ["Vídeos · ligar o som", "botao_som", "Ativar som"],
+        ["Aviso de cookies · aceitar", "cookies_aceitar", "Aceitar"],
+        ["Aviso de cookies · recusar", "cookies_recusar", "Recusar"]
       ];
-      const campo = ([k, n, ph, area]) => '<div class="campo"><label for="t_' + k + '">' + n + "</label>" + (area ? '<textarea id="t_' + k + '" style="min-height:80px" placeholder="' + esc(ph) + '">' + esc(t[k] || "") + "</textarea>" : '<input id="t_' + k + '" value="' + esc(t[k] || "") + '" placeholder="' + esc(ph) + '">') + "</div>";
-      v.innerHTML = '<div class="topo"><div><h1>Textos do blog</h1><p class="mut">Títulos e textos fixos de cada parte da página inicial. Campo vazio usa o texto que aparece em cinza.</p></div><div class="acoes"><a class="btn sec" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div></div>" +
-        GRUPOS.map(g => '<div class="card" style="margin-bottom:1rem"><h2>' + g[0] + "</h2>" + (g[1] ? '<p class="mut" style="margin:-.6rem 0 .8rem;font-size:.85rem">' + g[1] + "</p>" : "") + '<div class="grid2">' + g[2].map(campo).join("") + "</div></div>").join("");
+      const GRUPOS = [
+        ["Trilhas de vídeo", [["videos_titulo", "Título", "Quatro jeitos de aprender no set"], ["videos_lead", "Texto de apoio", "Cada trilha tem um ritmo diferente, porque ninguém grava do mesmo jeito. Escolha a sua.", 1]]],
+        ["Leituras (lista de posts)", [["leituras_titulo", "Título", "Para ler com calma"], ["leituras_lead", "Texto de apoio", "Matérias, vídeos educativos, eventos e lançamentos, organizados por quem vai usar.", 1]]],
+        ["Cinema em alta", [["cinema_titulo", "Título", "Cinema em alta"], ["cinema_lead", "Texto de apoio", "Filmes e séries que estão dando o que falar, e o equipamento por trás de cada cena.", 1]]],
+        ["Faixa turquesa (próximo take)", [["setup_titulo", "Título", "Qual será o nosso próximo take?"], ["setup_texto", "Texto", "Recebeu sua caixa? Poste, marque a gente e bora inovar nesse setup! Os melhores setups, bastidores e perguntas da galera viram vídeo aqui no blog.", 1]]],
+        ["Faixa de notificações", [["avisos_olho", "Chamada pequena", "Avisos do blog"], ["avisos_titulo", "Título", "Saiu post novo? Você fica sabendo na hora"], ["avisos_texto", "Texto", "Ative as notificações e receba um aviso no computador ou no celular quando publicarmos lançamentos, dicas de set e eventos. Sem cadastro, sem e-mail.", 1], ["avisos_frase", "Frase manuscrita", "bora contar histórias juntos"]]],
+        ["Página do post", [["relacionados_titulo", "Título dos posts relacionados", "Continue no set"]]],
+        ["Aviso de cookies", [["cookies_texto", "Texto do aviso", "Usamos cookies do Google (Analytics e anúncios) para entender o que a galera mais curte no blog e mostrar as novidades da MCI. Você escolhe.", 1]]],
+        ["Rodapé", [["cinepro_texto", "Texto da faixa CinePro", "CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.", 1], ["rodape_locais", "Onde a MCI está", "Ceará, Santa Catarina, São Paulo e Miami"]]]
+      ];
+      const inp = (k, ph, area) => area ? '<textarea id="t_' + k + '" style="min-height:80px" placeholder="' + esc(ph) + '">' + esc(t[k] || "") + "</textarea>" : '<input id="t_' + k + '" value="' + esc(t[k] || "") + '" placeholder="' + esc(ph) + '">';
+      const campo = ([k, n, ph, area]) => '<div class="campo"><label for="t_' + k + '">' + n + "</label>" + inp(k, ph, area) + "</div>";
+      const abas = '<div class="filtros" style="margin:0 0 1rem">' + [["botoes", "Botões"], ["textos", "Títulos e textos"]].map(([k, n]) => '<button data-aba="' + k + '" aria-pressed="' + (k === aba) + '">' + n + "</button>").join("") + "</div>";
+      const telaBotoes = '<div class="card"><p class="mut" style="margin:0 0 .8rem;font-size:.88rem">Campo vazio usa o texto em cinza. Links aceitam <code>https://…</code>, <code>#parte-da-página</code> ou <code>?secao=…</code>. O botão <b>Loja</b> do topo vem do menu, em <a href="#" data-ir="site">Menu e topo</a>.</p>' +
+        '<div class="bt-cab"><span>Onde aparece</span><span>Texto do botão</span><span>Link</span></div>' +
+        BOTOES.map(([onde, k, p, kl, pl]) => '<div class="bt-linha"><b>' + onde + "</b>" + inp(k, p) + (kl ? inp(kl, pl) : '<span class="mut" style="font-size:.82rem">—</span>') + "</div>").join("") + "</div>";
+      const telaTextos = GRUPOS.map(g => '<div class="card" style="margin-bottom:1rem"><h2>' + g[0] + '</h2><div class="grid2">' + g[1].map(campo).join("") + "</div></div>").join("");
+      v.innerHTML = '<div class="topo"><div><h1>Textos e botões</h1><p class="mut">Tudo o que está escrito nos botões e nas faixas da página inicial.</p></div><div class="acoes"><a class="btn sec" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div></div>" +
+        abas + '<div id="tBotoes"' + (aba === "botoes" ? "" : " hidden") + ">" + telaBotoes + '</div><div id="tTextos"' + (aba === "textos" ? "" : " hidden") + ">" + telaTextos + "</div>";
+      v.querySelectorAll("[data-aba]").forEach(b => b.onclick = () => { sessionStorage.setItem("mciTextosAba", b.dataset.aba); v.querySelectorAll("[data-aba]").forEach(x => x.setAttribute("aria-pressed", x === b)); v.querySelector("#tBotoes").hidden = b.dataset.aba !== "botoes"; v.querySelector("#tTextos").hidden = b.dataset.aba !== "textos"; });
       v.querySelector("#salvar")?.addEventListener("click", async () => {
-        const novo = Object.assign({}, t);
-        GRUPOS.forEach(g => g[2].forEach(([k]) => { const x = val(v, "t_" + k); if (x) novo[k] = x; else delete novo[k]; }));
+        const novo = Object.assign({}, t), chaves = [];
+        BOTOES.forEach(([, k, , kl]) => { chaves.push(k); if (kl) chaves.push(kl); });
+        GRUPOS.forEach(g => g[1].forEach(([k]) => chaves.push(k)));
+        for (const [, , , kl] of BOTOES) { const x = kl && val(v, "t_" + kl); if (x && !/^(#|\?|\/(?!\/)|https:\/\/)/.test(x)) { sessionStorage.setItem("mciTextosAba", "botoes"); return toast("Link inválido: " + x + ". Use https://…, #parte ou ?secao=…", true); } }
+        chaves.forEach(k => { const x = val(v, "t_" + k); if (x) novo[k] = x; else delete novo[k]; });
         const { error } = await db.from("site_config").update({ textos: novo }).eq("id", "config");
         if (error) return falhou(error);
         evento("mci:salvo", { tabela: "site_config", registro: { textos: novo } }); toast("Salvo");
@@ -499,7 +543,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
     async secoes(v) {
       const cfg = await carregarConfig(), sc = cfg.secoes || {};
-      v.innerHTML = '<div class="topo"><div><h1>Seções do blog</h1><p class="mut">Cada seção tem uma página própria, aberta pelo nome da seção nos posts e pelo menu (<code>?secao=…</code>). O vídeo de cada seção abre essa página e também o topo dos posts da seção que não têm vídeo próprio.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Seções</h1><p class="mut">Cada seção tem uma página própria, aberta pelo nome da seção nos posts e pelo menu (<code>?secao=…</code>). O vídeo de cada seção abre essa página e também o topo dos posts da seção que não têm vídeo próprio.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
         Object.entries(SECOES).map(([k, nome]) => { const s_ = sc[k] || {}; return '<div class="card" style="margin-bottom:1rem"><div class="topo" style="margin-bottom:.8rem"><h2 style="margin:0">' + esc(nome) + '</h2><a class="btn sec" href="/?secao=' + k + '" target="_blank" rel="noopener">Ver a página ↗</a></div>' +
           '<div class="grid2"><div><div class="campo"><label for="st_' + k + '">Nome exibido</label><input id="st_' + k + '" value="' + esc(s_.titulo || "") + '" placeholder="' + esc(nome) + '"></div><div class="campo"><label for="sx_' + k + '">Texto de abertura da página</label><textarea id="sx_' + k + '" style="min-height:90px">' + esc(s_.texto || "") + "</textarea></div>" +
           campoImagem("sp_" + k, "Foto de capa (aparece enquanto o vídeo carrega)", s_.poster) + "</div><div>" +
@@ -518,7 +562,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const cfg = await carregarConfig();
       const sel = (k, tipo, nome) => '<div class="campo"><label for="' + k + '">' + nome + '</label><select id="' + k + '">' +
         Object.entries(FONTES[tipo]).map(([id, f]) => '<option value="' + id + '"' + ((cfg[k] || PADRAO_FONTES[tipo]) === id ? " selected" : "") + ">" + esc(f.nome) + "</option>").join("") + "</select></div>";
-      v.innerHTML = '<div class="topo"><div><h1>Fontes e visual</h1><p class="mut">As fontes valem para o blog inteiro. Veja a prévia antes de salvar.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Fontes e cores</h1><p class="mut">As fontes valem para o blog inteiro. Veja a prévia antes de salvar.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Fontes</h2><div class="grid3">' + sel("fonte_titulos", "titulos", "Títulos") + sel("fonte_texto", "texto", "Textos") + sel("fonte_manuscrita", "manuscrita", "Manuscrita (detalhes e frases)") + "</div>" +
         '<div class="dica-box">Helvetica usa a fonte do aparelho de quem lê: no Mac e no iPhone é a Helvetica; no Windows e no Android aparece a Arial, que é muito parecida.</div></div>' +
         '<div class="card"><h2>Prévia</h2><div class="prev-fontes" id="previa" style="font-family:var(--sans)">' +
@@ -562,10 +606,10 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     async site(v) {
       const cfg = await carregarConfig();
       const c = (k, n, area, ph) => '<div class="campo"><label for="' + k + '">' + n + "</label>" + (area ? '<textarea id="' + k + '">' + esc(cfg[k] || "") + "</textarea>" : '<input id="' + k + '" value="' + esc(cfg[k] || "") + '" placeholder="' + esc(ph || "") + '">') + "</div>";
-      v.innerHTML = '<div class="topo"><div><h1>Site e menu</h1><p class="mut">Textos fixos do blog.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Menu e topo</h1><p class="mut">Textos fixos do blog.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Topo do blog (computador)</h2>' + c("hero_titulo", "Título principal") + c("hero_texto", "Texto de apoio", true) +
         '<div class="campo"><label for="topo_modo">Formato do topo</label><select id="topo_modo"><option value="lado"' + ((cfg.topo || {}).modo !== "tela_cheia" ? " selected" : "") + '>Vídeo ao lado do título (atual)</option><option value="tela_cheia"' + ((cfg.topo || {}).modo === "tela_cheia" ? " selected" : "") + '>Vídeo em tela cheia, ocupando todo o início da página</option></select>' +
-        '<div class="mut" style="font-size:.85rem;margin-top:.3rem">Em tela cheia, o vídeo toca sozinho, sem som e em repetição, com o título por cima. Funciona com MP4 enviado ou link do YouTube. Para o celular, configure a versão vertical em “Versão celular”.</div></div>' +
+        '<div class="mut" style="font-size:.85rem;margin-top:.3rem">Em tela cheia, o vídeo toca sozinho, sem som e em repetição, com o título por cima. Funciona com MP4 enviado ou link do YouTube. Para o celular, configure a versão vertical em “Celular”.</div></div>' +
         campoVideo("topo_video", "Vídeo do topo (horizontal)", (cfg.topo || {}).video, "Deixe vazio para usar o vídeo marcado como “Vídeo full” em Vídeos das redes. Ideal: MP4 de 10 a 20 segundos, 1920×1080, até 10 MB.") +
         campoImagem("topo_poster", "Foto de capa do topo (aparece enquanto o vídeo carrega e para quem desativou animações)", (cfg.topo || {}).poster) + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Para um submenu, comece a linha com <code>-</code>: ela entra dentro do item de cima (ex.: <code>Novidades</code> e, embaixo, <code>- Lançamentos | ?secao=produto</code>). Seções sem posts publicados não aparecem no menu. Destinos: <code>#leituras</code>, <code>#gente</code>, <code>#sobre</code>, <code>#videos</code>, a página de uma seção (<code>?secao=produto</code>, <code>?secao=educativo</code>, <code>?secao=evento</code>, <code>?secao=materia</code>) ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
@@ -582,7 +626,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const cfg = await carregarConfig();
       const cel = Object.assign({ trilhas_carrossel: true, trilhas_qtd: 4, mostrar_feed: true, mostrar_cinepro: true, mostrar_adesivo: true }, cfg.celular || {});
       const chk = (id, txt, ajuda) => '<label class="opcao"><input type="checkbox" id="' + id + '" ' + (cel[id] ? "checked" : "") + '><span><b>' + txt + "</b>" + (ajuda ? '<br><span class="mut">' + ajuda + "</span>" : "") + "</span></label>";
-      v.innerHTML = '<div class="topo"><div><h1>Versão celular</h1><p class="mut">O que muda quando o blog é aberto no celular. Campos vazios usam o mesmo conteúdo do computador.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar e atualizar prévia</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Celular</h1><p class="mut">O que muda quando o blog é aberto no celular. Campos vazios usam o mesmo conteúdo do computador.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar e atualizar prévia</button>' : "") + "</div>" +
         '<div class="celGrid"><div>' +
         '<div class="card" style="margin-bottom:1rem"><h2>Topo no celular</h2>' +
         campoVideo("cel_video", "Vídeo vertical do topo (9:16)", cel.video, "Ideal: MP4 de 10 a 20 segundos, 1080×1920, até 10 MB, com a ação no centro do quadro. Também aceita link de Reels, TikTok ou YouTube Shorts.") +
@@ -660,7 +704,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         '<div class="card" style="margin-bottom:1rem;overflow:auto"><h2>Enviados</h2>' + ((hist.data || []).length ? '<table><thead><tr><th>Aviso</th><th>Quando</th><th>Alcance</th></tr></thead><tbody>' + hist.data.map(n => "<tr><td><b>" + esc(n.titulo) + '</b><br><span class="mut">' + esc(n.texto) + "</span></td><td>" + dataBR(n.criado_em) + "</td><td>" + (n.erro ? '<span class="tag agendado" title="' + esc(n.erro) + '">erro</span>' : n.destinatarios != null ? n.destinatarios + " pessoa(s)" : '<span class="tag publicado">enviado</span>') + "</td></tr>").join("") + "</tbody></table>" : '<p class="mut">Nenhum aviso enviado ainda.</p>') + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Configuração</h2><label style="display:flex;gap:.6rem;align-items:center;cursor:pointer;margin-bottom:1rem"><input type="checkbox" id="avAtivo" style="width:auto;flex:none;margin:0"' + (ligado ? " checked" : "") + '> Mostrar a faixa “Ativar notificações” no blog (acima do rodapé, em todas as páginas)</label>' +
         '<div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="onesignal_app_id">OneSignal App ID</label><input id="onesignal_app_id" value="' + esc(appId) + '" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div><div class="acoes" style="justify-content:flex-start"><button class="btn" id="salvarApp">Salvar App ID</button></div></div>' +
-        '<p class="mut" style="font-size:.85rem;margin:.8rem 0 0">Textos da faixa e o link do e-mail (mci.tv): <a href="#" data-ir="textos">Textos do blog → Avisos do blog</a>.</p></div>' +
+        '<p class="mut" style="font-size:.85rem;margin:.8rem 0 0">Textos da faixa e o link do e-mail (mci.tv): <a href="#" data-ir="textos">Textos e botões</a>.</p></div>' +
         '<div class="card"><h2>Como ligar o OneSignal (uma vez só)</h2><ol style="margin:0;padding-left:1.1rem;display:grid;gap:.45rem"><li>No OneSignal, crie um app (ou use o da MCI) e ative a plataforma <b>Web</b>. Em <b>Site URL</b>, coloque o endereço do blog (<code>' + esc(location.origin) + '</code>) e escolha a integração <b>Custom Code</b>. O arquivo <code>OneSignalSDKWorker.js</code> já está na raiz do blog.</li><li>Em <b>Settings → Keys &amp; IDs</b>, copie o <b>App ID</b> e cole aqui em cima.</li><li>No mesmo lugar, crie uma <b>API Key</b> e cole no Supabase em <b>Edge Functions → Secrets</b> com o nome <code>ONESIGNAL_API_KEY</code> (é senha: não mande por chat ou e-mail).</li><li>Abra o blog, clique em <b>Ativar notificações</b> e envie um aviso de teste por esta tela.</li></ol></div>';
       const status = v.querySelector("#nStatus");
       fetch("/api/notificar/status", { method: "POST", headers: { authorization: "Bearer " + await token() } }).then(r => r.json()).then(d => {
@@ -675,7 +719,6 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         const capa = p.capa || (p.video_url && MCI.capaYoutube(p.video_url)?.alta) || "";
         v.querySelector("#nImagem").value = /^https:/.test(capa) ? capa : "";
       };
-      v.querySelector("[data-ir]").onclick = e => { e.preventDefault(); document.querySelector('[data-v="textos"]').click(); };
       v.querySelector("#avAtivo").onchange = async e => {
         const novo = Object.assign({}, av, { ativo: e.target.checked });
         const { error } = await db.from("site_config").update({ avisos: novo }).eq("id", "config");
@@ -737,7 +780,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     async acessos(v) {
       if (!pode("admin")) { v.innerHTML = "<h1>Acessos</h1><p class=mut>Só administradores veem esta área.</p>"; return; }
       const perfis = await listar("perfis", "criado_em", true);
-      v.innerHTML = '<div class="topo"><div><h1>Acessos e equipe</h1><p class="mut">Defina o nível de cada pessoa. Quem é novo entra como Leitor até você mudar.</p></div></div>' +
+      v.innerHTML = '<div class="topo"><div><h1>Equipe e acessos</h1><p class="mut">Defina o nível de cada pessoa. Quem é novo entra como Leitor até você mudar.</p></div></div>' +
         '<div class="card" style="margin-bottom:1.5rem;overflow:auto"><table><thead><tr><th>Pessoa</th><th>Nível</th><th></th></tr></thead><tbody>' + perfis.map(p =>
           "<tr><td><b>" + esc(p.nome || "") + '</b><br><span class="mut">' + esc(p.email || "") + "</span></td><td>" + (p.id === eu.id ? NIVEL_NOME[p.nivel] + ' <span class="mut">(você)</span>' :
             '<select data-niv="' + p.id + '">' + Object.keys(RANK).map(n => '<option value="' + n + '"' + (n === p.nivel ? " selected" : "") + ">" + NIVEL_NOME[n] + "</option>").join("") + "</select>") +
@@ -752,7 +795,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     async dev(v) {
       const cfg = await carregarConfig();
       v.innerHTML = '<div class="topo"><div><h1>Desenvolvedor</h1><p class="mut">Informações para quem cuida da parte técnica.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar observações</button>' : "") + "</div>" +
-        '<div class="card" style="margin-bottom:1rem"><h2>Como o blog funciona</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.45rem"><li>Site estático (HTML, CSS e JavaScript puro) publicado na Vercel a partir do GitHub.</li><li>Dados no Supabase: tabelas <code>posts</code>, <code>videos</code>, <code>marcos</code>, <code>paginas</code>, <code>site_config</code> e <code>perfis</code>; imagens no bucket <code>midia</code>.</li><li>Segurança por RLS: o público só lê o que está publicado; escrita exige login e nível.</li><li>Ganchos para plugins: eventos <code>mci:salvo</code> e <code>mci:excluido</code> no <code>window</code>, e o objeto <code>window.MCI</code> com o cliente do banco.</li><li>Detalhes no <code>README.md</code> do repositório.</li></ul></div>' +
+        '<div class="card" style="margin-bottom:1rem"><h2>Como o blog funciona</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.45rem"><li>Site estático (HTML, CSS e JavaScript puro) publicado na Vercel a partir do GitHub.</li><li>Dados no Supabase: tabelas <code>posts</code>, <code>videos</code>, <code>marcos</code>, <code>paginas</code>, <code>site_config</code> e <code>perfis</code>; imagens no bucket <code>midia</code>.</li><li>Segurança por RLS: o público só lê o que está publicado; escrita exige login e nível.</li><li>Ganchos para plugins: eventos <code>mci:salvo</code> e <code>mci:excluido</code> no <code>window</code>, e o objeto <code>window.MCI</code> com o cliente do banco.</li><li>Detalhes no <code>README.md</code> do repositório.</li><li>Blog antigo (WordPress): <a href="https://mcistore.blog" target="_blank" rel="noopener">mcistore.blog ↗</a></li></ul></div>' +
         '<div class="card"><h2>Observações para o desenvolvedor</h2><div class="campo"><textarea id="dev_nota" style="min-height:160px">' + esc(cfg.dev_nota || "") + "</textarea></div></div>";
       v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["dev_nota"]));
     }
@@ -810,7 +853,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         };
         const av = () => {
           const t = f.querySelector("#titulo").value, a = [];
-          if (f.querySelector("#secao").value === "cinema" && !cinemaPublicado) a.push("A seção Cinema ainda não está publicada: este post só aparece no blog depois que você marcar “Publicar a seção Cinema em alta” em Site e menu.");
+          if (f.querySelector("#secao").value === "cinema" && !cinemaPublicado) a.push("A seção Cinema ainda não está publicada: este post só aparece no blog depois que você marcar “Publicar a seção Cinema em alta” em Menu e topo.");
           if (!f.querySelector("#secao").value) a.push("Escolha a seção do blog (matéria, vídeo educativo, evento, produto ou cinema).");
           if (/@/.test(f.querySelector("#autor").value)) a.push("O autor parece um e-mail. Use o nome da pessoa.");
           const pal = t.split(/\s+/).filter(w => w.length > 3); if (pal.length >= 3 && pal.every(w => /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(w))) a.push("O título parece estar em Title Case. Em português, só a primeira palavra e nomes próprios vão em maiúscula.");
@@ -858,6 +901,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     document.querySelectorAll(".lado [data-v]").forEach(b => {
       b.setAttribute("aria-current", b.dataset.v === vistaAtual ? "page" : "false");
       b.hidden = b.dataset.min ? !pode(b.dataset.min) : false;
+      document.querySelectorAll(".lado .grupo[data-min]").forEach(g => g.hidden = !pode(g.dataset.min));
     });
     const v = $("#vista"); v.innerHTML = '<p class="mut">Carregando…</p>';
     try { await VISTAS[vistaAtual](v); } catch (e) { falhou(e); }
@@ -944,6 +988,8 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     toast("Senha salva"); const { data } = await db.auth.getSession(); if (data.session) exigirCodigo(data.session);
   };
   $("#sair").onclick = async ev => { ev.preventDefault(); await db.auth.signOut(); location.reload(); };
+  // Atalhos dentro das telas: <a data-ir="vista"> ou <button data-ir="vista">
+  $("#vista").addEventListener("click", e => { const x = e.target.closest("[data-ir]"); if (!x) return; e.preventDefault(); document.querySelector('.lado [data-v="' + x.dataset.ir + '"]')?.click(); window.scrollTo(0, 0); });
   document.querySelectorAll(".lado [data-v]").forEach(b => b.onclick = () => { vistaAtual = b.dataset.v; history.replaceState(null, "", "#" + vistaAtual); $("#lado").classList.remove("aberto"); render(); });
   $("#abrirMenu").onclick = () => { const a = $("#lado").classList.toggle("aberto"); $("#abrirMenu").setAttribute("aria-expanded", a); };
 

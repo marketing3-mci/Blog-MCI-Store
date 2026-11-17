@@ -19,6 +19,7 @@
     cinema: "Cinema: filmes e séries"
   };
 
+  const somTxt = () => (window.MCI && window.MCI.rotuloSom) || "Ativar som";
   function esc(v) {
     return String(v == null ? "" : v)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -75,13 +76,13 @@
     if (e.tipo === "arquivo" && o.reel) {
       const poster = urlSegura(o.capa) ? ' poster="' + esc(urlSegura(o.capa)) + '"' : "";
       caixa.classList.add("p-reel");
-      caixa.innerHTML = '<video muted loop playsinline preload="metadata"' + poster + ' src="' + esc(e.src) + '#t=0.1"></video><button type="button" class="som" aria-label="Ativar som">Ativar som</button>';
+      caixa.innerHTML = '<video muted loop playsinline preload="metadata"' + poster + ' src="' + esc(e.src) + '#t=0.1"></video><button type="button" class="som" aria-label="' + esc(somTxt()) + '">' + esc(somTxt()) + '</button>';
       const v = caixa.querySelector("video"), b = caixa.querySelector(".som");
       const parar = () => { v.pause(); };
       if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
         new IntersectionObserver(es => es.forEach(x => x.isIntersecting ? v.play().catch(() => {}) : parar()), { threshold: 0.5 }).observe(caixa);
       }
-      b.onclick = ev => { ev.stopPropagation(); v.muted = !v.muted; b.textContent = v.muted ? "Ativar som" : "Sem som"; b.setAttribute("aria-label", b.textContent); v.play().catch(() => {}); };
+      b.onclick = ev => { ev.stopPropagation(); v.muted = !v.muted; b.textContent = v.muted ? somTxt() : "Sem som"; b.setAttribute("aria-label", b.textContent); v.play().catch(() => {}); };
       v.addEventListener("click", () => { v.paused ? v.play().catch(() => {}) : v.pause(); });
       return caixa;
     }
@@ -89,9 +90,9 @@
       const poster = urlSegura(o.capa) ? ' poster="' + esc(urlSegura(o.capa)) + '"' : "";
       if (o.fundo) {
         caixa.classList.add("p-fundo");
-        caixa.innerHTML = '<video autoplay muted loop playsinline preload="auto"' + poster + ' src="' + esc(e.src) + '"></video><button type="button" class="som" aria-label="Ativar som">Ativar som</button>';
+        caixa.innerHTML = '<video autoplay muted loop playsinline preload="auto"' + poster + ' src="' + esc(e.src) + '"></video><button type="button" class="som" aria-label="' + esc(somTxt()) + '">' + esc(somTxt()) + '</button>';
         const v = caixa.querySelector("video"), b = caixa.querySelector(".som");
-        b.onclick = () => { v.muted = !v.muted; v.controls = !v.muted; b.textContent = v.muted ? "Ativar som" : "Sem som"; b.setAttribute("aria-label", b.textContent); if (!v.muted) v.play(); };
+        b.onclick = () => { v.muted = !v.muted; v.controls = !v.muted; b.textContent = v.muted ? somTxt() : "Sem som"; b.setAttribute("aria-label", b.textContent); if (!v.muted) v.play(); };
         return caixa;
       }
       caixa.innerHTML = '<video controls playsinline preload="metadata"' + poster + ' src="' + esc(e.src) + '"></video>';
