@@ -10,10 +10,10 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#0E1110">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Patrick+Hand&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#0E1110;--ink2:#151B19;--ink3:#1C2421;--teal:#1CA68D;--mint:#A0D9CE;--lime:#ABD97E;--green:#4EBF8B;--txt:#EAF2EF;--mut:#9DB3AC;--line:#2A3835;--warn:#F2C14E;--err:#F07167;
---sans:"Poppins",Helvetica,Arial,sans-serif;--disp:"Unbounded","Poppins",Helvetica,Arial,sans-serif}
+--sans:"Poppins",Helvetica,Arial,sans-serif;--disp:"Unbounded","Poppins",Helvetica,Arial,sans-serif;--hand:"Caveat",cursive}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0;background:var(--ink);color:var(--txt);font:400 15px/1.55 var(--sans)}
@@ -100,6 +100,17 @@ h2{font-size:1.1rem;margin:0 0 1rem}
 .toast.erro{background:var(--err);color:#fff}
 dialog{background:var(--ink2);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:0;width:min(820px,96vw);max-height:92vh}
 dialog::backdrop{background:rgba(0,0,0,.65)}
+dialog.largo{width:min(1360px,98vw);max-height:96vh;height:96vh}
+.ed-post{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:1.4rem;align-items:start}
+.ed-titulo{font:500 clamp(1.3rem,2.4vw,1.9rem)/1.2 var(--disp);padding:.7rem .9rem;margin-bottom:.8rem;letter-spacing:-.01em}
+.ed-lado{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:1rem;position:sticky;top:0}
+.ed-lado h2{font-size:.95rem;margin:0 0 .9rem}
+.ed-lado .grid2{grid-template-columns:1fr 1fr}
+.ed-lado .player-midia{max-width:100%}
+.ed-lado .capaprev{max-width:100%}
+.dica-box{font-size:.84rem;color:var(--mut);background:var(--ink3);border-radius:8px;padding:.6rem .75rem;margin:.2rem 0 1rem}
+.prev-fontes{background:#F2F2F2;color:#0E1110;border-radius:10px;padding:2rem}
+@media (max-width:1000px){.ed-post{grid-template-columns:1fr}.ed-lado{position:static}}
 dialog form{padding:1.5rem}
 dialog .rodape{display:flex;justify-content:space-between;gap:.6rem;padding-top:1rem;border-top:1px solid var(--line);margin-top:.5rem;flex-wrap:wrap}
 .cont{font-size:.78rem;color:var(--mut);text-align:right}
@@ -143,9 +154,12 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     <button data-v="videos">Vídeos das redes</button>
     <button data-v="destaques">Destaque da semana</button>
     <button data-v="historia">História da MCI</button>
-    <button data-v="mvv">Missão, visão e valores</button>
+    <button data-v="mvv">Sobre a MCI</button>
     <button data-v="paginas">Páginas</button>
     <button data-v="site">Site e menu</button>
+    <button data-v="textos">Textos do blog</button>
+    <button data-v="secoes">Seções do blog</button>
+    <button data-v="visual">Fontes e visual</button>
     <button data-v="celular">Versão celular</button>
     <button data-v="acessos" data-min="admin">Acessos e equipe</button>
     <button data-v="dev">Desenvolvedor</button>
@@ -163,9 +177,10 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="/assets/config.js"></script>
 <script src="/assets/mci.js"></script>
+<script src="/assets/editor-blocos.js"></script>
 <script>
 (function () {
-  const { db, C, FRENTES, SECOES, esc, urlSegura, emb, player, dataBR } = window.MCI;
+  const { db, C, FRENTES, SECOES, FONTES, PADRAO_FONTES, aplicarFontes, blocosDeTexto, textoDeBlocos, editorBlocos, esc, urlSegura, emb, player, dataBR } = window.MCI;
   const $ = s => document.querySelector(s);
   const RANK = { leitor: 1, colaborador: 2, editor: 3, admin: 4 };
   const NIVEL_NOME = { leitor: "Leitor", colaborador: "Colaborador", editor: "Editor", admin: "Administrador (acesso total)" };
@@ -283,8 +298,9 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     });
   }
 
-  function abrirDialogo(html, aoSalvar, aoMontar) {
+  function abrirDialogo(html, aoSalvar, aoMontar, classe) {
     const dlg = $("#dlg"), velho = $("#dlgForm");
+    dlg.className = classe || "";
     // Formulário novo a cada abertura: evita que ouvintes de um editor anterior continuem ativos.
     const f = velho.cloneNode(false); velho.replaceWith(f);
     f.innerHTML = html;
@@ -369,7 +385,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       };
       const form = d => '<h2>' + (d ? "Editar destaque" : "Novo destaque") + '</h2><div class="grid3"><div class="campo"><label for="nome">Nome</label><input id="nome" required value="' + esc(d?.nome || "") + '"></div><div class="campo"><label for="arroba">@ no Instagram/TikTok</label><input id="arroba" value="' + esc(d?.arroba || "") + '" placeholder="@usuario"></div>' +
         '<div class="campo"><label for="tipo">Tipo</label><select id="tipo">' + TIPOS_D.map(t => "<option" + ((d?.tipo || "Setup") === t ? " selected" : "") + ">" + t + "</option>").join("") + "</select></div></div>" +
-        '<div class="grid2"><div class="campo"><label for="titulo">Título curto</label><input id="titulo" value="' + esc(d?.titulo || "") + '" placeholder="O setup de um curta em Juazeiro"></div><div class="campo"><label for="semana">Semana</label><input id="semana" type="date" value="' + esc(d?.semana || new Date().toISOString().slice(0, 10)) + '"></div></div>' +
+        '<div class="grid2"><div class="campo"><label for="titulo">Título curto</label><input id="titulo" value="' + esc(d?.titulo || "") + '" placeholder="O setup de um curta independente"></div><div class="campo"><label for="semana">Semana</label><input id="semana" type="date" value="' + esc(d?.semana || new Date().toISOString().slice(0, 10)) + '"></div></div>' +
         '<div class="campo"><label for="texto">Texto (2 ou 3 frases)</label><textarea id="texto">' + esc(d?.texto || "") + "</textarea></div>" +
         campoVideo("midia_url", "Vídeo ou post da pessoa", d?.midia_url, "Cole o link do Reels, TikTok ou YouTube, ou envie um arquivo de até 50 MB.") +
         campoImagem("foto", "Foto (usada se não houver vídeo)", d?.foto) +
@@ -394,10 +410,10 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
     async historia(v) {
       const marcos = await listar("marcos", "ordem", true);
-      v.innerHTML = '<div class="topo"><div><h1>História da MCI</h1><p class="mut">O mural de marcos da página “Sobre a MCI”. No blog, os marcos aparecem por ano; os que estão “a definir” vão para o fim.</p></div>' + (pode("editor") ? '<button class="btn" id="novo">+ Novo marco</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>História da MCI</h1><p class="mut">O mural de marcos da página “Sobre a MCI”. No blog, os marcos aparecem numa linha do tempo horizontal, na ordem do campo “Ordem”.</p></div>' + (pode("editor") ? '<button class="btn" id="novo">+ Novo marco</button>' : "") + "</div>" +
         '<div class="lista">' + marcos.map(m => '<div class="item"><div class="th" style="background-image:' + (urlSegura(m.foto) ? "url('" + esc(m.foto) + "')" : "") + '"></div><div><div class="t">' + esc(m.ano || "a definir") + " · " + esc(m.titulo) + '</div><div class="s">' + esc(m.local || "") + "</div></div><div class=\"acoes\">" +
           (pode("editor") ? '<button class="btn sec" data-ed="' + esc(m.id) + '">Editar</button><button class="btn perigo" data-ex="' + esc(m.id) + '">Excluir</button>' : "") + "</div></div>").join("") + "</div>";
-      const form = m => '<h2>' + (m ? "Editar marco" : "Novo marco") + '</h2><div class="grid3"><div class="campo"><label for="ano">Ano</label><input id="ano" value="' + esc(m?.ano || "") + '" placeholder="2003"></div><div class="campo"><label for="ordem">Ordem (desempate)</label><input id="ordem" type="number" value="' + esc(m?.ordem ?? marcos.length + 1) + '"></div><div class="campo"><label for="local">Local</label><input id="local" value="' + esc(m?.local || "") + '"></div></div>' +
+      const form = m => '<h2>' + (m ? "Editar marco" : "Novo marco") + '</h2><div class="grid3"><div class="campo"><label for="ano">Ano</label><input id="ano" value="' + esc(m?.ano || "") + '" placeholder="2003"></div><div class="campo"><label for="ordem">Ordem na linha do tempo</label><input id="ordem" type="number" value="' + esc(m?.ordem ?? marcos.length + 1) + '"></div><div class="campo"><label for="local">Local</label><input id="local" value="' + esc(m?.local || "") + '"></div></div>' +
         '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(m?.titulo || "") + '"></div><div class="campo"><label for="texto">Texto</label><textarea id="texto">' + esc(m?.texto || "") + "</textarea></div>" + campoImagem("foto", "Foto", m?.foto) +
         '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar</button></div>';
       const abrir = m => abrirDialogo(form(m), async f => !!(await salvar("marcos", { ano: val(f, "ano"), ordem: Number(val(f, "ordem")) || 0, local: val(f, "local"), titulo: val(f, "titulo"), texto: val(f, "texto"), foto: val(f, "foto") }, m?.id)), f => ligarImagens(f, "marcos"));
@@ -408,9 +424,75 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
     async mvv(v) {
       const cfg = await carregarConfig();
+      const c = (k, n, area, dica) => '<div class="campo"><label for="' + k + '">' + n + "</label>" + (area ? '<textarea id="' + k + '" style="min-height:80px">' + esc(cfg[k] || "") + "</textarea>" : '<input id="' + k + '" value="' + esc(cfg[k] || "") + '">') + (dica ? '<div class="mut" style="font-size:.82rem;margin-top:.3rem">' + dica + "</div>" : "") + "</div>";
       const par = (k, nome) => '<div class="card" style="margin-bottom:1rem"><h2>' + nome + '</h2><div class="grid2"><div class="campo"><label for="' + k + '_atual">Versão atual da empresa (para comparar)</label><textarea id="' + k + '_atual">' + esc(cfg[k + "_atual"] || "") + '</textarea></div><div class="campo"><label for="' + k + '">Proposta (é o que aparece no blog)</label><textarea id="' + k + '">' + esc(cfg[k] || "") + "</textarea></div></div></div>";
-      v.innerHTML = '<div class="topo"><div><h1>Missão, visão e valores</h1><p class="mut">A proposta ainda é um rascunho para validar com a gestão. Nos valores, use uma linha por valor.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" + par("missao", "Missão") + par("visao", "Visão") + par("valores", "Valores");
-      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["missao", "missao_atual", "visao", "visao_atual", "valores", "valores_atual"]));
+      v.innerHTML = '<div class="topo"><div><h1>Sobre a MCI</h1><p class="mut">Todos os textos da seção “Sobre” do blog. A linha do tempo é editada em “História da MCI”.</p></div><div class="acoes"><a class="btn sec" href="/#sobre" target="_blank" rel="noopener">Ver no blog ↗</a>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div></div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Abertura da seção</h2><div class="grid2">' + c("sobre_olho", "Chamada pequena (acima do título)") + c("sobre_trilha_titulo", "Título da linha do tempo") + "</div>" +
+        c("sobre_titulo", "Título", true) + c("sobre_texto", "Descrição", true) +
+        c("sobre_frase", "Frase manuscrita", false, "Aparece logo abaixo do título, na fonte manuscrita escolhida em “Fontes e visual”. Deixe vazio para não mostrar.") +
+        c("sobre_numeros", "Números de destaque", true, "Uma linha por número, no formato <code>Número | legenda</code>. Ex.: <code>23+ | anos de mercado</code>. Deixe vazio para não mostrar.") + "</div>" +
+        par("missao", "Missão") + par("visao", "Visão") + par("valores", "Valores") +
+        '<p class="mut" style="font-size:.85rem">Nos valores, uma linha por valor vira uma lista com marcadores.</p>';
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["sobre_olho", "sobre_trilha_titulo", "sobre_titulo", "sobre_texto", "sobre_frase", "sobre_numeros", "missao", "missao_atual", "visao", "visao_atual", "valores", "valores_atual"]));
+    },
+
+    async textos(v) {
+      const cfg = await carregarConfig(), t = cfg.textos || {};
+      const GRUPOS = [
+        ["Topo da página inicial", "O título e o texto do topo ficam em “Site e menu”.", [["botao_videos", "Botão 1", "Ver os vídeos"], ["botao_setup", "Botão 2", "Mostrar meu setup"]]],
+        ["Trilhas de vídeo", "", [["videos_titulo", "Título", "Quatro jeitos de aprender no set"], ["videos_lead", "Texto de apoio", "Cada trilha tem um ritmo diferente, porque ninguém grava do mesmo jeito. Escolha a sua.", 1]]],
+        ["Leituras (lista de posts)", "", [["leituras_titulo", "Título", "Para ler com calma"], ["leituras_lead", "Texto de apoio", "Matérias, vídeos educativos, eventos e lançamentos, organizados por quem vai usar.", 1]]],
+        ["Cinema em alta", "", [["cinema_titulo", "Título", "Cinema em alta"], ["cinema_lead", "Texto de apoio", "Filmes e séries que estão dando o que falar, e o equipamento por trás de cada cena.", 1]]],
+        ["Faixa turquesa (próximo take)", "", [["setup_titulo", "Título", "Qual será o nosso próximo take?"], ["setup_texto", "Texto", "Recebeu sua caixa? Poste, marque a gente e bora inovar nesse setup! Os melhores setups, bastidores e perguntas da galera viram vídeo aqui no blog.", 1], ["setup_botao", "Texto do botão", "Marcar @mcistore"], ["setup_link", "Link do botão", "https://www.instagram.com/mcistore/"]]],
+        ["Rodapé", "", [["cinepro_texto", "Texto da faixa CinePro", "CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.", 1], ["rodape_locais", "Onde a MCI está", "Ceará, Santa Catarina, São Paulo e Miami"]]]
+      ];
+      const campo = ([k, n, ph, area]) => '<div class="campo"><label for="t_' + k + '">' + n + "</label>" + (area ? '<textarea id="t_' + k + '" style="min-height:80px" placeholder="' + esc(ph) + '">' + esc(t[k] || "") + "</textarea>" : '<input id="t_' + k + '" value="' + esc(t[k] || "") + '" placeholder="' + esc(ph) + '">') + "</div>";
+      v.innerHTML = '<div class="topo"><div><h1>Textos do blog</h1><p class="mut">Títulos e textos fixos de cada parte da página inicial. Campo vazio usa o texto que aparece em cinza.</p></div><div class="acoes"><a class="btn sec" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div></div>" +
+        GRUPOS.map(g => '<div class="card" style="margin-bottom:1rem"><h2>' + g[0] + "</h2>" + (g[1] ? '<p class="mut" style="margin:-.6rem 0 .8rem;font-size:.85rem">' + g[1] + "</p>" : "") + '<div class="grid2">' + g[2].map(campo).join("") + "</div></div>").join("");
+      v.querySelector("#salvar")?.addEventListener("click", async () => {
+        const novo = Object.assign({}, t);
+        GRUPOS.forEach(g => g[2].forEach(([k]) => { const x = val(v, "t_" + k); if (x) novo[k] = x; else delete novo[k]; }));
+        const { error } = await db.from("site_config").update({ textos: novo }).eq("id", "config");
+        if (error) return falhou(error);
+        evento("mci:salvo", { tabela: "site_config", registro: { textos: novo } }); toast("Salvo");
+      });
+    },
+
+    async secoes(v) {
+      const cfg = await carregarConfig(), sc = cfg.secoes || {};
+      v.innerHTML = '<div class="topo"><div><h1>Seções do blog</h1><p class="mut">Cada seção tem uma página própria, aberta pelo nome da seção nos posts e pelo menu (<code>?secao=…</code>). O vídeo de cada seção abre essa página e também o topo dos posts da seção que não têm vídeo próprio.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
+        Object.entries(SECOES).map(([k, nome]) => { const s_ = sc[k] || {}; return '<div class="card" style="margin-bottom:1rem"><div class="topo" style="margin-bottom:.8rem"><h2 style="margin:0">' + esc(nome) + '</h2><a class="btn sec" href="/?secao=' + k + '" target="_blank" rel="noopener">Ver a página ↗</a></div>' +
+          '<div class="grid2"><div><div class="campo"><label for="st_' + k + '">Nome exibido</label><input id="st_' + k + '" value="' + esc(s_.titulo || "") + '" placeholder="' + esc(nome) + '"></div><div class="campo"><label for="sx_' + k + '">Texto de abertura da página</label><textarea id="sx_' + k + '" style="min-height:90px">' + esc(s_.texto || "") + "</textarea></div>" +
+          campoImagem("sp_" + k, "Foto de capa (aparece enquanto o vídeo carrega)", s_.poster) + "</div><div>" +
+          campoVideo("sv_" + k, "Vídeo do topo da seção", s_.video, "Ideal: MP4 de 10 a 20 segundos, horizontal, até 10 MB (toca sozinho, sem som). Também aceita link do YouTube.") + "</div></div></div>"; }).join("");
+      ligarImagens(v, "secoes"); ligarVideos(v, "secoes");
+      v.querySelector("#salvar")?.addEventListener("click", async () => {
+        const novo = {};
+        Object.keys(SECOES).forEach(k => { const o = { titulo: val(v, "st_" + k), texto: val(v, "sx_" + k), video: val(v, "sv_" + k), poster: val(v, "sp_" + k) }; Object.keys(o).forEach(x => !o[x] && delete o[x]); if (Object.keys(o).length) novo[k] = o; });
+        const { error } = await db.from("site_config").update({ secoes: novo }).eq("id", "config");
+        if (error) return falhou(error);
+        evento("mci:salvo", { tabela: "site_config", registro: { secoes: novo } }); toast("Salvo");
+      });
+    },
+
+    async visual(v) {
+      const cfg = await carregarConfig();
+      const sel = (k, tipo, nome) => '<div class="campo"><label for="' + k + '">' + nome + '</label><select id="' + k + '">' +
+        Object.entries(FONTES[tipo]).map(([id, f]) => '<option value="' + id + '"' + ((cfg[k] || PADRAO_FONTES[tipo]) === id ? " selected" : "") + ">" + esc(f.nome) + "</option>").join("") + "</select></div>";
+      v.innerHTML = '<div class="topo"><div><h1>Fontes e visual</h1><p class="mut">As fontes valem para o blog inteiro. Veja a prévia antes de salvar.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Fontes</h2><div class="grid3">' + sel("fonte_titulos", "titulos", "Títulos") + sel("fonte_texto", "texto", "Textos") + sel("fonte_manuscrita", "manuscrita", "Manuscrita (detalhes e frases)") + "</div>" +
+        '<div class="dica-box">Helvetica usa a fonte do aparelho de quem lê: no Mac e no iPhone é a Helvetica; no Windows e no Android aparece a Arial, que é muito parecida.</div></div>' +
+        '<div class="card"><h2>Prévia</h2><div class="prev-fontes" id="previa" style="font-family:var(--sans)">' +
+          '<span style="display:block;font:600 .75rem var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#0F7A66;margin-bottom:.7rem">' + esc(cfg.sobre_olho || "Sobre a MCI Store") + "</span>" +
+          '<div style="font:500 clamp(1.4rem,3vw,2.1rem)/1.15 var(--disp);letter-spacing:-.02em;max-width:22ch">' + esc(cfg.sobre_titulo || "Mais de duas décadas crescendo junto com quem cria imagem em movimento.") + "</div>" +
+          '<span style="display:inline-block;margin:.7rem 0 1rem;font:700 2.1rem/1 var(--hand);color:#1CA68D;transform:rotate(-3deg)">' + esc(cfg.sobre_frase || "É da MCI.") + "</span>" +
+          '<p style="margin:0 0 1.2rem;max-width:60ch;color:#4A5B56;line-height:1.6">' + esc(cfg.sobre_texto || "Tecnologia, conhecimento e suporte para quem faz cinema e audiovisual em toda a América Latina.") + "</p>" +
+          '<span style="display:inline-block;padding:.7rem 1.3rem;border-radius:999px;background:#1CA68D;color:#06130F;font-weight:600">Ver os vídeos</span></div>' +
+        '<p class="mut" style="font-size:.85rem;margin:.8rem 0 0">Cores: o blog segue a paleta da marca (turquesa #1CA68D, menta #A0D9CE, verde #4EBF8B, lima #ABD97E, cinza #F2F2F2 e preto #0E1110).</p></div>';
+      const prev = v.querySelector("#previa");
+      const atualizar = () => aplicarFontes({ fonte_titulos: v.querySelector("#fonte_titulos").value, fonte_texto: v.querySelector("#fonte_texto").value, fonte_manuscrita: v.querySelector("#fonte_manuscrita").value }, prev);
+      v.querySelectorAll("select").forEach(x => x.onchange = atualizar); atualizar();
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["fonte_titulos", "fonte_texto", "fonte_manuscrita"]));
     },
 
     async paginas(v) {
@@ -419,12 +501,20 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         '<div class="lista">' + (paginas.map(p => '<div class="item"><div class="th"></div><div><div class="t">' + esc(p.titulo) + '</div><div class="s">/?pagina=' + esc(p.slug) + (p.menu ? " · no menu" : "") + '</div></div><div class="acoes"><a class="btn sec" target="_blank" rel="noopener" href="/?pagina=' + encodeURIComponent(p.slug) + '">Ver</a>' +
           (pode("editor") ? '<button class="btn sec" data-ed="' + esc(p.id) + '">Editar</button><button class="btn perigo" data-ex="' + esc(p.id) + '">Excluir</button>' : "") + "</div></div>").join("") || '<p class="mut">Nenhuma página criada.</p>') + "</div>";
       const slugify = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      const form = p => '<h2>' + (p ? "Editar página" : "Nova página") + '</h2><div class="grid2"><div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(p?.titulo || "") + '"></div><div class="campo"><label for="slug">Endereço</label><input id="slug" required value="' + esc(p?.slug || "") + '" placeholder="quem-somos"></div></div>' +
-        '<div class="campo"><label><input type="checkbox" id="menu" style="width:auto" ' + (p?.menu ? "checked" : "") + '> Entra no menu do blog</label></div><div class="campo"><label for="video">Link de vídeo (opcional)</label><input id="video" value="' + esc(p?.video || "") + '"></div><div class="campo"><label for="texto">Conteúdo (deixe uma linha em branco entre parágrafos)</label><textarea id="texto" style="min-height:220px">' + esc(p?.texto || "") + "</textarea></div>" +
-        '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar</button></div>';
-      const abrir = p => abrirDialogo(form(p), async f => !!(await salvar("paginas", { titulo: val(f, "titulo"), slug: slugify(val(f, "slug")), menu: f.querySelector("#menu").checked, video: val(f, "video"), texto: val(f, "texto") }, p?.id)), f => {
+      const form = p => '<div class="ed-post"><div class="ed-main"><input id="titulo" class="ed-titulo" required placeholder="Título da página" value="' + esc(p?.titulo || "") + '"><div id="editor"></div></div>' +
+        '<aside class="ed-lado"><h2>Configurações da página</h2><div class="campo"><label for="slug">Endereço</label><input id="slug" required value="' + esc(p?.slug || "") + '" placeholder="quem-somos"></div>' +
+        '<div class="campo"><label><input type="checkbox" id="menu" style="width:auto" ' + (p?.menu ? "checked" : "") + '> Entra no menu do blog</label></div>' + campoVideo("video", "Vídeo do topo da página (opcional)", p?.video, "") + "</aside></div>" +
+        '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar página</button></div>';
+      let ed = null;
+      const abrir = p => abrirDialogo(form(p), async f => {
+        const blocos = ed.obter();
+        return !!(await salvar("paginas", { titulo: val(f, "titulo"), slug: slugify(val(f, "slug")), menu: f.querySelector("#menu").checked, video: val(f, "video"), blocos, texto: textoDeBlocos(blocos) || null }, p?.id));
+      }, f => {
+        ligarVideos(f, "paginas");
+        ed = editorBlocos(f.querySelector("#editor"), p?.blocos?.length ? p.blocos : blocosDeTexto(p?.texto), { toast, enviarImagem: a => enviarImagem(a, "paginas"), enviarVideo: a => enviarVideo(a, "paginas") });
+        aplicarFontes(window.__cfgFontes || {}, f.querySelector(".eb-canvas"));
         const t = f.querySelector("#titulo"), s = f.querySelector("#slug"); if (!p) t.addEventListener("input", () => s.value = slugify(t.value));
-      });
+      }, "largo");
       v.querySelector("#novo")?.addEventListener("click", () => abrir(null));
       v.querySelectorAll("[data-ed]").forEach(b => b.onclick = () => abrir(paginas.find(x => x.id === b.dataset.ed)));
       v.querySelectorAll("[data-ex]").forEach(b => b.onclick = async () => { const x = paginas.find(y => y.id === b.dataset.ex); if (await excluir("paginas", x.id, x.titulo)) render(); });
@@ -439,7 +529,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         '<div class="mut" style="font-size:.85rem;margin-top:.3rem">Em tela cheia, o vídeo toca sozinho, sem som e em repetição, com o título por cima. Funciona com MP4 enviado ou link do YouTube. Para o celular, configure a versão vertical em “Versão celular”.</div></div>' +
         campoVideo("topo_video", "Vídeo do topo (horizontal)", (cfg.topo || {}).video, "Deixe vazio para usar o vídeo marcado como “Vídeo full” em Vídeos das redes. Ideal: MP4 de 10 a 20 segundos, 1920×1080, até 10 MB.") +
         campoImagem("topo_poster", "Foto de capa do topo (aparece enquanto o vídeo carrega e para quem desativou animações)", (cfg.topo || {}).poster) + "</div>" +
-        '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Destinos: <code>#videos</code>, <code>#leituras</code>, <code>#sobre</code>, <code>#setup</code> ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Destinos: <code>#videos</code>, <code>#leituras</code>, <code>#sobre</code>, <code>#setup</code>, a página de uma seção (<code>?secao=produto</code>, <code>?secao=educativo</code>, <code>?secao=evento</code>, <code>?secao=materia</code>) ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Seções opcionais</h2><label style="display:flex;gap:.6rem;align-items:flex-start;color:var(--txt)"><input type="checkbox" id="mostrar_cinema" style="width:auto;margin-top:.3rem" ' + (cfg.mostrar_cinema ? "checked" : "") + '><span><b>Publicar a seção “Cinema em alta”</b><br><span class="mut">Enquanto estiver desmarcado, a seção e o item “Cinema” do menu ficam escondidos, e os posts da seção Cinema não aparecem no blog. Prepare os posts com calma e marque aqui quando quiser lançar.</span></span></label></div>' +
         '<div class="card"><h2>Contato e página Sobre</h2><div class="grid2">' + c("contato_email", "E-mail de contato") + c("contato_tel", "Telefone") + "</div>" + c("video_sobre", "Vídeo da página Sobre (link)", false, "https://www.youtube.com/watch?v=…") + "</div>";
       ligarImagens(v, "topo"); ligarVideos(v, "topo");
@@ -520,29 +610,43 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
   }
 
   function editarPost(p, videos) {
+    let atual = p, ed = null;
     const opts = videos.map(x => '<option value="' + esc(x.id) + '"' + (p?.video_id === x.id ? " selected" : "") + ">" + esc(x.titulo) + " (" + esc(x.tipo) + ")</option>").join("");
     const checks = videos.filter(x => x.id !== p?.video_id).map(x => '<label><input type="checkbox" value="' + esc(x.id) + '"' + ((p?.cortes || []).includes(x.id) ? " checked" : "") + "> " + esc(x.titulo) + ' <span class="mut">· ' + esc(x.tipo) + "</span></label>").join("");
+    const gravar = async f => {
+      const blocos = ed.obter();
+      const d = { titulo: val(f, "titulo"), frente: val(f, "frente"), status: val(f, "status"), data: val(f, "data"), autor: val(f, "autor"), url: val(f, "url"), resumo: val(f, "resumo"), blocos, corpo: textoDeBlocos(blocos) || null, capa: val(f, "capa"), video_id: val(f, "video_id"), secao: val(f, "secao"), video_url: val(f, "video_url"),
+        cortes: [...f.querySelectorAll("#cortes input:checked")].map(i => i.value).filter(x => x !== val(f, "video_id")) };
+      const salvo = await salvar("posts", d, atual?.id);
+      if (salvo) atual = salvo;
+      return salvo;
+    };
     abrirDialogo(
-      "<h2>" + (p ? "Editar post" : "Novo post") + '</h2><div id="avisos"></div>' +
-      '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(p?.titulo || "") + '"></div>' +
-      '<div class="grid2"><div class="campo"><label for="secao">Seção do blog</label><select id="secao"><option value="">—</option>' + Object.entries(SECOES).map(([k, n]) => '<option value="' + k + '"' + (p?.secao === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div>' +
-      '<div class="campo"><label for="frente">Frente editorial</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (p?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div></div>' +
+      '<div class="ed-post"><div class="ed-main"><input id="titulo" class="ed-titulo" required placeholder="Título do post" value="' + esc(p?.titulo || "") + '"><div id="avisos"></div><div id="editor"></div></div>' +
+      '<aside class="ed-lado"><h2>Configurações do post</h2>' +
       '<div class="grid2"><div class="campo"><label for="status">Status</label><select id="status">' + STATUS.map(s => "<option" + ((p?.status || "rascunho") === s ? " selected" : "") + ">" + s + "</option>").join("") + '</select></div>' +
       '<div class="campo"><label for="data">Data</label><input id="data" type="date" value="' + esc(p?.data || new Date().toISOString().slice(0, 10)) + '"></div></div>' +
-      '<div class="grid2"><div class="campo"><label for="autor">Autor (nome)</label><input id="autor" value="' + esc(p?.autor || perfil.nome || "") + '"></div><div class="campo"><label for="url">Link da matéria original (opcional)</label><input id="url" value="' + esc(p?.url || "") + '"></div></div>' +
-      '<div class="campo"><label for="resumo">Resumo</label><input id="resumo" maxlength="160" value="' + esc(p?.resumo || "") + '"><div class="cont" id="contResumo"></div></div>' +
-      '<div class="campo"><label for="corpo">Texto (uma linha em branco entre parágrafos)</label><textarea id="corpo" style="min-height:200px">' + esc(p?.corpo || "") + "</textarea></div>" +
-      campoVideo("video_url", "Vídeo do post", p?.video_url, "Cole o link (YouTube, Instagram, TikTok, Facebook) ou envie um arquivo de até 50 MB. Aparece no topo da matéria.") +
-      campoImagem("capa", "Foto de capa", p?.capa) +
-      '<div class="grid2"><div class="campo"><label for="video_id">Vídeo da biblioteca (opcional)</label><select id="video_id"><option value="">— nenhum —</option>' + opts + '</select></div><div class="campo"><label>Cortes, reels e posts ligados</label><div class="checks" id="cortes">' + (checks || '<span class="mut">Cadastre vídeos em “Vídeos das redes”.</span>') + "</div></div></div>" +
-      '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar post</button></div>',
-      async f => {
-        const d = { titulo: val(f, "titulo"), frente: val(f, "frente"), status: val(f, "status"), data: val(f, "data"), autor: val(f, "autor"), url: val(f, "url"), resumo: val(f, "resumo"), corpo: val(f, "corpo"), capa: val(f, "capa"), video_id: val(f, "video_id"), secao: val(f, "secao"), video_url: val(f, "video_url"),
-          cortes: [...f.querySelectorAll("#cortes input:checked")].map(i => i.value).filter(x => x !== val(f, "video_id")) };
-        return !!(await salvar("posts", d, p?.id));
-      },
+      '<div class="campo"><label for="secao">Seção do blog</label><select id="secao"><option value="">—</option>' + Object.entries(SECOES).map(([k, n]) => '<option value="' + k + '"' + (p?.secao === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div>' +
+      '<div class="campo"><label for="frente">Frente editorial</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (p?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div>' +
+      '<div class="campo"><label for="autor">Autor (nome)</label><input id="autor" value="' + esc(p?.autor || perfil.nome || "") + '"></div>' +
+      '<div class="campo"><label for="resumo">Resumo (aparece abaixo do título)</label><textarea id="resumo" maxlength="160" style="min-height:70px">' + esc(p?.resumo || "") + '</textarea><div class="cont" id="contResumo"></div></div>' +
+      campoVideo("video_url", "Vídeo do post (abre a página, no topo)", p?.video_url, "Cole o link (YouTube, Instagram, TikTok, Facebook) ou envie um arquivo de até 50 MB. Sem vídeo, o topo usa o vídeo da seção.") +
+      campoImagem("capa", "Foto de capa (lista do blog)", p?.capa) +
+      '<div class="campo"><label for="video_id">Vídeo da biblioteca (opcional)</label><select id="video_id"><option value="">— nenhum —</option>' + opts + '</select></div><div class="campo"><label>Cortes, reels e posts ligados</label><div class="checks" id="cortes">' + (checks || '<span class="mut">Cadastre vídeos em “Vídeos das redes”.</span>') + "</div></div>" +
+      '<div class="campo"><label for="url">Link da matéria original (opcional)</label><input id="url" value="' + esc(p?.url || "") + '"></div></aside></div>' +
+      '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><div class="acoes"><button type="button" class="btn sec" id="btnPrevia">Salvar e ver prévia ↗</button><button class="btn" type="submit">Salvar post</button></div></div>',
+      async f => !!(await gravar(f)),
       f => {
         ligarImagens(f, "posts"); ligarVideos(f, "posts");
+        ed = editorBlocos(f.querySelector("#editor"), p?.blocos?.length ? p.blocos : blocosDeTexto(p?.corpo), { toast, enviarImagem: a => enviarImagem(a, "posts"), enviarVideo: a => enviarVideo(a, "posts") });
+        aplicarFontes(window.__cfgFontes || {}, f.querySelector(".eb-canvas"));
+        f.querySelector("#btnPrevia").onclick = async () => {
+          if (!f.querySelector("#titulo").value.trim()) { f.querySelector("#titulo").focus(); return toast("Dê um título ao post antes da prévia.", true); }
+          const janela = window.open("", "_blank");
+          const salvo = await gravar(f);
+          if (salvo && janela) janela.location.href = "/?post=" + encodeURIComponent(salvo.id) + "&t=" + Date.now(); else if (janela) janela.close();
+          if (salvo) render();
+        };
         const av = () => {
           const t = f.querySelector("#titulo").value, a = [];
           if (f.querySelector("#secao").value === "cinema" && !cinemaPublicado) a.push("A seção Cinema ainda não está publicada: este post só aparece no blog depois que você marcar “Publicar a seção Cinema em alta” em Site e menu.");
@@ -553,8 +657,8 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
           f.querySelector("#avisos").innerHTML = a.map(x => '<div class="aviso">' + esc(x) + "</div>").join("");
           f.querySelector("#contResumo").textContent = f.querySelector("#resumo").value.length + "/160";
         };
-        f.addEventListener("input", av); f.addEventListener("change", av); av();
-      });
+        f.querySelector(".ed-lado").addEventListener("input", av); f.querySelector(".ed-lado").addEventListener("change", av); f.querySelector("#titulo").addEventListener("input", av); av();
+      }, "largo");
   }
 
   function editarVideo(x) {
@@ -599,6 +703,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       return;
     }
     perfil = data;
+    db.from("site_config").select("fonte_titulos,fonte_texto,fonte_manuscrita").eq("id", "config").maybeSingle().then(r => { window.__cfgFontes = r.data || {}; });
     $("#quem").textContent = perfil.nome || eu.email;
     $("#nivelTxt").textContent = NIVEL_NOME[perfil.nivel];
     $("#telaLogin").hidden = true; $("#telaNovaSenha").hidden = true; $("#app").hidden = false;

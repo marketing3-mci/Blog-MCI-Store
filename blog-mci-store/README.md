@@ -61,3 +61,14 @@ O player só carrega quando a pessoa clica na capa (página mais leve). Posts pr
 ## Vercel
 
 O projeto não precisa de comando de build: *Framework Preset* = Other e *Output Directory* vazio (raiz). As variáveis de ambiente do Supabase criadas pela integração não são usadas pelo site estático. A proteção de acesso da Vercel (Deployment Protection) está ligada: só quem tem acesso à equipe da Vercel abre o site.
+
+## Editor de blocos, seções e textos (nov/2026)
+
+- **Posts e páginas** usam o editor de blocos (`assets/editor-blocos.js`): texto com formatação (negrito, itálico, links, listas, cores da marca, trecho manuscrito), título, imagem (1 a 3 lado a lado, largura do texto/larga/tela inteira), imagem + texto, vídeo, citação, botão e divisória. Os blocos ficam em `posts.blocos` / `paginas.blocos` (jsonb); `corpo`/`texto` guardam o texto puro para compatibilidade. Posts antigos sem blocos continuam aparecendo pelo `corpo`.
+- **Segurança:** todo HTML do editor passa por `MCI.limparHtml` (lista fechada de tags e classes) ao salvar e ao exibir.
+- **Post imersivo:** o vídeo do post abre a página, no topo. Sem vídeo próprio, o topo usa o vídeo da seção (`site_config.secoes[secao].video`), depois a capa.
+- **Páginas de seção:** `/?secao=produto` (e `educativo`, `evento`, `materia`, `cinema`), com vídeo, nome e texto configurados em *Seções do blog*.
+- **Prévia de rascunho:** o painel abre `/?post=ID`; quem está logado vê o post mesmo sem publicar.
+- **Textos do blog:** títulos e textos fixos da página inicial em `site_config.textos` (jsonb), aplicados nos elementos com `data-t`.
+- **Sobre a MCI:** `sobre_*` em `site_config`; linha do tempo horizontal na ordem do campo `ordem` dos marcos.
+- **Fontes:** `MCI.FONTES` + `MCI.aplicarFontes(cfg)` → variáveis `--disp`, `--sans`, `--hand` (títulos: Unbounded, Poppins, Montserrat, Helvetica; textos: Poppins, Montserrat, Helvetica; manuscrita: Caveat, Kalam, Patrick Hand).
