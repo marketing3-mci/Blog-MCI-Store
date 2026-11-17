@@ -2,6 +2,20 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<!-- Consent Mode v2: cookies do Google ficam bloqueados até o "Aceitar" no aviso do blog -->
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+(function(){var c=null;try{c=localStorage.getItem('mciCookies')}catch(e){}var s=c==='sim'?'granted':'denied';
+gtag('consent','default',{ad_storage:s,ad_user_data:s,ad_personalization:s,analytics_storage:s,wait_for_update:500});})();
+</script>
+<!-- Google Tag Manager -->
+<script>if(!/[?&]previa=/.test(location.search))(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KZ7VCP83');</script>
+<!-- End Google Tag Manager -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Blog MCI: Tecnologia para contar histórias</title>
 <meta name="description" content="Vídeos, bastidores e técnica de set com quem cria imagem em movimento. Blog da MCI Store.">
@@ -300,6 +314,10 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KZ7VCP83"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <header class="dark hero" id="topo">
   <div class="fundo-topo" id="fundoTopo" hidden></div>
   <div class="wrap top">
@@ -834,34 +852,28 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
       if (window.mciGoogle === "gtm") window.dataLayer.push({ event: "clique_blog", rotulo: alvo, destino: el.href || "" });
       else if (window.mciGoogle === "ga") window.gtag("event", "clique", { rotulo: alvo, destino: el.href || "" });
     }, true);
-    // Google (Tag Manager e/ou Analytics 4) com Consent Mode: nada do Google carrega antes do "Aceitar"
+    // Google: o Tag Manager GTM-KZ7VCP83 está instalado no <head> (Consent Mode: tudo negado até o "Aceitar").
+    // GA4, Google Ads e ferramentas 360 são configurados dentro do GTM. Outro GTM-… salvo no painel também é carregado.
+    const GTM_FIXO = "GTM-KZ7VCP83";
     const limpa = (x, re) => { const t = String(x || "").trim().toUpperCase(); return re.test(t) ? t : ""; };
-    const gtm = limpa(cfg.gtm_id, /^GTM-[A-Z0-9]{4,}$/), ga = limpa(cfg.ga_id, /^G-[A-Z0-9]{4,}$/);
-    if (!gtm && !ga) return;
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-    const TUDO = s => ({ ad_storage: s, ad_user_data: s, ad_personalization: s, analytics_storage: s });
-    window.gtag("consent", "default", Object.assign(TUDO("denied"), { wait_for_update: 500 }));
-    let carregado = false;
-    const carregarGoogle = () => {
-      if (carregado) return; carregado = true;
-      window.gtag("consent", "update", TUDO("granted"));
-      if (gtm) { // o GA4 e as tags das ferramentas 360/Ads ficam configuradas dentro do GTM
-        window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
-        const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(gtm); document.head.appendChild(sc);
-      } else {
-        const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(ga); document.head.appendChild(sc);
-        window.gtag("js", new Date()); window.gtag("config", ga, { page_path: pagina, page_title: document.title });
-      }
-      window.mciGoogle = gtm ? "gtm" : "ga";
-    };
+    const gtmExtra = limpa(cfg.gtm_id, /^GTM-[A-Z0-9]{4,}$/);
+    if (gtmExtra && gtmExtra !== GTM_FIXO) {
+      window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+      const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(gtmExtra); document.head.appendChild(sc);
+    }
+    window.mciGoogle = "gtm";
+    const TUDO = v => ({ ad_storage: v, ad_user_data: v, ad_personalization: v, analytics_storage: v });
     const pref = $("prefCookies"); if (pref) { pref.hidden = false; pref.onclick = () => { try { localStorage.removeItem("mciCookies"); } catch (e) {} location.reload(); }; }
     let escolha = null; try { escolha = localStorage.getItem("mciCookies"); } catch (e) {}
-    if (escolha === "sim") return carregarGoogle();
-    if (escolha === "nao") return;
+    if (escolha === "sim" || escolha === "nao") return;
     const av = document.createElement("div"); av.className = "aviso-cookies"; av.setAttribute("role", "dialog"); av.setAttribute("aria-label", "Cookies");
     av.innerHTML = '<p>Usamos cookies do Google (Analytics e anúncios) para entender o que a galera mais curte no blog e mostrar as novidades da MCI. Você escolhe.</p><div class="acoes"><button type="button" class="btn ghost" data-c="nao" style="color:#F2F2F2">Recusar</button><button type="button" class="btn" data-c="sim">Aceitar</button></div>';
-    av.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (!b) return; try { localStorage.setItem("mciCookies", b.dataset.c); } catch (x) {} av.remove(); if (b.dataset.c === "sim") carregarGoogle(); });
+    av.addEventListener("click", e => {
+      const b = e.target.closest("[data-c]"); if (!b) return;
+      try { localStorage.setItem("mciCookies", b.dataset.c); } catch (x) {}
+      av.remove();
+      if (b.dataset.c === "sim") { window.gtag("consent", "update", TUDO("granted")); window.dataLayer.push({ event: "consentimento_aceito" }); }
+    });
     document.body.appendChild(av);
   })();
 })();
