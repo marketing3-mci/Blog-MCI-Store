@@ -206,6 +206,33 @@ a.olho-sec:hover{color:#fff}
 .lista-secao{max-width:1180px;margin-inline:auto}
 #leitura{overflow-x:clip}
 /* Aviso de cookies (Google Analytics) */
+/* Newsletter */
+.news{background:radial-gradient(60% 90% at 100% 0%,rgba(28,166,141,.28),transparent 60%),#0E1110;color:#F2F2F2;padding:clamp(3rem,6vw,4.5rem) 0}
+.news-g{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center}
+.news h2{margin:.7rem 0 .8rem;font:600 clamp(1.6rem,3.2vw,2.4rem)/1.12 var(--disp)}
+.news p{color:#cfe3dd;max-width:46ch;margin:0}
+.news .news-hand{display:inline-block;margin-top:1rem;font:700 clamp(1.5rem,2.4vw,2rem)/1 var(--hand);color:var(--lime);transform:rotate(-3deg);transform-origin:left center}
+.news form{background:#151b19;border:1px solid #26302d;border-radius:14px;padding:clamp(1.1rem,2.5vw,1.6rem);display:grid;gap:.85rem}
+.news .linha{display:grid;grid-template-columns:1fr 1.3fr;gap:.7rem}
+.news label.cp{display:grid;gap:.3rem;font-size:.82rem;color:#a9bdb7}
+.news input[type=text],.news input[type=email]{font:inherit;color:#F2F2F2;background:#0E1110;border:1px solid #2f3b38;border-radius:10px;padding:.75rem .85rem;width:100%;min-width:0}
+.news input:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+.news fieldset{border:0;margin:0;padding:0}.news legend{float:left;width:100%;font-size:.82rem;color:#a9bdb7;margin-bottom:.5rem;padding:0}.news fieldset .chips{clear:both}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem}
+.chips label{position:relative;cursor:pointer}
+.chips input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.chips span{display:inline-block;padding:.42rem .85rem;border:1px solid #33413d;border-radius:999px;font-size:.86rem;color:#cfe3dd;transition:.15s}
+.chips input:checked+span{background:var(--teal);border-color:var(--teal);color:#06130F;font-weight:600}
+.chips input:focus-visible+span{outline:2px solid var(--mint);outline-offset:2px}
+.news .aceite{display:flex;gap:.6rem;align-items:flex-start;font-size:.84rem;color:#b9d1ca;line-height:1.45}
+.news .aceite input{margin-top:.2rem;accent-color:var(--teal);width:1.05rem;height:1.05rem;flex:none}
+.news .btn{justify-self:start}
+.news .msg{min-height:1.2em;font-size:.9rem;margin:0}.news .msg.erro{color:#ff9b8f}.news .msg.ok{color:var(--lime)}
+.news .ok-box{text-align:center;padding:1.4rem .5rem}.news .ok-box b{display:block;font:600 1.3rem var(--disp);margin-bottom:.4rem}
+.armadilha{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+.pref-cookies{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer;opacity:.8}
+@media (max-width:900px){.news-g{grid-template-columns:1fr}}
+@media (max-width:520px){.news .linha{grid-template-columns:1fr}.news .btn{justify-self:stretch;text-align:center}}
 .aviso-cookies{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:90;width:min(560px,calc(100% - 2rem));background:#0E1110;color:#F2F2F2;border:1px solid #26302d;border-radius:12px;padding:1rem 1.1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;box-shadow:0 18px 50px rgba(0,0,0,.45);font-size:.92rem}
 .aviso-cookies p{margin:0;flex:1 1 260px;color:#cfe3dd}
 .aviso-cookies .acoes{display:flex;gap:.5rem}
@@ -359,6 +386,32 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
 
 <main id="leitura" hidden><section><div class="wrap" id="leituraConteudo"></div></section></main>
 
+<section class="news" id="newsletter" hidden>
+  <div class="wrap news-g">
+    <div>
+      <span class="olho-sec" data-t="news_olho">Newsletter MCI</span>
+      <h2 data-t="news_titulo">Novidades do set direto no seu e-mail</h2>
+      <p data-t="news_texto">Lançamentos, dicas de set, eventos e o que rola na MCI. Sem spam: você cancela quando quiser.</p>
+      <span class="news-hand" data-t="news_frase">bora contar histórias juntos</span>
+    </div>
+    <form id="newsForm" novalidate>
+      <div class="linha">
+        <label class="cp">Seu nome<input type="text" name="nome" autocomplete="given-name" maxlength="80" placeholder="Como te chamamos?"></label>
+        <label class="cp">Seu melhor e-mail<input type="email" name="email" autocomplete="email" maxlength="200" required placeholder="voce@exemplo.com"></label>
+      </div>
+      <fieldset><legend>O que você quer receber?</legend><div class="chips">
+        <label><input type="checkbox" name="interesses" value="novidades" checked><span>Lançamentos</span></label>
+        <label><input type="checkbox" name="interesses" value="dicas" checked><span>Dicas de set</span></label>
+        <label><input type="checkbox" name="interesses" value="eventos" checked><span>Eventos</span></label>
+        <label><input type="checkbox" name="interesses" value="mci" checked><span>Sobre a MCI</span></label>
+      </div><div class="armadilha" aria-hidden="true"><label>Não preencha<input type="text" name="site" tabindex="-1" autocomplete="off"></label></div></fieldset>
+      <label class="aceite"><input type="checkbox" name="consentimento" required><span data-t="news_aceite">Autorizo a MCI a me enviar e-mails com novidades e conteúdos. Posso cancelar a qualquer momento pelo link no fim de cada e-mail.</span></label>
+      <button class="btn" type="submit" data-t="news_botao">Quero receber</button>
+      <p class="msg" id="newsMsg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
 <footer class="dark">
   <div class="wrap">
     <div class="cine"><img src="/assets/cinepro.png" alt="CinePro Solutions" loading="lazy"><p data-t="cinepro_texto">CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.</p></div>
@@ -370,6 +423,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
       <div><img src="/assets/logo-branca.png" alt="MCI" loading="lazy"><span data-t="rodape_locais">Ceará, Santa Catarina, São Paulo e Miami</span></div>
       <div>Instagram e Facebook @mcistore<br>TikTok @mcistore_<br>YouTube @mcistore.oficial</div>
       <div id="contatos"><a href="mailto:marketing@mcistore.com.br">marketing@mcistore.com.br</a><br><a href="https://www.mci.tv/">mci.tv</a></div>
+      <button type="button" class="pref-cookies" id="prefCookies" hidden style="flex-basis:100%;text-align:left;font-size:.82rem">Preferências de cookies</button>
     </div>
   </div>
 </footer>
@@ -730,6 +784,32 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
     if (v) { modoLeitura('<div class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><h2>' + esc(v.titulo) + '</h2><div class="bloco-video vf" id="vAbrir"></div></div>', v.titulo); $("vAbrir").appendChild(player(v.url, op(v))); }
   } else if (location.hash) aplicarHash();
 
+  // ---- Newsletter: inscrição (vai para a lista do painel e para o SendPulse)
+  (function newsletter() {
+    const sec = $("newsletter"), f = $("newsForm"); if (!sec || !f) return;
+    const ins = cfg.inscricao || {};
+    if (ins.ativo === false || q.get("previa")) return;
+    sec.hidden = false;
+    const msg = $("newsMsg"), dizer = (t, tipo) => { msg.textContent = t; msg.className = "msg " + (tipo || ""); };
+    f.addEventListener("submit", async e => {
+      e.preventDefault();
+      const email = f.email.value.trim(), interesses = [...f.querySelectorAll("[name=interesses]:checked")].map(x => x.value);
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { dizer("Confira o e-mail.", "erro"); f.email.focus(); return; }
+      if (!interesses.length) { dizer("Escolha pelo menos um assunto.", "erro"); return; }
+      if (!f.consentimento.checked) { dizer("Marque a autorização para receber os e-mails.", "erro"); f.consentimento.focus(); return; }
+      const bt = f.querySelector("button[type=submit]"); bt.disabled = true; dizer("Enviando…");
+      try {
+        const r = await fetch("/api/inscricao", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ nome: f.nome.value.trim(), email, interesses, consentimento: true, site: f.site.value, origem: location.pathname + location.search }) });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.erro || "Não deu certo agora. Tente de novo em instantes.");
+        const textos = cfg.textos || {};
+        f.innerHTML = '<div class="ok-box" role="status"><b>' + esc(textos.news_ok_titulo || "Pronto, você está na lista!") + "</b><p style=\"margin:0 auto\">" + esc(textos.news_ok_texto || "As próximas novidades da MCI chegam no seu e-mail. Confira a caixa de promoções se não aparecer.") + "</p></div>";
+        if (window.mciGoogle === "gtm") window.dataLayer.push({ event: "newsletter_inscricao", interesses: interesses.join(",") });
+        else if (window.mciGoogle === "ga") window.gtag("event", "generate_lead", { origem: "newsletter" });
+      } catch (x) { dizer(x.message, "erro"); bt.disabled = false; }
+    });
+  })();
+
   // ---- Análises: contagem anônima própria (sem cookies) + Google Analytics com consentimento
   (function analises() {
     if (q.get("previa")) return; // prévia do celular dentro do painel
@@ -744,29 +824,44 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
     registrar("visita");
     const rotulo = el => {
       const txt = (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 70) || el.tagName.toLowerCase();
-      const onde = el.closest("#nav") || el.closest(".top") ? "Menu" : el.closest(".reel") ? "Reels" : el.closest(".row,.card") ? "Post" : el.closest("#palco,.palco") ? "Vídeo do post" : el.closest(".blocos") ? "Texto do post" : el.closest("footer") ? "Rodapé" : el.closest("#topo") ? "Topo" : "Página";
+      const onde = el.closest("#nav") || el.closest(".top") ? "Menu" : el.closest(".reel") ? "Reels" : el.closest(".row,.card") ? "Post" : el.closest("#palco,.palco") ? "Vídeo do post" : el.closest(".blocos") ? "Texto do post" : el.closest("#newsletter") ? "Newsletter" : el.closest("footer") ? "Rodapé" : el.closest("#topo") ? "Topo" : "Página";
       const extra = el.closest(".reel") ? " — " + ((el.closest(".reel").querySelector("p") || {}).textContent || "").slice(0, 40) : "";
       return onde + ": " + txt + extra;
     };
     document.addEventListener("click", e => {
       const el = e.target.closest("a, button, video"); if (!el || el.closest(".aviso-cookies")) return;
       const alvo = rotulo(el); registrar("clique", alvo);
-      if (window.gtag) window.gtag("event", "clique", { rotulo: alvo, destino: el.href || "" });
+      if (window.mciGoogle === "gtm") window.dataLayer.push({ event: "clique_blog", rotulo: alvo, destino: el.href || "" });
+      else if (window.mciGoogle === "ga") window.gtag("event", "clique", { rotulo: alvo, destino: el.href || "" });
     }, true);
-    // Google Analytics 4: só carrega depois do "Aceitar"
-    const ga = /^G-[A-Z0-9]{4,}$/i.test(String(cfg.ga_id || "").trim()) ? String(cfg.ga_id).trim().toUpperCase() : "";
-    if (!ga) return;
-    const carregarGA = () => {
-      const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(ga); document.head.appendChild(sc);
-      window.dataLayer = window.dataLayer || []; window.gtag = function () { window.dataLayer.push(arguments); };
-      window.gtag("js", new Date()); window.gtag("config", ga, { page_path: pagina, page_title: document.title });
+    // Google (Tag Manager e/ou Analytics 4) com Consent Mode: nada do Google carrega antes do "Aceitar"
+    const limpa = (x, re) => { const t = String(x || "").trim().toUpperCase(); return re.test(t) ? t : ""; };
+    const gtm = limpa(cfg.gtm_id, /^GTM-[A-Z0-9]{4,}$/), ga = limpa(cfg.ga_id, /^G-[A-Z0-9]{4,}$/);
+    if (!gtm && !ga) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    const TUDO = s => ({ ad_storage: s, ad_user_data: s, ad_personalization: s, analytics_storage: s });
+    window.gtag("consent", "default", Object.assign(TUDO("denied"), { wait_for_update: 500 }));
+    let carregado = false;
+    const carregarGoogle = () => {
+      if (carregado) return; carregado = true;
+      window.gtag("consent", "update", TUDO("granted"));
+      if (gtm) { // o GA4 e as tags das ferramentas 360/Ads ficam configuradas dentro do GTM
+        window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+        const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtm.js?id=" + encodeURIComponent(gtm); document.head.appendChild(sc);
+      } else {
+        const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(ga); document.head.appendChild(sc);
+        window.gtag("js", new Date()); window.gtag("config", ga, { page_path: pagina, page_title: document.title });
+      }
+      window.mciGoogle = gtm ? "gtm" : "ga";
     };
+    const pref = $("prefCookies"); if (pref) { pref.hidden = false; pref.onclick = () => { try { localStorage.removeItem("mciCookies"); } catch (e) {} location.reload(); }; }
     let escolha = null; try { escolha = localStorage.getItem("mciCookies"); } catch (e) {}
-    if (escolha === "sim") return carregarGA();
+    if (escolha === "sim") return carregarGoogle();
     if (escolha === "nao") return;
     const av = document.createElement("div"); av.className = "aviso-cookies"; av.setAttribute("role", "dialog"); av.setAttribute("aria-label", "Cookies");
-    av.innerHTML = '<p>Usamos cookies do Google Analytics para entender o que a galera mais curte no blog. Você escolhe.</p><div class="acoes"><button type="button" class="btn ghost" data-c="nao" style="color:#F2F2F2">Recusar</button><button type="button" class="btn" data-c="sim">Aceitar</button></div>';
-    av.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (!b) return; try { localStorage.setItem("mciCookies", b.dataset.c); } catch (x) {} av.remove(); if (b.dataset.c === "sim") carregarGA(); });
+    av.innerHTML = '<p>Usamos cookies do Google (Analytics e anúncios) para entender o que a galera mais curte no blog e mostrar as novidades da MCI. Você escolhe.</p><div class="acoes"><button type="button" class="btn ghost" data-c="nao" style="color:#F2F2F2">Recusar</button><button type="button" class="btn" data-c="sim">Aceitar</button></div>';
+    av.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (!b) return; try { localStorage.setItem("mciCookies", b.dataset.c); } catch (x) {} av.remove(); if (b.dataset.c === "sim") carregarGoogle(); });
     document.body.appendChild(av);
   })();
 })();

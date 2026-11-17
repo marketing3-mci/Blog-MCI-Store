@@ -195,6 +195,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     <button data-v="visual">Fontes e visual</button>
     <button data-v="celular">Versão celular</button>
     <button data-v="analises">Análises</button>
+    <button data-v="inscritos" data-min="editor">Inscritos (newsletter)</button>
     <button data-v="acessos" data-min="admin">Acessos e equipe</button>
     <button data-v="chaves" data-min="admin">Chaves de API</button>
     <button data-v="dev">Desenvolvedor</button>
@@ -481,6 +482,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         ["Leituras (lista de posts)", "", [["leituras_titulo", "Título", "Para ler com calma"], ["leituras_lead", "Texto de apoio", "Matérias, vídeos educativos, eventos e lançamentos, organizados por quem vai usar.", 1]]],
         ["Cinema em alta", "", [["cinema_titulo", "Título", "Cinema em alta"], ["cinema_lead", "Texto de apoio", "Filmes e séries que estão dando o que falar, e o equipamento por trás de cada cena.", 1]]],
         ["Faixa turquesa (próximo take)", "", [["setup_titulo", "Título", "Qual será o nosso próximo take?"], ["setup_texto", "Texto", "Recebeu sua caixa? Poste, marque a gente e bora inovar nesse setup! Os melhores setups, bastidores e perguntas da galera viram vídeo aqui no blog.", 1], ["setup_botao", "Texto do botão", "Marcar @mcistore"], ["setup_link", "Link do botão", "https://www.instagram.com/mcistore/"]]],
+        ["Newsletter (inscrição por e-mail)", "Ligar ou desligar o formulário: em “Inscritos (newsletter)”.", [["news_olho", "Chamada pequena", "Newsletter MCI"], ["news_titulo", "Título", "Novidades do set direto no seu e-mail"], ["news_texto", "Texto", "Lançamentos, dicas de set, eventos e o que rola na MCI. Sem spam: você cancela quando quiser.", 1], ["news_frase", "Frase manuscrita", "bora contar histórias juntos"], ["news_aceite", "Texto da autorização (LGPD)", "Autorizo a MCI a me enviar e-mails com novidades e conteúdos. Posso cancelar a qualquer momento pelo link no fim de cada e-mail.", 1], ["news_botao", "Texto do botão", "Quero receber"], ["news_ok_titulo", "Título depois de inscrever", "Pronto, você está na lista!"], ["news_ok_texto", "Texto depois de inscrever", "As próximas novidades da MCI chegam no seu e-mail. Confira a caixa de promoções se não aparecer.", 1]]],
         ["Rodapé", "", [["cinepro_texto", "Texto da faixa CinePro", "CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.", 1], ["rodape_locais", "Onde a MCI está", "Ceará, Santa Catarina, São Paulo e Miami"]]]
       ];
       const campo = ([k, n, ph, area]) => '<div class="campo"><label for="t_' + k + '">' + n + "</label>" + (area ? '<textarea id="t_' + k + '" style="min-height:80px" placeholder="' + esc(ph) + '">' + esc(t[k] || "") + "</textarea>" : '<input id="t_' + k + '" value="' + esc(t[k] || "") + '" placeholder="' + esc(ph) + '">') + "</div>";
@@ -624,19 +626,71 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       for (let i = dias - 1; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5 - 3 * 36e5).toISOString().slice(0, 10); dd.push([d, mapa[d] || 0]); }
       const maxd = Math.max(1, ...dd.map(d => d[1]));
       const pct = r.visitas ? Math.round(r.celular / r.visitas * 100) : 0;
-      const ga = cfg.ga_id || "";
+      const ga = cfg.ga_id || "", gtm = cfg.gtm_id || "";
       v.innerHTML = '<div class="topo"><div><h1>Análises</h1><p class="mut">Contagem própria e anônima do blog (sem cookies e sem dados pessoais). Para relatórios completos, use o Google Analytics.</p></div><div class="filtros" style="margin:0">' + [7, 30, 90].map(n => '<button data-d="' + n + '" aria-pressed="' + (n === dias) + '">' + n + " dias</button>").join("") + "</div></div>" +
         '<div class="cards"><div class="card"><div class="num">' + r.visitas + '</div>visitas</div><div class="card"><div class="num">' + r.visitantes + '</div>visitantes (sessões)</div><div class="card"><div class="num">' + r.cliques + '</div>cliques</div><div class="card"><div class="num">' + pct + '%</div>pelo celular</div></div>' +
         '<div class="card" style="margin-bottom:1rem"><h2>Visitas por dia</h2><div class="barras">' + dd.map(d => '<i style="height:' + Math.max(2, Math.round(d[1] / maxd * 100)) + '%" data-t="' + d[0].split("-").reverse().slice(0, 2).join("/") + ": " + d[1] + '"></i>').join("") + '</div><div class="mut" style="display:flex;justify-content:space-between;font-size:.78rem;margin-top:.3rem"><span>' + dd[0][0].split("-").reverse().join("/") + "</span><span>hoje</span></div></div>" +
         '<div class="grid3" style="margin-bottom:1rem"><div class="card"><h2>Mais vistos</h2>' + ranking(r.paginas || [], nomePagina) + '</div><div class="card"><h2>Mais clicados</h2>' + ranking(r.cliques_top || [], x => x.alvo) + '</div><div class="card"><h2>De onde vêm</h2>' + ranking(r.origens || [], x => x.origem) + '<p class="mut" style="font-size:.8rem;margin:.6rem 0 0">Quem digitou o endereço ou veio de app (como o Instagram) muitas vezes não informa a origem.</p></div></div>' +
-        '<div class="card"><h2>Google Analytics 4</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="ga_id">ID da métrica (começa com G-)</label><input id="ga_id" value="' + esc(ga) + '" placeholder="G-XXXXXXXXXX"></div><div class="acoes" style="justify-content:flex-start">' + (pode("editor") ? '<button class="btn" id="salvarGa">Salvar</button>' : "") + '<a class="btn sec" href="https://analytics.google.com/" target="_blank" rel="noopener">Abrir o Google Analytics ↗</a></div></div>' +
-        '<div class="dica-box" style="margin-top:1rem">' + (ga ? "Tag ativa: <b>" + esc(ga) + "</b>. O GA só carrega para quem clica em “Aceitar” no aviso de cookies do blog (LGPD). Os cliques chegam ao GA como o evento <code>clique</code>, com o rótulo do que foi clicado." : "Onde achar o ID: no Google Analytics, abra <b>Administrador → Fluxos de dados</b>, escolha o site do blog e copie o <b>ID da métrica</b> (G-…). Se ainda não houver uma propriedade, crie em <b>Administrador → Criar → Propriedade</b> com o endereço do blog.") + "</div></div>";
+        '<div class="card"><h2>Google: Tag Manager e Analytics 4</h2><div class="grid2"><div class="campo"><label for="gtm_id">Google Tag Manager (começa com GTM-)</label><input id="gtm_id" value="' + esc(gtm) + '" placeholder="GTM-XXXXXXX"></div><div class="campo"><label for="ga_id">Google Analytics 4 (começa com G-)</label><input id="ga_id" value="' + esc(ga) + '" placeholder="G-XXXXXXXXXX"></div></div>' +
+        '<div class="acoes" style="justify-content:flex-start">' + (pode("editor") ? '<button class="btn" id="salvarGa">Salvar</button>' : "") + '<a class="btn sec" href="https://tagmanager.google.com/" target="_blank" rel="noopener">Abrir o Tag Manager ↗</a><a class="btn sec" href="https://analytics.google.com/" target="_blank" rel="noopener">Abrir o Analytics ↗</a></div>' +
+        '<div class="dica-box" style="margin-top:1rem">' + (gtm ? "<b>Tag Manager ativo (" + esc(gtm) + ").</b> O blog carrega só o GTM; configure dentro dele a tag do Google (GA4" + (ga ? " " + esc(ga) : "") + "), Google Ads, Campaign Manager 360/Floodlight, Display & Video 360 e Search Ads 360. Assim nada conta em dobro." : ga ? "<b>Analytics ativo (" + esc(ga) + ").</b> Para usar Google Ads e as ferramentas 360, cole também o ID do Tag Manager." : "Onde achar os IDs: no <b>Tag Manager</b>, o ID GTM-… aparece no topo, ao lado do nome do contêiner. No <b>Analytics</b>: Administrador → Fluxos de dados → site do blog → ID da métrica (G-…).") +
+        "<br><br>Tudo do Google só carrega para quem clica em “Aceitar” no aviso de cookies (LGPD), com o <b>Consent Mode v2</b> do Google avisando a escolha às tags. O blog envia ao GTM os eventos <code>clique_blog</code> (com <code>rotulo</code> e <code>destino</code>) e <code>newsletter_inscricao</code>, que podem virar conversões no Google Ads.</div></div>";
       v.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { sessionStorage.setItem("mciDias", b.dataset.d); render(); });
       v.querySelector("#salvarGa")?.addEventListener("click", () => {
-        const x = v.querySelector("#ga_id").value.trim().toUpperCase();
+        const x = v.querySelector("#ga_id").value.trim().toUpperCase(), t = v.querySelector("#gtm_id").value.trim().toUpperCase();
         if (x && !/^G-[A-Z0-9]{4,}$/.test(x)) return toast("O ID do GA4 começa com G- (ex.: G-AB12CD34EF).", true);
-        v.querySelector("#ga_id").value = x; salvarConfig(v, ["ga_id"]);
+        if (t && !/^GTM-[A-Z0-9]{4,}$/.test(t)) return toast("O ID do Tag Manager começa com GTM- (ex.: GTM-AB12CD3).", true);
+        v.querySelector("#ga_id").value = x; v.querySelector("#gtm_id").value = t; salvarConfig(v, ["ga_id", "gtm_id"]).then(render);
       });
+    },
+
+    async inscritos(v) {
+      if (!pode("editor")) { v.innerHTML = "<h1>Inscritos</h1><p class=mut>Só editores e administradores veem esta área.</p>"; return; }
+      const [cfg, res] = await Promise.all([carregarConfig(), db.from("inscritos").select("*").order("criado_em", { ascending: false }).limit(5000)]);
+      if (res.error) falhou(res.error);
+      const todos = res.data || [], ativos = todos.filter(i => !i.cancelado_em);
+      const semana = ativos.filter(i => Date.now() - new Date(i.criado_em) < 7 * 864e5).length;
+      const noSP = ativos.filter(i => i.sendpulse_em).length, comErro = ativos.filter(i => !i.sendpulse_em && i.sendpulse_erro).length;
+      const ins = cfg.inscricao || {}, ligado = ins.ativo !== false;
+      const filtro = sessionStorage.getItem("mciInsFiltro") || "ativos", busca = (sessionStorage.getItem("mciInsBusca") || "").toLowerCase();
+      const NOMES = { novidades: "Lançamentos", dicas: "Dicas de set", eventos: "Eventos", mci: "Sobre a MCI" };
+      const lista = (filtro === "cancelados" ? todos.filter(i => i.cancelado_em) : filtro === "todos" ? todos : ativos).filter(i => !busca || (i.email + " " + (i.nome || "")).toLowerCase().includes(busca));
+      const statusSP = i => i.cancelado_em ? '<span class="tag">cancelado</span>' : i.sendpulse_em ? '<span class="tag publicado">no SendPulse</span>' : i.sendpulse_erro ? '<span class="tag agendado" title="' + esc(i.sendpulse_erro) + '">erro no envio</span>' : '<span class="tag">só no blog</span>';
+      v.innerHTML = '<div class="topo"><div><h1>Inscritos (newsletter)</h1><p class="mut">Quem se inscreveu pelo formulário do blog para receber e-mails da MCI. Cada inscrição guarda a data da autorização (LGPD).</p></div><div class="acoes"><button class="btn sec" id="csv">Exportar CSV</button><button class="btn" id="sinc">Enviar ao SendPulse agora</button></div></div>' +
+        '<div class="cards"><div class="card"><div class="num">' + ativos.length + '</div>inscritos ativos</div><div class="card"><div class="num">' + semana + '</div>nos últimos 7 dias</div><div class="card"><div class="num">' + noSP + '</div>já no SendPulse</div><div class="card"><div class="num">' + (ativos.length - noSP) + '</div>aguardando envio' + (comErro ? ' <span class="mut">(' + comErro + " com erro)</span>" : "") + "</div></div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Formulário no blog</h2><label style="display:flex;gap:.6rem;align-items:center;cursor:pointer"><input type="checkbox" id="insAtivo" style="width:auto;flex:none;margin:0"' + (ligado ? " checked" : "") + '> Mostrar o formulário “Receba as novidades” no blog (acima do rodapé, em todas as páginas)</label><p class="mut" style="font-size:.85rem;margin:.6rem 0 0">Títulos e textos do formulário: <a href="#" data-ir="textos">Textos do blog → Newsletter</a>.</p></div>' +
+        '<div class="card" style="margin-bottom:1rem;overflow:auto"><div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem"><div class="filtros" style="margin:0">' + [["ativos", "Ativos"], ["cancelados", "Cancelados"], ["todos", "Todos"]].map(([k, n]) => '<button data-f="' + k + '" aria-pressed="' + (k === filtro) + '">' + n + "</button>").join("") + '</div><input id="insBusca" placeholder="Buscar nome ou e-mail" value="' + esc(busca) + '" style="max-width:260px"></div>' +
+        (lista.length ? '<table><thead><tr><th>Pessoa</th><th>Interesses</th><th>Inscrição</th><th>SendPulse</th><th></th></tr></thead><tbody>' + lista.slice(0, 500).map(i => "<tr><td><b>" + esc(i.nome || "—") + '</b><br><span class="mut">' + esc(i.email) + "</span></td><td>" + ((i.interesses || []).map(x => '<span class="tag">' + esc(NOMES[x] || x) + "</span>").join("") || '<span class="mut">—</span>') + "</td><td>" + dataBR(i.criado_em) + "</td><td>" + statusSP(i) + "</td><td>" + (i.cancelado_em ? '<button class="btn sec" data-re="' + esc(i.id) + '">Reativar</button>' : '<button class="btn perigo" data-can="' + esc(i.id) + '">Cancelar</button>') + "</td></tr>").join("") + "</tbody></table>" + (lista.length > 500 ? '<p class="mut">Mostrando 500 de ' + lista.length + ". Use a busca ou exporte o CSV.</p>" : "") : '<p class="mut">' + (todos.length ? "Ninguém nesse filtro." : "Ainda sem inscritos. Assim que alguém se inscrever pelo blog, aparece aqui.") + "</p>") + "</div>" +
+        '<div class="card"><h2>Como ligar ao SendPulse (uma vez só)</h2><ol style="margin:0;padding-left:1.1rem;display:grid;gap:.45rem"><li>No SendPulse, crie (ou escolha) o <b>livro de endereços</b> da newsletter em <b>E-mail → Livros de endereços</b>. O número no fim do endereço da página do livro é o <b>ID da lista</b>.</li><li>Em <b>Configurações da conta → API</b>, ative a REST API e copie o <b>ID</b> e o <b>Secret</b>.</li><li>No Supabase, abra <b>Edge Functions → Secrets</b> e crie três segredos: <code>SENDPULSE_ID</code>, <code>SENDPULSE_SECRET</code> e <code>SENDPULSE_LISTA</code>.</li><li>Volte aqui e clique em <b>Enviar ao SendPulse agora</b>: quem já se inscreveu vai para a lista. Daí em diante, cada inscrição nova entra sozinha.</li></ol><p class="mut" style="font-size:.85rem;margin:.8rem 0 0">No SendPulse, o nome chega na variável <code>Name</code> e os assuntos escolhidos em <code>interesses</code>, para segmentar as campanhas. Quem clica em “descadastrar” num e-mail sai pelo próprio SendPulse. Cancelar aqui no painel também tira a pessoa da lista no próximo envio.</p></div>';
+      v.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { sessionStorage.setItem("mciInsFiltro", b.dataset.f); render(); });
+      const bx = v.querySelector("#insBusca"); bx.onchange = () => { sessionStorage.setItem("mciInsBusca", bx.value.trim()); render(); };
+      v.querySelector("[data-ir]").onclick = e => { e.preventDefault(); document.querySelector('[data-v="textos"]').click(); };
+      v.querySelector("#insAtivo").onchange = async e => {
+        const novo = Object.assign({}, ins, { ativo: e.target.checked });
+        const { error } = await db.from("site_config").update({ inscricao: novo }).eq("id", "config");
+        if (error) return falhou(error); evento("mci:salvo", { tabela: "site_config", registro: { inscricao: novo } }); toast(e.target.checked ? "Formulário ligado no blog" : "Formulário escondido do blog");
+      };
+      const mudar = async (id, dados, msg) => { const { error } = await db.from("inscritos").update(dados).eq("id", id); if (error) return falhou(error); toast(msg); render(); };
+      v.querySelectorAll("[data-can]").forEach(b => b.onclick = () => { if (confirm("Cancelar a inscrição desta pessoa? Ela para de receber os e-mails (sai do SendPulse no próximo envio).")) mudar(b.dataset.can, { cancelado_em: new Date().toISOString() }, "Inscrição cancelada"); });
+      v.querySelectorAll("[data-re]").forEach(b => b.onclick = () => { if (confirm("Reativar? Só faça isso se a pessoa pediu para voltar a receber.")) mudar(b.dataset.re, { cancelado_em: null, sendpulse_em: null, sendpulse_erro: null }, "Inscrição reativada"); });
+      v.querySelector("#csv").onclick = () => {
+        const c = x => '"' + String(x ?? "").replace(/"/g, '""') + '"';
+        const linhas = [["email", "nome", "interesses", "inscricao", "autorizacao_lgpd", "origem", "status"].join(",")].concat(lista.map(i => [i.email, i.nome, (i.interesses || []).join(" "), i.criado_em, i.consentimento_em, i.origem, i.cancelado_em ? "cancelado" : "ativo"].map(c).join(",")));
+        const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + linhas.join("\n")], { type: "text/csv;charset=utf-8" }));
+        a.download = "inscritos-blog-mci-" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      };
+      v.querySelector("#sinc").onclick = async e => {
+        const b = e.target; b.disabled = true; b.textContent = "Enviando…";
+        try {
+          const { data: { session } } = await db.auth.getSession();
+          const r = await fetch("/api/inscricao/sincronizar", { method: "POST", headers: { authorization: "Bearer " + (session?.access_token || "") } });
+          const d = await r.json().catch(() => ({}));
+          if (d.configurado === false) toast("Falta ligar o SendPulse: veja o passo a passo no fim da página.", true);
+          else if (!r.ok || d.erro) toast(d.erro || "Não deu certo agora.", true);
+          else { toast(d.enviados + " enviado(s) ao SendPulse" + (d.retirados ? ", " + d.retirados + " retirado(s)" : "")); return render(); }
+        } catch (x) { toast("Sem conexão com o servidor.", true); }
+        b.disabled = false; b.textContent = "Enviar ao SendPulse agora";
+      };
     },
 
     async chaves(v) {
