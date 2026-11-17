@@ -226,27 +226,17 @@ a.olho-sec:hover{color:#fff}
 .news h2{margin:.7rem 0 .8rem;font:600 clamp(1.6rem,3.2vw,2.4rem)/1.12 var(--disp)}
 .news p{color:#cfe3dd;max-width:46ch;margin:0}
 .news .news-hand{display:inline-block;margin-top:1rem;font:700 clamp(1.5rem,2.4vw,2rem)/1 var(--hand);color:var(--lime);transform:rotate(-3deg);transform-origin:left center}
-.news form{background:#151b19;border:1px solid #26302d;border-radius:14px;padding:clamp(1.1rem,2.5vw,1.6rem);display:grid;gap:.85rem}
-.news .linha{display:grid;grid-template-columns:1fr 1.3fr;gap:.7rem}
-.news label.cp{display:grid;gap:.3rem;font-size:.82rem;color:#a9bdb7}
-.news input[type=text],.news input[type=email]{font:inherit;color:#F2F2F2;background:#0E1110;border:1px solid #2f3b38;border-radius:10px;padding:.75rem .85rem;width:100%;min-width:0}
-.news input:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
-.news fieldset{border:0;margin:0;padding:0}.news legend{float:left;width:100%;font-size:.82rem;color:#a9bdb7;margin-bottom:.5rem;padding:0}.news fieldset .chips{clear:both}
-.chips{display:flex;flex-wrap:wrap;gap:.45rem}
-.chips label{position:relative;cursor:pointer}
-.chips input{position:absolute;opacity:0;inset:0;cursor:pointer}
-.chips span{display:inline-block;padding:.42rem .85rem;border:1px solid #33413d;border-radius:999px;font-size:.86rem;color:#cfe3dd;transition:.15s}
-.chips input:checked+span{background:var(--teal);border-color:var(--teal);color:#06130F;font-weight:600}
-.chips input:focus-visible+span{outline:2px solid var(--mint);outline-offset:2px}
-.news .aceite{display:flex;gap:.6rem;align-items:flex-start;font-size:.84rem;color:#b9d1ca;line-height:1.45}
-.news .aceite input{margin-top:.2rem;accent-color:var(--teal);width:1.05rem;height:1.05rem;flex:none}
-.news .btn{justify-self:start}
+.avisos-caixa{background:#151b19;border:1px solid #26302d;border-radius:14px;padding:clamp(1.3rem,3vw,2rem);display:grid;gap:.9rem;justify-items:start}
+.avisos-caixa .sino{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:rgba(28,166,141,.16);color:var(--mint)}
+.avisos-caixa.ligado .sino{background:var(--teal);color:#06130F}
+.avisos-caixa .estado{margin:0;color:#cfe3dd;font-size:.98rem}
+.avisos-caixa .btn:disabled{opacity:.6;cursor:default}
+.avisos-email{color:var(--mint);font-size:.9rem;text-decoration:none;border-bottom:1px solid rgba(160,217,206,.35);padding-bottom:1px}
+.avisos-email:hover{color:#fff;border-color:#fff}
 .news .msg{min-height:1.2em;font-size:.9rem;margin:0}.news .msg.erro{color:#ff9b8f}.news .msg.ok{color:var(--lime)}
-.news .ok-box{text-align:center;padding:1.4rem .5rem}.news .ok-box b{display:block;font:600 1.3rem var(--disp);margin-bottom:.4rem}
-.armadilha{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
 .pref-cookies{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer;opacity:.8}
 @media (max-width:900px){.news-g{grid-template-columns:1fr}}
-@media (max-width:520px){.news .linha{grid-template-columns:1fr}.news .btn{justify-self:stretch;text-align:center}}
+@media (max-width:520px){.avisos-caixa .btn{justify-self:stretch;text-align:center}}
 .aviso-cookies{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:90;width:min(560px,calc(100% - 2rem));background:#0E1110;color:#F2F2F2;border:1px solid #26302d;border-radius:12px;padding:1rem 1.1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;box-shadow:0 18px 50px rgba(0,0,0,.45);font-size:.92rem}
 .aviso-cookies p{margin:0;flex:1 1 260px;color:#cfe3dd}
 .aviso-cookies .acoes{display:flex;gap:.5rem}
@@ -404,29 +394,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <main id="leitura" hidden><section><div class="wrap" id="leituraConteudo"></div></section></main>
 
-<section class="news" id="newsletter" hidden>
+<section class="news" id="avisos" hidden>
   <div class="wrap news-g">
     <div>
-      <span class="olho-sec" data-t="news_olho">Newsletter MCI</span>
-      <h2 data-t="news_titulo">Novidades do set direto no seu e-mail</h2>
-      <p data-t="news_texto">Lançamentos, dicas de set, eventos e o que rola na MCI. Sem spam: você cancela quando quiser.</p>
-      <span class="news-hand" data-t="news_frase">bora contar histórias juntos</span>
+      <span class="olho-sec" data-t="avisos_olho">Avisos do blog</span>
+      <h2 data-t="avisos_titulo">Saiu post novo? Você fica sabendo na hora</h2>
+      <p data-t="avisos_texto">Ative as notificações e receba um aviso no computador ou no celular quando publicarmos lançamentos, dicas de set e eventos. Sem cadastro, sem e-mail.</p>
+      <span class="news-hand" data-t="avisos_frase">bora contar histórias juntos</span>
     </div>
-    <form id="newsForm" novalidate>
-      <div class="linha">
-        <label class="cp">Seu nome<input type="text" name="nome" autocomplete="given-name" maxlength="80" placeholder="Como te chamamos?"></label>
-        <label class="cp">Seu melhor e-mail<input type="email" name="email" autocomplete="email" maxlength="200" required placeholder="voce@exemplo.com"></label>
-      </div>
-      <fieldset><legend>O que você quer receber?</legend><div class="chips">
-        <label><input type="checkbox" name="interesses" value="novidades" checked><span>Lançamentos</span></label>
-        <label><input type="checkbox" name="interesses" value="dicas" checked><span>Dicas de set</span></label>
-        <label><input type="checkbox" name="interesses" value="eventos" checked><span>Eventos</span></label>
-        <label><input type="checkbox" name="interesses" value="mci" checked><span>Sobre a MCI</span></label>
-      </div><div class="armadilha" aria-hidden="true"><label>Não preencha<input type="text" name="site" tabindex="-1" autocomplete="off"></label></div></fieldset>
-      <label class="aceite"><input type="checkbox" name="consentimento" required><span data-t="news_aceite">Autorizo a MCI a me enviar e-mails com novidades e conteúdos. Posso cancelar a qualquer momento pelo link no fim de cada e-mail.</span></label>
-      <button class="btn" type="submit" data-t="news_botao">Quero receber</button>
-      <p class="msg" id="newsMsg" role="status" aria-live="polite"></p>
-    </form>
+    <div class="avisos-caixa">
+      <div class="sino" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <p class="estado" id="avisosEstado">Um clique e pronto. Dá para desligar quando quiser.</p>
+      <button class="btn" type="button" id="avisosBtn" data-t="avisos_botao">Ativar notificações</button>
+      <p class="msg" id="avisosMsg" role="status" aria-live="polite"></p>
+      <a class="avisos-email" id="avisosEmail" href="https://www.mci.tv/" target="_blank" rel="noopener"><span data-t="avisos_email">Prefere receber por e-mail? Inscreva-se no mci.tv</span> ↗</a>
+    </div>
   </div>
 </section>
 
@@ -802,29 +784,53 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (v) { modoLeitura('<div class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><h2>' + esc(v.titulo) + '</h2><div class="bloco-video vf" id="vAbrir"></div></div>', v.titulo); $("vAbrir").appendChild(player(v.url, op(v))); }
   } else if (location.hash) aplicarHash();
 
-  // ---- Newsletter: inscrição (vai para a lista do painel e para o SendPulse)
-  (function newsletter() {
-    const sec = $("newsletter"), f = $("newsForm"); if (!sec || !f) return;
-    const ins = cfg.inscricao || {};
-    if (ins.ativo === false || q.get("previa")) return;
+  // ---- Notificações no navegador (OneSignal). O e-mail fica no mci.tv.
+  (function avisos() {
+    const sec = $("avisos"), appId = String(cfg.onesignal_app_id || "").trim();
+    const av = cfg.avisos || {}, textos = cfg.textos || {};
+    if (urlSegura(textos.avisos_email_link)) $("avisosEmail").href = urlSegura(textos.avisos_email_link);
+    if (!sec || !appId || av.ativo === false || q.get("previa")) return;
     sec.hidden = false;
-    const msg = $("newsMsg"), dizer = (t, tipo) => { msg.textContent = t; msg.className = "msg " + (tipo || ""); };
-    f.addEventListener("submit", async e => {
-      e.preventDefault();
-      const email = f.email.value.trim(), interesses = [...f.querySelectorAll("[name=interesses]:checked")].map(x => x.value);
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { dizer("Confira o e-mail.", "erro"); f.email.focus(); return; }
-      if (!interesses.length) { dizer("Escolha pelo menos um assunto.", "erro"); return; }
-      if (!f.consentimento.checked) { dizer("Marque a autorização para receber os e-mails.", "erro"); f.consentimento.focus(); return; }
-      const bt = f.querySelector("button[type=submit]"); bt.disabled = true; dizer("Enviando…");
-      try {
-        const r = await fetch("/api/inscricao", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ nome: f.nome.value.trim(), email, interesses, consentimento: true, site: f.site.value, origem: location.pathname + location.search }) });
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.erro || "Não deu certo agora. Tente de novo em instantes.");
-        const textos = cfg.textos || {};
-        f.innerHTML = '<div class="ok-box" role="status"><b>' + esc(textos.news_ok_titulo || "Pronto, você está na lista!") + "</b><p style=\"margin:0 auto\">" + esc(textos.news_ok_texto || "As próximas novidades da MCI chegam no seu e-mail. Confira a caixa de promoções se não aparecer.") + "</p></div>";
-        if (window.mciGoogle === "gtm") window.dataLayer.push({ event: "newsletter_inscricao", interesses: interesses.join(",") });
-        else if (window.mciGoogle === "ga") window.gtag("event", "generate_lead", { origem: "newsletter" });
-      } catch (x) { dizer(x.message, "erro"); bt.disabled = false; }
+    const caixa = sec.querySelector(".avisos-caixa"), bt = $("avisosBtn"), estado = $("avisosEstado"), msg = $("avisosMsg");
+    const rotuloLigar = bt.textContent;
+    const dizer = (t, tipo) => { msg.textContent = t || ""; msg.className = "msg " + (tipo || ""); };
+    const ios = /iP(hone|ad|od)/.test(navigator.userAgent), instalado = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+    if (!("Notification" in window) || !("serviceWorker" in navigator) || !window.isSecureContext) {
+      estado.textContent = ios && !instalado ? "No iPhone e no iPad: toque em Compartilhar → “Adicionar à Tela de Início”, abra o blog pelo ícone e ative aqui." : "Este navegador não recebe notificações. Tente no Chrome, Edge, Firefox ou Safari.";
+      bt.hidden = true; return;
+    }
+    bt.disabled = true;
+    const sc = document.createElement("script"); sc.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"; sc.defer = true; document.head.appendChild(sc);
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function (OneSignal) {
+      try { await OneSignal.init({ appId }); } catch (e) { estado.textContent = "As notificações estão indisponíveis agora."; return; }
+      const atualizar = () => {
+        const ligado = OneSignal.User.PushSubscription.optedIn && Notification.permission === "granted";
+        caixa.classList.toggle("ligado", ligado);
+        if (Notification.permission === "denied") { estado.textContent = "As notificações estão bloqueadas neste navegador. Clique no cadeado ao lado do endereço do site e permita as notificações."; bt.hidden = true; return; }
+        bt.hidden = false; bt.disabled = false;
+        estado.textContent = ligado ? "Notificações ativadas. Você recebe um aviso a cada post novo." : "Um clique e pronto. Dá para desligar quando quiser.";
+        bt.textContent = ligado ? "Desativar notificações" : rotuloLigar;
+        bt.className = ligado ? "btn ghost" : "btn"; if (ligado) bt.style.color = "#F2F2F2"; else bt.style.color = "";
+      };
+      atualizar();
+      OneSignal.User.PushSubscription.addEventListener("change", atualizar);
+      OneSignal.Notifications.addEventListener("permissionChange", atualizar);
+      bt.onclick = async () => {
+        dizer(""); bt.disabled = true;
+        try {
+          if (OneSignal.User.PushSubscription.optedIn && Notification.permission === "granted") { await OneSignal.User.PushSubscription.optOut(); dizer("Notificações desativadas."); }
+          else {
+            if (Notification.permission !== "granted") await OneSignal.Notifications.requestPermission();
+            if (Notification.permission === "granted") {
+              if (!OneSignal.User.PushSubscription.optedIn) await OneSignal.User.PushSubscription.optIn();
+              dizer("Pronto! Avisamos quando sair post novo.", "ok");
+              (window.dataLayer = window.dataLayer || []).push({ event: "notificacoes_ativadas" });
+            }
+          }
+        } catch (e) { dizer("Não deu certo agora. Tente de novo.", "erro"); }
+        atualizar();
+      };
     });
   })();
 
@@ -842,7 +848,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     registrar("visita");
     const rotulo = el => {
       const txt = (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 70) || el.tagName.toLowerCase();
-      const onde = el.closest("#nav") || el.closest(".top") ? "Menu" : el.closest(".reel") ? "Reels" : el.closest(".row,.card") ? "Post" : el.closest("#palco,.palco") ? "Vídeo do post" : el.closest(".blocos") ? "Texto do post" : el.closest("#newsletter") ? "Newsletter" : el.closest("footer") ? "Rodapé" : el.closest("#topo") ? "Topo" : "Página";
+      const onde = el.closest("#nav") || el.closest(".top") ? "Menu" : el.closest(".reel") ? "Reels" : el.closest(".row,.card") ? "Post" : el.closest("#palco,.palco") ? "Vídeo do post" : el.closest(".blocos") ? "Texto do post" : el.closest("#avisos") ? "Avisos" : el.closest("footer") ? "Rodapé" : el.closest("#topo") ? "Topo" : "Página";
       const extra = el.closest(".reel") ? " — " + ((el.closest(".reel").querySelector("p") || {}).textContent || "").slice(0, 40) : "";
       return onde + ": " + txt + extra;
     };

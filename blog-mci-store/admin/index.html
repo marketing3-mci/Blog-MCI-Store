@@ -195,7 +195,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     <button data-v="visual">Fontes e visual</button>
     <button data-v="celular">Versão celular</button>
     <button data-v="analises">Análises</button>
-    <button data-v="inscritos" data-min="editor">Inscritos (newsletter)</button>
+    <button data-v="notificacoes" data-min="editor">Notificações</button>
     <button data-v="acessos" data-min="admin">Acessos e equipe</button>
     <button data-v="chaves" data-min="admin">Chaves de API</button>
     <button data-v="dev">Desenvolvedor</button>
@@ -482,7 +482,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         ["Leituras (lista de posts)", "", [["leituras_titulo", "Título", "Para ler com calma"], ["leituras_lead", "Texto de apoio", "Matérias, vídeos educativos, eventos e lançamentos, organizados por quem vai usar.", 1]]],
         ["Cinema em alta", "", [["cinema_titulo", "Título", "Cinema em alta"], ["cinema_lead", "Texto de apoio", "Filmes e séries que estão dando o que falar, e o equipamento por trás de cada cena.", 1]]],
         ["Faixa turquesa (próximo take)", "", [["setup_titulo", "Título", "Qual será o nosso próximo take?"], ["setup_texto", "Texto", "Recebeu sua caixa? Poste, marque a gente e bora inovar nesse setup! Os melhores setups, bastidores e perguntas da galera viram vídeo aqui no blog.", 1], ["setup_botao", "Texto do botão", "Marcar @mcistore"], ["setup_link", "Link do botão", "https://www.instagram.com/mcistore/"]]],
-        ["Newsletter (inscrição por e-mail)", "Ligar ou desligar o formulário: em “Inscritos (newsletter)”.", [["news_olho", "Chamada pequena", "Newsletter MCI"], ["news_titulo", "Título", "Novidades do set direto no seu e-mail"], ["news_texto", "Texto", "Lançamentos, dicas de set, eventos e o que rola na MCI. Sem spam: você cancela quando quiser.", 1], ["news_frase", "Frase manuscrita", "bora contar histórias juntos"], ["news_aceite", "Texto da autorização (LGPD)", "Autorizo a MCI a me enviar e-mails com novidades e conteúdos. Posso cancelar a qualquer momento pelo link no fim de cada e-mail.", 1], ["news_botao", "Texto do botão", "Quero receber"], ["news_ok_titulo", "Título depois de inscrever", "Pronto, você está na lista!"], ["news_ok_texto", "Texto depois de inscrever", "As próximas novidades da MCI chegam no seu e-mail. Confira a caixa de promoções se não aparecer.", 1]]],
+        ["Avisos do blog (notificações)", "Ligar ou desligar a faixa e enviar avisos: em “Notificações”.", [["avisos_olho", "Chamada pequena", "Avisos do blog"], ["avisos_titulo", "Título", "Saiu post novo? Você fica sabendo na hora"], ["avisos_texto", "Texto", "Ative as notificações e receba um aviso no computador ou no celular quando publicarmos lançamentos, dicas de set e eventos. Sem cadastro, sem e-mail.", 1], ["avisos_frase", "Frase manuscrita", "bora contar histórias juntos"], ["avisos_botao", "Texto do botão", "Ativar notificações"], ["avisos_email", "Texto do link para e-mail", "Prefere receber por e-mail? Inscreva-se no mci.tv"], ["avisos_email_link", "Link da inscrição por e-mail", "https://www.mci.tv/"]]],
         ["Rodapé", "", [["cinepro_texto", "Texto da faixa CinePro", "CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.", 1], ["rodape_locais", "Onde a MCI está", "Ceará, Santa Catarina, São Paulo e Miami"]]]
       ];
       const campo = ([k, n, ph, area]) => '<div class="campo"><label for="t_' + k + '">' + n + "</label>" + (area ? '<textarea id="t_' + k + '" style="min-height:80px" placeholder="' + esc(ph) + '">' + esc(t[k] || "") + "</textarea>" : '<input id="t_' + k + '" value="' + esc(t[k] || "") + '" placeholder="' + esc(ph) + '">') + "</div>";
@@ -634,7 +634,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         '<div class="card"><h2>Google: Tag Manager e Analytics 4</h2><div class="grid2"><div class="campo"><label for="gtm_id">Google Tag Manager (começa com GTM-)</label><input id="gtm_id" value="' + esc(gtm) + '" placeholder="GTM-XXXXXXX"></div><div class="campo"><label for="ga_id">Google Analytics 4 (começa com G-)</label><input id="ga_id" value="' + esc(ga) + '" placeholder="G-XXXXXXXXXX"></div></div>' +
         '<div class="acoes" style="justify-content:flex-start">' + (pode("editor") ? '<button class="btn" id="salvarGa">Salvar</button>' : "") + '<a class="btn sec" href="https://tagmanager.google.com/" target="_blank" rel="noopener">Abrir o Tag Manager ↗</a><a class="btn sec" href="https://analytics.google.com/" target="_blank" rel="noopener">Abrir o Analytics ↗</a></div>' +
         '<div class="dica-box" style="margin-top:1rem">' + (gtm ? "<b>Tag Manager ativo (" + esc(gtm) + ").</b> O blog carrega só o GTM; configure dentro dele a tag do Google (GA4" + (ga ? " " + esc(ga) : "") + "), Google Ads, Campaign Manager 360/Floodlight, Display & Video 360 e Search Ads 360. Assim nada conta em dobro." : ga ? "<b>Analytics ativo (" + esc(ga) + ").</b> Para usar Google Ads e as ferramentas 360, cole também o ID do Tag Manager." : "Onde achar os IDs: no <b>Tag Manager</b>, o ID GTM-… aparece no topo, ao lado do nome do contêiner. No <b>Analytics</b>: Administrador → Fluxos de dados → site do blog → ID da métrica (G-…).") +
-        "<br><br>O contêiner <b>GTM-KZ7VCP83</b> está instalado direto no código do blog (no topo de todas as páginas), por isso o Google consegue detectá-lo. Com o <b>Consent Mode v2</b>, os cookies do Google ficam bloqueados até o visitante clicar em “Aceitar” no aviso (LGPD); antes disso as tags só mandam sinais sem cookies. O evento <code>consentimento_aceito</code> avisa o GTM no momento do aceite. O blog envia ao GTM os eventos <code>clique_blog</code> (com <code>rotulo</code> e <code>destino</code>) e <code>newsletter_inscricao</code>, que podem virar conversões no Google Ads.</div></div>";
+        "<br><br>O contêiner <b>GTM-KZ7VCP83</b> está instalado direto no código do blog (no topo de todas as páginas), por isso o Google consegue detectá-lo. Com o <b>Consent Mode v2</b>, os cookies do Google ficam bloqueados até o visitante clicar em “Aceitar” no aviso (LGPD); antes disso as tags só mandam sinais sem cookies. O evento <code>consentimento_aceito</code> avisa o GTM no momento do aceite. O blog envia ao GTM os eventos <code>clique_blog</code> (com <code>rotulo</code> e <code>destino</code>) e <code>notificacoes_ativadas</code>, que podem virar conversões no Google Ads.</div></div>";
       v.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { sessionStorage.setItem("mciDias", b.dataset.d); render(); });
       v.querySelector("#salvarGa")?.addEventListener("click", () => {
         const x = v.querySelector("#ga_id").value.trim().toUpperCase(), t = v.querySelector("#gtm_id").value.trim().toUpperCase();
@@ -644,52 +644,61 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       });
     },
 
-    async inscritos(v) {
-      if (!pode("editor")) { v.innerHTML = "<h1>Inscritos</h1><p class=mut>Só editores e administradores veem esta área.</p>"; return; }
-      const [cfg, res] = await Promise.all([carregarConfig(), db.from("inscritos").select("*").order("criado_em", { ascending: false }).limit(5000)]);
-      if (res.error) falhou(res.error);
-      const todos = res.data || [], ativos = todos.filter(i => !i.cancelado_em);
-      const semana = ativos.filter(i => Date.now() - new Date(i.criado_em) < 7 * 864e5).length;
-      const noSP = ativos.filter(i => i.sendpulse_em).length, comErro = ativos.filter(i => !i.sendpulse_em && i.sendpulse_erro).length;
-      const ins = cfg.inscricao || {}, ligado = ins.ativo !== false;
-      const filtro = sessionStorage.getItem("mciInsFiltro") || "ativos", busca = (sessionStorage.getItem("mciInsBusca") || "").toLowerCase();
-      const NOMES = { novidades: "Lançamentos", dicas: "Dicas de set", eventos: "Eventos", mci: "Sobre a MCI" };
-      const lista = (filtro === "cancelados" ? todos.filter(i => i.cancelado_em) : filtro === "todos" ? todos : ativos).filter(i => !busca || (i.email + " " + (i.nome || "")).toLowerCase().includes(busca));
-      const statusSP = i => i.cancelado_em ? '<span class="tag">cancelado</span>' : i.sendpulse_em ? '<span class="tag publicado">no SendPulse</span>' : i.sendpulse_erro ? '<span class="tag agendado" title="' + esc(i.sendpulse_erro) + '">erro no envio</span>' : '<span class="tag">só no blog</span>';
-      v.innerHTML = '<div class="topo"><div><h1>Inscritos (newsletter)</h1><p class="mut">Quem se inscreveu pelo formulário do blog para receber e-mails da MCI. Cada inscrição guarda a data da autorização (LGPD).</p></div><div class="acoes"><button class="btn sec" id="csv">Exportar CSV</button><button class="btn" id="sinc">Enviar ao SendPulse agora</button></div></div>' +
-        '<div class="cards"><div class="card"><div class="num">' + ativos.length + '</div>inscritos ativos</div><div class="card"><div class="num">' + semana + '</div>nos últimos 7 dias</div><div class="card"><div class="num">' + noSP + '</div>já no SendPulse</div><div class="card"><div class="num">' + (ativos.length - noSP) + '</div>aguardando envio' + (comErro ? ' <span class="mut">(' + comErro + " com erro)</span>" : "") + "</div></div>" +
-        '<div class="card" style="margin-bottom:1rem"><h2>Formulário no blog</h2><label style="display:flex;gap:.6rem;align-items:center;cursor:pointer"><input type="checkbox" id="insAtivo" style="width:auto;flex:none;margin:0"' + (ligado ? " checked" : "") + '> Mostrar o formulário “Receba as novidades” no blog (acima do rodapé, em todas as páginas)</label><p class="mut" style="font-size:.85rem;margin:.6rem 0 0">Títulos e textos do formulário: <a href="#" data-ir="textos">Textos do blog → Newsletter</a>.</p></div>' +
-        '<div class="card" style="margin-bottom:1rem;overflow:auto"><div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem"><div class="filtros" style="margin:0">' + [["ativos", "Ativos"], ["cancelados", "Cancelados"], ["todos", "Todos"]].map(([k, n]) => '<button data-f="' + k + '" aria-pressed="' + (k === filtro) + '">' + n + "</button>").join("") + '</div><input id="insBusca" placeholder="Buscar nome ou e-mail" value="' + esc(busca) + '" style="max-width:260px"></div>' +
-        (lista.length ? '<table><thead><tr><th>Pessoa</th><th>Interesses</th><th>Inscrição</th><th>SendPulse</th><th></th></tr></thead><tbody>' + lista.slice(0, 500).map(i => "<tr><td><b>" + esc(i.nome || "—") + '</b><br><span class="mut">' + esc(i.email) + "</span></td><td>" + ((i.interesses || []).map(x => '<span class="tag">' + esc(NOMES[x] || x) + "</span>").join("") || '<span class="mut">—</span>') + "</td><td>" + dataBR(i.criado_em) + "</td><td>" + statusSP(i) + "</td><td>" + (i.cancelado_em ? '<button class="btn sec" data-re="' + esc(i.id) + '">Reativar</button>' : '<button class="btn perigo" data-can="' + esc(i.id) + '">Cancelar</button>') + "</td></tr>").join("") + "</tbody></table>" + (lista.length > 500 ? '<p class="mut">Mostrando 500 de ' + lista.length + ". Use a busca ou exporte o CSV.</p>" : "") : '<p class="mut">' + (todos.length ? "Ninguém nesse filtro." : "Ainda sem inscritos. Assim que alguém se inscrever pelo blog, aparece aqui.") + "</p>") + "</div>" +
-        '<div class="card"><h2>Como ligar ao SendPulse (uma vez só)</h2><ol style="margin:0;padding-left:1.1rem;display:grid;gap:.45rem"><li>No SendPulse, crie (ou escolha) o <b>livro de endereços</b> da newsletter em <b>E-mail → Livros de endereços</b>. O número no fim do endereço da página do livro é o <b>ID da lista</b>.</li><li>Em <b>Configurações da conta → API</b>, ative a REST API e copie o <b>ID</b> e o <b>Secret</b>.</li><li>No Supabase, abra <b>Edge Functions → Secrets</b> e crie três segredos: <code>SENDPULSE_ID</code>, <code>SENDPULSE_SECRET</code> e <code>SENDPULSE_LISTA</code>.</li><li>Volte aqui e clique em <b>Enviar ao SendPulse agora</b>: quem já se inscreveu vai para a lista. Daí em diante, cada inscrição nova entra sozinha.</li></ol><p class="mut" style="font-size:.85rem;margin:.8rem 0 0">No SendPulse, o nome chega na variável <code>Name</code> e os assuntos escolhidos em <code>interesses</code>, para segmentar as campanhas. Quem clica em “descadastrar” num e-mail sai pelo próprio SendPulse. Cancelar aqui no painel também tira a pessoa da lista no próximo envio.</p></div>';
-      v.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { sessionStorage.setItem("mciInsFiltro", b.dataset.f); render(); });
-      const bx = v.querySelector("#insBusca"); bx.onchange = () => { sessionStorage.setItem("mciInsBusca", bx.value.trim()); render(); };
+    async notificacoes(v) {
+      if (!pode("editor")) { v.innerHTML = "<h1>Notificações</h1><p class=mut>Só editores e administradores veem esta área.</p>"; return; }
+      const [cfg, posts, hist] = await Promise.all([carregarConfig(), listar("posts", "data"), db.from("notificacoes").select("*").order("criado_em", { ascending: false }).limit(30)]);
+      const appId = cfg.onesignal_app_id || "", av = cfg.avisos || {}, ligado = av.ativo !== false;
+      const publicados = posts.filter(p => p.status === "publicado");
+      const token = async () => (await db.auth.getSession()).data.session?.access_token || "";
+      v.innerHTML = '<div class="topo"><div><h1>Notificações</h1><p class="mut">Avisos no navegador (computador e Android; no iPhone, para quem adicionou o blog à Tela de Início) pelo OneSignal. Quem quer e-mail é levado para a inscrição do mci.tv.</p></div><a class="btn sec" href="https://dashboard.onesignal.com/" target="_blank" rel="noopener">Abrir o OneSignal ↗</a></div>' +
+        '<div class="card" style="margin-bottom:1rem"><h2>Enviar aviso</h2><div id="nStatus" class="dica-box" style="margin-bottom:1rem">Verificando a conexão com o OneSignal…</div>' +
+        '<div class="campo"><label for="nPost">Sobre qual post? (preenche os campos abaixo)</label><select id="nPost"><option value="">Aviso livre (sem post)</option>' + publicados.map(p => '<option value="' + esc(p.id) + '">' + esc(p.titulo) + " · " + dataBR(p.data) + "</option>").join("") + "</select></div>" +
+        '<div class="grid2"><div class="campo"><label for="nTitulo">Título (até 80 letras)</label><input id="nTitulo" maxlength="80" placeholder="Post novo no Blog MCI"></div><div class="campo"><label for="nUrl">Link ao clicar</label><input id="nUrl" placeholder="https://blog-mci-store.vercel.app/?post=…"></div></div>' +
+        '<div class="campo"><label for="nTexto">Texto (até 200 letras)</label><textarea id="nTexto" maxlength="200" style="min-height:70px"></textarea></div>' +
+        '<div class="campo"><label for="nImagem">Imagem grande (opcional, aparece no Chrome/Android)</label><input id="nImagem" placeholder="https://…"></div>' +
+        '<div class="acoes" style="justify-content:flex-start"><button class="btn" id="nEnviar">Enviar para todos os inscritos</button></div></div>' +
+        '<div class="card" style="margin-bottom:1rem;overflow:auto"><h2>Enviados</h2>' + ((hist.data || []).length ? '<table><thead><tr><th>Aviso</th><th>Quando</th><th>Alcance</th></tr></thead><tbody>' + hist.data.map(n => "<tr><td><b>" + esc(n.titulo) + '</b><br><span class="mut">' + esc(n.texto) + "</span></td><td>" + dataBR(n.criado_em) + "</td><td>" + (n.erro ? '<span class="tag agendado" title="' + esc(n.erro) + '">erro</span>' : n.destinatarios != null ? n.destinatarios + " pessoa(s)" : '<span class="tag publicado">enviado</span>') + "</td></tr>").join("") + "</tbody></table>" : '<p class="mut">Nenhum aviso enviado ainda.</p>') + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Configuração</h2><label style="display:flex;gap:.6rem;align-items:center;cursor:pointer;margin-bottom:1rem"><input type="checkbox" id="avAtivo" style="width:auto;flex:none;margin:0"' + (ligado ? " checked" : "") + '> Mostrar a faixa “Ativar notificações” no blog (acima do rodapé, em todas as páginas)</label>' +
+        '<div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="onesignal_app_id">OneSignal App ID</label><input id="onesignal_app_id" value="' + esc(appId) + '" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div><div class="acoes" style="justify-content:flex-start"><button class="btn" id="salvarApp">Salvar App ID</button></div></div>' +
+        '<p class="mut" style="font-size:.85rem;margin:.8rem 0 0">Textos da faixa e o link do e-mail (mci.tv): <a href="#" data-ir="textos">Textos do blog → Avisos do blog</a>.</p></div>' +
+        '<div class="card"><h2>Como ligar o OneSignal (uma vez só)</h2><ol style="margin:0;padding-left:1.1rem;display:grid;gap:.45rem"><li>No OneSignal, crie um app (ou use o da MCI) e ative a plataforma <b>Web</b>. Em <b>Site URL</b>, coloque o endereço do blog (<code>' + esc(location.origin) + '</code>) e escolha a integração <b>Custom Code</b>. O arquivo <code>OneSignalSDKWorker.js</code> já está na raiz do blog.</li><li>Em <b>Settings → Keys &amp; IDs</b>, copie o <b>App ID</b> e cole aqui em cima.</li><li>No mesmo lugar, crie uma <b>API Key</b> e cole no Supabase em <b>Edge Functions → Secrets</b> com o nome <code>ONESIGNAL_API_KEY</code> (é senha: não mande por chat ou e-mail).</li><li>Abra o blog, clique em <b>Ativar notificações</b> e envie um aviso de teste por esta tela.</li></ol></div>';
+      const status = v.querySelector("#nStatus");
+      fetch("/api/notificar/status", { method: "POST", headers: { authorization: "Bearer " + await token() } }).then(r => r.json()).then(d => {
+        status.innerHTML = d.app && d.chave ? "<b>Tudo conectado.</b> Os avisos vão para todos que ativaram as notificações no blog." : "<b>Falta configurar:</b> " + [d.app ? "" : "o App ID (abaixo, em Configuração)", d.chave ? "" : "o segredo <code>ONESIGNAL_API_KEY</code> no Supabase"].filter(Boolean).join(" e ") + ". Veja o passo a passo no fim da página.";
+      }).catch(() => { status.textContent = "Não consegui verificar a conexão agora."; });
+      const site = location.origin;
+      v.querySelector("#nPost").onchange = e => {
+        const p = publicados.find(x => x.id === e.target.value); if (!p) return;
+        v.querySelector("#nTitulo").value = ("Post novo: " + p.titulo).slice(0, 80);
+        v.querySelector("#nTexto").value = String(p.resumo || "Leia no Blog MCI.").slice(0, 200);
+        v.querySelector("#nUrl").value = site + "/?post=" + encodeURIComponent(p.id);
+        const capa = p.capa || (p.video_url && MCI.capaYoutube(p.video_url)?.alta) || "";
+        v.querySelector("#nImagem").value = /^https:/.test(capa) ? capa : "";
+      };
       v.querySelector("[data-ir]").onclick = e => { e.preventDefault(); document.querySelector('[data-v="textos"]').click(); };
-      v.querySelector("#insAtivo").onchange = async e => {
-        const novo = Object.assign({}, ins, { ativo: e.target.checked });
-        const { error } = await db.from("site_config").update({ inscricao: novo }).eq("id", "config");
-        if (error) return falhou(error); evento("mci:salvo", { tabela: "site_config", registro: { inscricao: novo } }); toast(e.target.checked ? "Formulário ligado no blog" : "Formulário escondido do blog");
+      v.querySelector("#avAtivo").onchange = async e => {
+        const novo = Object.assign({}, av, { ativo: e.target.checked });
+        const { error } = await db.from("site_config").update({ avisos: novo }).eq("id", "config");
+        if (error) return falhou(error); evento("mci:salvo", { tabela: "site_config", registro: { avisos: novo } }); toast(e.target.checked ? "Faixa ligada no blog" : "Faixa escondida do blog");
       };
-      const mudar = async (id, dados, msg) => { const { error } = await db.from("inscritos").update(dados).eq("id", id); if (error) return falhou(error); toast(msg); render(); };
-      v.querySelectorAll("[data-can]").forEach(b => b.onclick = () => { if (confirm("Cancelar a inscrição desta pessoa? Ela para de receber os e-mails (sai do SendPulse no próximo envio).")) mudar(b.dataset.can, { cancelado_em: new Date().toISOString() }, "Inscrição cancelada"); });
-      v.querySelectorAll("[data-re]").forEach(b => b.onclick = () => { if (confirm("Reativar? Só faça isso se a pessoa pediu para voltar a receber.")) mudar(b.dataset.re, { cancelado_em: null, sendpulse_em: null, sendpulse_erro: null }, "Inscrição reativada"); });
-      v.querySelector("#csv").onclick = () => {
-        const c = x => '"' + String(x ?? "").replace(/"/g, '""') + '"';
-        const linhas = [["email", "nome", "interesses", "inscricao", "autorizacao_lgpd", "origem", "status"].join(",")].concat(lista.map(i => [i.email, i.nome, (i.interesses || []).join(" "), i.criado_em, i.consentimento_em, i.origem, i.cancelado_em ? "cancelado" : "ativo"].map(c).join(",")));
-        const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + linhas.join("\n")], { type: "text/csv;charset=utf-8" }));
-        a.download = "inscritos-blog-mci-" + new Date().toISOString().slice(0, 10) + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      v.querySelector("#salvarApp").onclick = () => {
+        const x = v.querySelector("#onesignal_app_id").value.trim().toLowerCase();
+        if (x && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(x)) return toast("O App ID tem o formato xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.", true);
+        v.querySelector("#onesignal_app_id").value = x; salvarConfig(v, ["onesignal_app_id"]).then(render);
       };
-      v.querySelector("#sinc").onclick = async e => {
+      v.querySelector("#nEnviar").onclick = async e => {
+        const dados = { titulo: val(v, "nTitulo"), texto: val(v, "nTexto"), url: val(v, "nUrl"), imagem: val(v, "nImagem"), post_id: v.querySelector("#nPost").value || null };
+        if (!dados.titulo || !dados.texto) return toast("Preencha o título e o texto.", true);
+        if (dados.url && !/^https:\/\//.test(dados.url)) return toast("O link precisa começar com https://", true);
+        if (!confirm("Enviar este aviso agora para todos que ativaram as notificações? Não dá para desfazer.")) return;
         const b = e.target; b.disabled = true; b.textContent = "Enviando…";
         try {
-          const { data: { session } } = await db.auth.getSession();
-          const r = await fetch("/api/inscricao/sincronizar", { method: "POST", headers: { authorization: "Bearer " + (session?.access_token || "") } });
+          const r = await fetch("/api/notificar", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + await token() }, body: JSON.stringify(dados) });
           const d = await r.json().catch(() => ({}));
-          if (d.configurado === false) toast("Falta ligar o SendPulse: veja o passo a passo no fim da página.", true);
-          else if (!r.ok || d.erro) toast(d.erro || "Não deu certo agora.", true);
-          else { toast(d.enviados + " enviado(s) ao SendPulse" + (d.retirados ? ", " + d.retirados + " retirado(s)" : "")); return render(); }
-        } catch (x) { toast("Sem conexão com o servidor.", true); }
-        b.disabled = false; b.textContent = "Enviar ao SendPulse agora";
+          if (!r.ok) throw new Error(d.erro || "Não deu certo agora.");
+          toast(d.destinatarios != null ? "Aviso enviado para " + d.destinatarios + " pessoa(s)" : "Aviso enviado"); return render();
+        } catch (x) { toast(x.message, true); }
+        b.disabled = false; b.textContent = "Enviar para todos os inscritos";
       };
     },
 

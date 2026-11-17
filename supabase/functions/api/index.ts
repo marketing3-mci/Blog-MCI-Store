@@ -7,7 +7,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "x-api-key, authorization, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
 };
 const json = (dados: unknown, status = 200) =>
   new Response(JSON.stringify(dados), { status, headers: { ...CORS, "Content-Type": "application/json; charset=utf-8" } });
@@ -26,50 +26,16 @@ const CAMPOS_ESCRITA: Record<string, string[]> = {
   videos: ["titulo", "url", "link_rede", "rede", "frente", "tipo", "capa", "no_rodape", "exibicao"],
 };
 
-// ---- Newsletter: inscrição pública e envio ao SendPulse
-// Segredos (Supabase → Edge Functions → Secrets): SENDPULSE_ID, SENDPULSE_SECRET, SENDPULSE_LISTA (id do livro de endereços).
-const INTERESSES = ["novidades", "dicas", "eventos", "mci"];
-const spConfigurado = () => !!(Deno.env.get("SENDPULSE_ID") && Deno.env.get("SENDPULSE_SECRET") && Deno.env.get("SENDPULSE_LISTA"));
-let spToken = { valor: "", ate: 0 };
-async function sendpulse(metodo: string, caminho: string, corpo: unknown) {
-  if (Date.now() > spToken.ate) {
-    const r = await fetch("https://api.sendpulse.com/oauth/access_token", {
-      method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ grant_type: "client_credentials", client_id: Deno.env.get("SENDPULSE_ID"), client_secret: Deno.env.get("SENDPULSE_SECRET") }),
-    });
-    const t = await r.json().catch(() => ({}));
-    if (!r.ok || !t.access_token) throw new Error("SendPulse recusou o ID/Secret (" + r.status + ")");
-    spToken = { valor: t.access_token, ate: Date.now() + (Number(t.expires_in) || 3600) * 1000 - 60000 };
-  }
-  const r = await fetch("https://api.sendpulse.com" + caminho, {
-    method: metodo, headers: { "content-type": "application/json", authorization: "Bearer " + spToken.valor }, body: JSON.stringify(corpo),
-  });
-  const txt = await r.text();
-  if (!r.ok) throw new Error("SendPulse " + r.status + ": " + txt.slice(0, 160));
-  return txt;
-}
-type Inscrito = { id: string; email: string; nome: string | null; interesses: string[] };
-// deno-lint-ignore no-explicit-any
-async function enviarAoSendPulse(db: any, lista: Inscrito[]) {
-  if (!spConfigurado() || !lista.length) return { enviados: 0, configurado: spConfigurado() };
-  const livro = Deno.env.get("SENDPULSE_LISTA");
-  try {
-    await sendpulse("POST", "/addressbooks/" + livro + "/emails", {
-      emails: lista.map((i) => ({ email: i.email, variables: { Name: i.nome || "", nome: i.nome || "", interesses: (i.interesses || []).join(", "), origem: "Blog MCI" } })),
-    });
-    await db.from("inscritos").update({ sendpulse_em: new Date().toISOString(), sendpulse_erro: null }).in("id", lista.map((i) => i.id));
-    return { enviados: lista.length, configurado: true };
-  } catch (e) {
-    await db.from("inscritos").update({ sendpulse_erro: String((e as Error).message).slice(0, 300) }).in("id", lista.map((i) => i.id));
-    return { enviados: 0, configurado: true, erro: String((e as Error).message) };
-  }
+// ---- Notificações no navegador (OneSignal)
+// Segredo (Supabase → Edge Functions → Secrets): ONESIGNAL_API_KEY. O App ID fica em site_config.onesignal_app_id (painel).
+function authOneSignal(chave: string) {
+  return (chave.startsWith("os_v2_") ? "Key " : "Basic ") + chave; // chaves novas usam "Key"; antigas, "Basic"
 }
 
 const ROTAS = [
   "GET /api/posts?secao=produto&limite=20&inicio=0", "GET /api/posts/{id}", "GET /api/videos", "GET /api/paginas", "GET /api/paginas/{slug}",
   "GET /api/marcos", "GET /api/secoes", "POST /api/posts (chave de escrita)", "PATCH /api/posts/{id} (chave de escrita)",
   "POST /api/videos (chave de escrita)", "PATCH /api/videos/{id} (chave de escrita)",
-  "POST /api/inscricao (pública: formulário de newsletter do blog)",
 ];
 
 Deno.serve(async (req) => {
@@ -83,46 +49,38 @@ Deno.serve(async (req) => {
 
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
-  // Inscrição na newsletter (pública, sem chave)
-  if (rota[0] === "inscricao" && !rota[1] && req.method === "POST") {
-    const c = await req.json().catch(() => null);
-    if (!c || typeof c !== "object") return json({ erro: "Dados inválidos." }, 400);
-    if (c.site) return json({ ok: true }); // armadilha para robôs
-    const email = String(c.email || "").trim().toLowerCase().slice(0, 200);
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ erro: "Confira o e-mail." }, 400);
-    if (c.consentimento !== true) return json({ erro: "Marque a autorização para receber e-mails." }, 400);
-    const nome = String(c.nome || "").replace(/\s+/g, " ").trim().slice(0, 80) || null;
-    const interesses = Array.isArray(c.interesses) ? c.interesses.map(String).filter((x: string) => INTERESSES.includes(x)) : [];
-    const origem = String(c.origem || "").slice(0, 160) || null;
-    const { data: ja } = await db.from("inscritos").select("id, cancelado_em").eq("email", email).maybeSingle();
-    const dados = { email, nome, interesses, origem, consentimento_em: new Date().toISOString(), cancelado_em: null, sendpulse_em: null, sendpulse_erro: null };
-    const { data: ins, error } = ja
-      ? await db.from("inscritos").update(dados).eq("id", ja.id).select("id, email, nome, interesses").single()
-      : await db.from("inscritos").insert(dados).select("id, email, nome, interesses").single();
-    if (error) return json({ erro: "Não foi possível salvar agora. Tente de novo." }, 500);
-    await enviarAoSendPulse(db, [ins as Inscrito]);
-    return json({ ok: true, novo: !ja }, ja ? 200 : 201);
-  }
-
-  // Painel: reenviar pendentes ao SendPulse e retirar os cancelados (login de editor/admin)
-  if (rota[0] === "inscricao" && rota[1] === "sincronizar" && req.method === "POST") {
+  // Painel: enviar notificação aos inscritos do OneSignal (login de editor/admin)
+  if (rota[0] === "notificar" && req.method === "POST") {
     const jwt = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
     const usuario = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: "Bearer " + jwt } }, auth: { persistSession: false } });
     const { data: pode } = await usuario.rpc("pode", { minimo: "editor" });
     if (pode !== true) return json({ erro: "Entre no painel como editor ou admin." }, 401);
-    if (!spConfigurado()) return json({ configurado: false, erro: "Faltam os segredos do SendPulse na função api." }, 400);
-    const { data: pend } = await db.from("inscritos").select("id, email, nome, interesses").is("cancelado_em", null).is("sendpulse_em", null).limit(500);
-    const r = await enviarAoSendPulse(db, (pend || []) as Inscrito[]);
-    const { data: canc } = await db.from("inscritos").select("id, email").not("cancelado_em", "is", null).not("sendpulse_em", "is", null).limit(500);
-    let retirados = 0;
-    if (canc?.length) {
-      try {
-        await sendpulse("DELETE", "/addressbooks/" + Deno.env.get("SENDPULSE_LISTA") + "/emails", { emails: canc.map((x) => x.email) });
-        await db.from("inscritos").update({ sendpulse_em: null }).in("id", canc.map((x) => x.id));
-        retirados = canc.length;
-      } catch (e) { return json({ ...r, retirados: 0, erro: String((e as Error).message) }, 502); }
-    }
-    return json({ ...r, retirados });
+    const chaveOS = Deno.env.get("ONESIGNAL_API_KEY") || "";
+    const { data: cfg } = await db.from("site_config").select("onesignal_app_id").eq("id", "config").maybeSingle();
+    const appId = String(cfg?.onesignal_app_id || "").trim();
+    if (rota[1] === "status") return json({ chave: !!chaveOS, app: !!appId });
+    if (!appId) return json({ erro: "Salve o App ID do OneSignal no painel." }, 400);
+    if (!chaveOS) return json({ erro: "Falta o segredo ONESIGNAL_API_KEY na função api (Supabase → Edge Functions → Secrets)." }, 400);
+    const c = await req.json().catch(() => null);
+    const titulo = String(c?.titulo || "").trim().slice(0, 80), texto = String(c?.texto || "").trim().slice(0, 200);
+    if (!titulo || !texto) return json({ erro: "Preencha o título e o texto da notificação." }, 400);
+    const link = /^https:\/\//.test(String(c?.url || "")) ? String(c.url) : null;
+    const imagem = /^https:\/\//.test(String(c?.imagem || "")) ? String(c.imagem) : null;
+    const { data: { user } } = await usuario.auth.getUser(jwt);
+    const corpo: Record<string, unknown> = {
+      app_id: appId, target_channel: "push", included_segments: ["Subscribed Users"],
+      headings: { en: titulo, pt: titulo }, contents: { en: texto, pt: texto },
+    };
+    if (link) corpo.url = link;
+    if (imagem) { corpo.chrome_web_image = imagem; corpo.big_picture = imagem; }
+    const r = await fetch("https://api.onesignal.com/notifications", {
+      method: "POST", headers: { "content-type": "application/json", authorization: authOneSignal(chaveOS) }, body: JSON.stringify(corpo),
+    });
+    const d = await r.json().catch(() => ({}));
+    const erro = !r.ok ? "OneSignal " + r.status + ": " + JSON.stringify(d.errors || d).slice(0, 200) : (d.errors && !d.id ? JSON.stringify(d.errors).slice(0, 200) : null);
+    await db.from("notificacoes").insert({ titulo, texto, url: link, imagem, post_id: c?.post_id ? String(c.post_id) : null, enviado_por: user?.id || null, onesignal_id: d.id || null, destinatarios: typeof d.recipients === "number" ? d.recipients : null, erro });
+    if (erro) return json({ erro }, 502);
+    return json({ ok: true, id: d.id, destinatarios: d.recipients ?? null });
   }
 
   const chave = req.headers.get("x-api-key") || (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
