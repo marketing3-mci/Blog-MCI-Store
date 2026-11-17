@@ -498,8 +498,8 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         ["Faixa turquesa (próximo take)", "setup_botao", "Marcar @mcistore", "setup_link", "https://www.instagram.com/mcistore/"],
         ["Notificações · ativar", "avisos_botao", "Ativar notificações"],
         ["Notificações · link para e-mail", "avisos_email", "Prefere receber por e-mail? Inscreva-se no mci.tv", "avisos_email_link", "https://www.mci.tv/"],
-        ["Rodapé · Instagram", "botao_instagram", "Seguir no Instagram", "botao_instagram_link", "https://www.instagram.com/mcistore/"],
-        ["Rodapé · TikTok", "botao_tiktok", "Seguir no TikTok", "botao_tiktok_link", "https://www.tiktok.com/@mcistore_"],
+        ["Faixa “A MCI nas redes” · Instagram", "botao_instagram", "Seguir no Instagram", "botao_instagram_link", "https://www.instagram.com/mcistore/"],
+        ["Faixa “A MCI nas redes” · TikTok", "botao_tiktok", "Seguir no TikTok", "botao_tiktok_link", "https://www.tiktok.com/@mcistore.oficial"],
         ["Reels · abrir na rede (+ nome da rede)", "botao_reels", "Ver no"],
         ["Lista de posts · abrir seção (+ nome da seção)", "botao_secao", "Abrir a página de"],
         ["Post · voltar", "botao_voltar", "← Voltar ao blog"],
@@ -517,12 +517,12 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         ["Faixa de notificações", [["avisos_olho", "Chamada pequena", "Avisos do blog"], ["avisos_titulo", "Título", "Saiu post novo? Você fica sabendo na hora"], ["avisos_texto", "Texto", "Ative as notificações e receba um aviso no computador ou no celular quando publicarmos lançamentos, dicas de set e eventos. Sem cadastro, sem e-mail.", 1], ["avisos_frase", "Frase manuscrita", "bora contar histórias juntos"]]],
         ["Página do post", [["relacionados_titulo", "Título dos posts relacionados", "Continue no set"]]],
         ["Aviso de cookies", [["cookies_texto", "Texto do aviso", "Usamos cookies do Google (Analytics e anúncios) para entender o que a galera mais curte no blog e mostrar as novidades da MCI. Você escolhe.", 1]]],
-        ["Rodapé", [["cinepro_texto", "Texto da faixa CinePro", "CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.", 1], ["rodape_locais", "Onde a MCI está", "Ceará, Santa Catarina, São Paulo e Miami"]]]
+        ["Rodapé", [["cinepro_texto", "Texto da faixa CinePro", "CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.", 1], ["rodape_locais", "Onde a MCI está", "Ceará, Santa Catarina, São Paulo e Miami"], ["rodape_razao", "Razão social", "MULTICOMERCIAL E IMPORTADORA EIRELI"], ["rodape_cnpj", "CNPJ", "05.502.390/0001-11"], ["rede_instagram", "Link do Instagram", "https://www.instagram.com/mcistore"], ["rede_facebook", "Link do Facebook", "https://www.facebook.com/MciStore/"], ["rede_tiktok", "Link do TikTok", "https://www.tiktok.com/@mcistore.oficial"], ["rede_youtube", "Link do YouTube", "https://www.youtube.com/channel/UCSyjv8Qk39k7nwgvjdZ6V4Q/featured"], ["rede_loja", "Link da loja", "https://www.mci.tv/"]]]
       ];
       const inp = (k, ph, area) => area ? '<textarea id="t_' + k + '" style="min-height:80px" placeholder="' + esc(ph) + '">' + esc(t[k] || "") + "</textarea>" : '<input id="t_' + k + '" value="' + esc(t[k] || "") + '" placeholder="' + esc(ph) + '">';
       const campo = ([k, n, ph, area]) => '<div class="campo"><label for="t_' + k + '">' + n + "</label>" + inp(k, ph, area) + "</div>";
       const abas = '<div class="filtros" style="margin:0 0 1rem">' + [["botoes", "Botões"], ["textos", "Títulos e textos"]].map(([k, n]) => '<button data-aba="' + k + '" aria-pressed="' + (k === aba) + '">' + n + "</button>").join("") + "</div>";
-      const telaBotoes = '<div class="card"><p class="mut" style="margin:0 0 .8rem;font-size:.88rem">Campo vazio usa o texto em cinza. Links aceitam <code>https://…</code>, <code>#parte-da-página</code> ou <code>?secao=…</code>. O botão <b>Loja</b> do topo vem do menu, em <a href="#" data-ir="site">Menu e topo</a>.</p>' +
+      const telaBotoes = '<div class="card"><p class="mut" style="margin:0 0 .8rem;font-size:.88rem">Campo vazio usa o texto em cinza. Telefone e e-mail do rodapé ficam em <a href="#" data-ir="site">Menu e topo</a>; links das redes, razão social e CNPJ, na aba “Títulos e textos” → Rodapé. Links aceitam <code>https://…</code>, <code>#parte-da-página</code> ou <code>?secao=…</code>. O botão <b>Loja</b> do topo vem do menu, em <a href="#" data-ir="site">Menu e topo</a>.</p>' +
         '<div class="bt-cab"><span>Onde aparece</span><span>Texto do botão</span><span>Link</span></div>' +
         BOTOES.map(([onde, k, p, kl, pl]) => '<div class="bt-linha"><b>' + onde + "</b>" + inp(k, p) + (kl ? inp(kl, pl) : '<span class="mut" style="font-size:.82rem">—</span>') + "</div>").join("") + "</div>";
       const telaTextos = GRUPOS.map(g => '<div class="card" style="margin-bottom:1rem"><h2>' + g[0] + '</h2><div class="grid2">' + g[1].map(campo).join("") + "</div></div>").join("");
@@ -533,7 +533,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         const novo = Object.assign({}, t), chaves = [];
         BOTOES.forEach(([, k, , kl]) => { chaves.push(k); if (kl) chaves.push(kl); });
         GRUPOS.forEach(g => g[1].forEach(([k]) => chaves.push(k)));
-        for (const [, , , kl] of BOTOES) { const x = kl && val(v, "t_" + kl); if (x && !/^(#|\?|\/(?!\/)|https:\/\/)/.test(x)) { sessionStorage.setItem("mciTextosAba", "botoes"); return toast("Link inválido: " + x + ". Use https://…, #parte ou ?secao=…", true); } }
+        for (const kl of BOTOES.map(b => b[3]).concat(["rede_instagram", "rede_facebook", "rede_tiktok", "rede_youtube", "rede_loja"])) { const x = kl && val(v, "t_" + kl); if (x && !/^(#|\?|\/(?!\/)|https:\/\/)/.test(x)) { sessionStorage.setItem("mciTextosAba", "botoes"); return toast("Link inválido: " + x + ". Use https://…, #parte ou ?secao=…", true); } }
         chaves.forEach(k => { const x = val(v, "t_" + k); if (x) novo[k] = x; else delete novo[k]; });
         const { error } = await db.from("site_config").update({ textos: novo }).eq("id", "config");
         if (error) return falhou(error);

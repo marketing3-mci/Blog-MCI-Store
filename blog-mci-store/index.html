@@ -251,8 +251,21 @@ a.olho-sec:hover{color:#fff}
 .feed-topo .btn{padding:.5rem 1rem;font-size:.9rem}
 .feed-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.2rem;align-items:start}
 footer{padding:2.2rem 0 2.6rem;font-size:.92rem;color:#b9d1ca}
-footer .cols{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.5rem;padding-top:2rem}
-footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
+.rod-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:2rem;padding-top:2.2rem}
+.rod-marca img{height:36px;width:auto;margin-bottom:.8rem}
+.rod-marca p{margin:0 0 1.1rem;color:#cfe3dd}
+.rod-marca .btn{padding:.55rem 1.1rem;font-size:.9rem}
+footer h3{margin:0 0 .8rem;font:600 .78rem var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--mint)}
+.rod-lista{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+.rod-lista li{display:grid;gap:.1rem}
+.rod-lista span{font-size:.78rem;color:#8fa8a1}
+footer a,footer .pref-cookies{color:#F2F2F2;text-decoration:none}
+footer .rod-lista a:hover,footer .pref-cookies:hover{color:var(--mint);text-decoration:underline}
+footer .pref-cookies{opacity:1;text-decoration:none;text-align:left;font-size:inherit}
+.rod-legal{margin-top:2.2rem;padding-top:1.2rem;border-top:1px solid #26302d;font-size:.8rem;color:#8fa8a1}
+.rod-legal p{margin:0}
+@media (max-width:900px){.rod-grid{grid-template-columns:1fr 1fr}.rod-marca{grid-column:1/-1}}
+@media (max-width:520px){.rod-grid{grid-template-columns:1fr;gap:1.6rem}}
 /* Topo em tela cheia (Site e menu → Topo do blog) */
 .hero.hero-cheia{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;background:#000;overflow:hidden}
 .fundo-topo{position:absolute;inset:0;z-index:0;overflow:hidden}
@@ -416,14 +429,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="wrap">
     <div class="cine"><img src="/assets/cinepro.png" alt="CinePro Solutions" loading="lazy"><p data-t="cinepro_texto">CinePro Solutions identifica as soluções de cinematografia da MCI. Quer montar o set completo? A loja tem o que você precisa.</p></div>
     <div class="feed" id="feed" hidden>
-      <div class="feed-topo"><h2>A MCI nas redes</h2><div class="seguir"><a class="btn ghost" href="https://www.instagram.com/mcistore/" target="_blank" rel="noopener" data-t="botao_instagram" data-l="botao_instagram_link">Seguir no Instagram</a><a class="btn ghost" href="https://www.tiktok.com/@mcistore_" target="_blank" rel="noopener" data-t="botao_tiktok" data-l="botao_tiktok_link">Seguir no TikTok</a></div></div>
+      <div class="feed-topo"><h2>A MCI nas redes</h2><div class="seguir"><a class="btn ghost" href="https://www.instagram.com/mcistore/" target="_blank" rel="noopener" data-t="botao_instagram" data-l="botao_instagram_link">Seguir no Instagram</a><a class="btn ghost" href="https://www.tiktok.com/@mcistore.oficial" target="_blank" rel="noopener" data-t="botao_tiktok" data-l="botao_tiktok_link">Seguir no TikTok</a></div></div>
       <div class="feed-grade" id="feedGrade"></div>
     </div>
-    <div class="cols">
-      <div><img src="/assets/logo-branca.png" alt="MCI" loading="lazy"><span data-t="rodape_locais">Ceará, Santa Catarina, São Paulo e Miami</span></div>
-      <div>Instagram e Facebook @mcistore<br>TikTok @mcistore_<br>YouTube @mcistore.oficial</div>
-      <div id="contatos"><a href="mailto:marketing@mcistore.com.br">marketing@mcistore.com.br</a><br><a href="https://www.mci.tv/">mci.tv</a></div>
-      <button type="button" class="pref-cookies" id="prefCookies" hidden style="flex-basis:100%;text-align:left;font-size:.82rem">Preferências de cookies</button>
+    <div class="rod-grid">
+      <div class="rod-marca">
+        <img src="/assets/logo-branca.png" alt="MCI Store" loading="lazy">
+        <p data-t="rodape_locais">Ceará, Santa Catarina, São Paulo e Miami</p>
+        <a class="btn ghost" href="https://www.mci.tv/" data-l="rede_loja" target="_blank" rel="noopener">Visitar a loja mci.tv ↗</a>
+      </div>
+      <div>
+        <h3>Fale conosco</h3>
+        <ul class="rod-lista" id="contatos">
+          <li><span>Telefone</span><a href="tel:+558532544700">(85) 3254-4700</a></li>
+          <li><span>E-mail</span><a href="mailto:marketing@mcistore.com.br">marketing@mcistore.com.br</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Redes sociais</h3>
+        <ul class="rod-lista rod-redes">
+          <li><a href="https://www.instagram.com/mcistore" data-l="rede_instagram" target="_blank" rel="noopener">Instagram ↗</a></li>
+          <li><a href="https://www.facebook.com/MciStore/" data-l="rede_facebook" target="_blank" rel="noopener">Facebook ↗</a></li>
+          <li><a href="https://www.tiktok.com/@mcistore.oficial" data-l="rede_tiktok" target="_blank" rel="noopener">TikTok ↗</a></li>
+          <li><a href="https://www.youtube.com/channel/UCSyjv8Qk39k7nwgvjdZ6V4Q/featured" data-l="rede_youtube" target="_blank" rel="noopener">YouTube ↗</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Institucional</h3>
+        <ul class="rod-lista">
+          <li><a href="/#sobre">Sobre a MCI</a></li>
+          <li><a href="/?pagina=politica-de-privacidade">Política de Privacidade</a></li>
+          <li><button type="button" class="pref-cookies" id="prefCookies">Preferências de cookies</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="rod-legal">
+      <p>© <span id="anoRodape">2026</span> <span data-t="rodape_razao">MULTICOMERCIAL E IMPORTADORA EIRELI</span> · CNPJ <span data-t="rodape_cnpj">05.502.390/0001-11</span> · Todos os direitos reservados.</p>
     </div>
   </div>
 </footer>
@@ -691,7 +732,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     feed.forEach(v => $("feedGrade").appendChild(player(v.url, op(v))));
   }
   const em = cfg.contato_email || "marketing@mcistore.com.br";
-  $("contatos").innerHTML = '<a href="mailto:' + esc(em) + '">' + esc(em) + "</a>" + (cfg.contato_tel ? "<br>" + esc(cfg.contato_tel) : "") + '<br><a href="https://www.mci.tv/">mci.tv</a>';
+  const tel = cfg.contato_tel || "(85) 3254-4700", telLink = "+55" + tel.replace(/\D/g, "").replace(/^0/, "");
+  $("contatos").innerHTML = '<li><span>Telefone</span><a href="tel:' + esc(telLink) + '">' + esc(tel) + '</a></li><li><span>E-mail</span><a href="mailto:' + esc(em) + '">' + esc(em) + "</a></li>";
+  $("anoRodape").textContent = new Date().getFullYear();
 
   // ---- Âncoras do menu que filtram (Lançamentos, Dicas, Eventos...) e "Gente" → destaque
   function aplicarHash() {
@@ -877,7 +920,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let escolha = null; try { escolha = localStorage.getItem("mciCookies"); } catch (e) {}
     if (escolha === "sim" || escolha === "nao") return;
     const av = document.createElement("div"); av.className = "aviso-cookies"; av.setAttribute("role", "dialog"); av.setAttribute("aria-label", "Cookies");
-    av.innerHTML = '<p>' + esc(T("cookies_texto", "Usamos cookies do Google (Analytics e anúncios) para entender o que a galera mais curte no blog e mostrar as novidades da MCI. Você escolhe.")) + '</p><div class="acoes"><button type="button" class="btn ghost" data-c="nao" style="color:#F2F2F2">' + esc(T("cookies_recusar", "Recusar")) + '</button><button type="button" class="btn" data-c="sim">' + esc(T("cookies_aceitar", "Aceitar")) + "</button></div>";
+    av.innerHTML = '<p>' + esc(T("cookies_texto", "Usamos cookies do Google (Analytics e anúncios) para entender o que a galera mais curte no blog e mostrar as novidades da MCI. Você escolhe.")) + ' <a href="/?pagina=politica-de-privacidade" style="color:var(--mint)">Política de Privacidade</a></p><div class="acoes"><button type="button" class="btn ghost" data-c="nao" style="color:#F2F2F2">' + esc(T("cookies_recusar", "Recusar")) + '</button><button type="button" class="btn" data-c="sim">' + esc(T("cookies_aceitar", "Aceitar")) + "</button></div>";
     av.addEventListener("click", e => {
       const b = e.target.closest("[data-c]"); if (!b) return;
       try { localStorage.setItem("mciCookies", b.dataset.c); } catch (x) {}

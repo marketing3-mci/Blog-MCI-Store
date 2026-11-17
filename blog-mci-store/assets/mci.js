@@ -31,7 +31,7 @@
     if (!u || !String(u).trim()) return "";
     try {
       const x = new URL(String(u || ""), location.href);
-      return /^https?:$/.test(x.protocol) || x.protocol === "mailto:" ? x.href : "";
+      return /^https?:$/.test(x.protocol) || x.protocol === "mailto:" || x.protocol === "tel:" ? x.href : "";
     } catch (e) { return ""; }
   }
 
@@ -201,7 +201,7 @@
           const h = urlSegura(n.getAttribute("href"));
           if (!h) { copiar(n, para); return; }
           el.setAttribute("href", h);
-          if (!/^mailto:/.test(h)) { el.setAttribute("target", "_blank"); el.setAttribute("rel", "noopener"); }
+          if (!/^(mailto|tel):/.test(h)) { el.setAttribute("target", "_blank"); el.setAttribute("rel", "noopener"); }
         }
         if (tag === "SPAN") {
           const cls = String(n.getAttribute("class") || "").split(/\s+/).filter(c => CLASSES_OK.includes(c));

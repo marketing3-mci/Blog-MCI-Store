@@ -90,3 +90,9 @@ O projeto não precisa de comando de build: *Framework Preset* = Other e *Output
 - **Notificações no navegador:** faixa "Ativar notificações" acima do rodapé (todas as páginas), com o SDK Web v16 do OneSignal (`OneSignalSDKWorker.js` na raiz). Só aparece com `site_config.onesignal_app_id` preenchido e `site_config.avisos.ativo` diferente de `false`. Quem prefere e-mail é levado à inscrição do mci.tv (link editável em Textos do blog).
 - **Envio:** tela *Notificações* do painel → `POST /api/notificar` (login de editor; segredo `ONESIGNAL_API_KEY` na função `api`), segmento "Subscribed Users". Histórico na tabela `notificacoes`.
 - **Google:** contêiner `GTM-KZ7VCP83` instalado no `<head>` com Consent Mode v2 (negado até o "Aceitar"); GA4, Ads e 360 configurados dentro do GTM. Eventos no dataLayer: `clique_blog` (`rotulo`, `destino`), `notificacoes_ativadas`, `consentimento_aceito`. Link "Preferências de cookies" no rodapé.
+
+## Rodapé e privacidade (nov/2026)
+
+- Rodapé em 4 colunas: marca + loja, Fale conosco (telefone e e-mail de `site_config.contato_*`), redes sociais (links editáveis `textos.rede_*`), Institucional (Sobre, Política de Privacidade, Preferências de cookies) e linha legal com razão social e CNPJ (`textos.rodape_razao`, `textos.rodape_cnpj`).
+- Política de Privacidade (LGPD) é a página `?pagina=politica-de-privacidade` (tabela `paginas`, editável no painel). O aviso de cookies tem link para ela.
+- Retenção: job do pg_cron `limpar-eventos-24-meses` apaga diariamente eventos com mais de 24 meses, como diz a política.
