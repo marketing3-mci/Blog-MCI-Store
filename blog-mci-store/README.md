@@ -78,3 +78,9 @@ O projeto não precisa de comando de build: *Framework Preset* = Other e *Output
 - **Menu:** em *Site e menu*, linhas que começam com `-` viram submenu do item de cima. Seções sem posts publicados somem do menu sozinhas. No celular e no tablet (até 900 px) o menu abre em tela cheia pelo botão ☰.
 - **Reels:** `videos.url` é o que toca (MP4 enviado ou link) e `videos.link_rede` é o post na rede (botão "Ver no Instagram"). Reels em MP4 tocam sem som, em repetição, só quando aparecem na tela (`player(url, { reel: true })`). Sem MP4, o blog usa o player do Instagram, que Safari e Android costumam bloquear; o painel avisa ("sem MP4").
 - **Topo no celular:** em telas de toque o YouTube não é usado como fundo (aparecem controles); entra a capa do vídeo com zoom lento.
+
+## Análises, chaves de API e autenticador (nov/2026)
+
+- **Análises:** contagem anônima própria na tabela `eventos` (visita e clique; sem cookies, sem IP), resumida pela função `resumo_eventos(dias)` e mostrada em *Análises*. O Google Analytics 4 (`site_config.ga_id`) só carrega depois do "Aceitar" no aviso de cookies; os cliques vão ao GA como o evento `clique`.
+- **API:** Supabase Edge Function `api` (código em `supabase/functions/api/index.ts`), servida também em `/api` pelo `vercel.json`. Chaves geradas em *Chaves de API* (só admin), guardadas como SHA-256 em `api_chaves`; permissão `leitura` ou `escrita`; revogação imediata.
+- **Autenticador (2FA):** obrigatório para todos no login do painel (Supabase Auth MFA/TOTP). Na base, `pode()` exige sessão `aal2`. Para quem perdeu o celular: Supabase → Authentication → Users → remover o fator MFA.

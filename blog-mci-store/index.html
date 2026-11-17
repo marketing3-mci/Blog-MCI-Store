@@ -205,6 +205,11 @@ a.olho-sec:hover{color:#fff}
 .mais h2{font-size:1.3rem}
 .lista-secao{max-width:1180px;margin-inline:auto}
 #leitura{overflow-x:clip}
+/* Aviso de cookies (Google Analytics) */
+.aviso-cookies{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:90;width:min(560px,calc(100% - 2rem));background:#0E1110;color:#F2F2F2;border:1px solid #26302d;border-radius:12px;padding:1rem 1.1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;box-shadow:0 18px 50px rgba(0,0,0,.45);font-size:.92rem}
+.aviso-cookies p{margin:0;flex:1 1 260px;color:#cfe3dd}
+.aviso-cookies .acoes{display:flex;gap:.5rem}
+.aviso-cookies .btn{padding:.55rem 1.1rem;font-size:.9rem}
 /* Rodapé */
 .cine{display:flex;align-items:center;gap:1.5rem;padding:2rem 0;border-bottom:1px solid #26302d}
 .cine img{height:84px;width:auto}.cine p{margin:0;color:#b9d1ca;max-width:60ch}
@@ -724,6 +729,46 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
     const v = videoPorId[q2.get("video")];
     if (v) { modoLeitura('<div class="artigo"><a class="voltar" href="/">← Voltar ao blog</a><h2>' + esc(v.titulo) + '</h2><div class="bloco-video vf" id="vAbrir"></div></div>', v.titulo); $("vAbrir").appendChild(player(v.url, op(v))); }
   } else if (location.hash) aplicarHash();
+
+  // ---- Análises: contagem anônima própria (sem cookies) + Google Analytics com consentimento
+  (function analises() {
+    if (q.get("previa")) return; // prévia do celular dentro do painel
+    let sessao = "";
+    try { sessao = sessionStorage.getItem("mciSessao") || Math.random().toString(36).slice(2, 12); sessionStorage.setItem("mciSessao", sessao); } catch (e) { sessao = Math.random().toString(36).slice(2, 12); }
+    const dispositivo = matchMedia("(max-width: 700px)").matches ? "celular" : matchMedia("(max-width: 1024px)").matches ? "tablet" : "computador";
+    const chaves = ["post", "secao", "pagina", "video"].filter(k => q.get(k));
+    const pagina = "/" + (chaves.length ? "?" + chaves.map(k => k + "=" + encodeURIComponent(q.get(k))).join("&") : "");
+    let origem = null; try { const r = document.referrer && new URL(document.referrer).hostname; origem = r && r !== location.hostname ? r.replace(/^www\./, "") : null; } catch (e) {}
+    const base = { pagina, post_id: q.get("post") || null, sessao, dispositivo };
+    const registrar = (tipo, alvo) => db.from("eventos").insert(Object.assign({ tipo, alvo: alvo ? String(alvo).slice(0, 120) : null, origem: tipo === "visita" ? origem : null }, base)).then(() => {}, () => {});
+    registrar("visita");
+    const rotulo = el => {
+      const txt = (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 70) || el.tagName.toLowerCase();
+      const onde = el.closest("#nav") || el.closest(".top") ? "Menu" : el.closest(".reel") ? "Reels" : el.closest(".row,.card") ? "Post" : el.closest("#palco,.palco") ? "Vídeo do post" : el.closest(".blocos") ? "Texto do post" : el.closest("footer") ? "Rodapé" : el.closest("#topo") ? "Topo" : "Página";
+      const extra = el.closest(".reel") ? " — " + ((el.closest(".reel").querySelector("p") || {}).textContent || "").slice(0, 40) : "";
+      return onde + ": " + txt + extra;
+    };
+    document.addEventListener("click", e => {
+      const el = e.target.closest("a, button, video"); if (!el || el.closest(".aviso-cookies")) return;
+      const alvo = rotulo(el); registrar("clique", alvo);
+      if (window.gtag) window.gtag("event", "clique", { rotulo: alvo, destino: el.href || "" });
+    }, true);
+    // Google Analytics 4: só carrega depois do "Aceitar"
+    const ga = /^G-[A-Z0-9]{4,}$/i.test(String(cfg.ga_id || "").trim()) ? String(cfg.ga_id).trim().toUpperCase() : "";
+    if (!ga) return;
+    const carregarGA = () => {
+      const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(ga); document.head.appendChild(sc);
+      window.dataLayer = window.dataLayer || []; window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag("js", new Date()); window.gtag("config", ga, { page_path: pagina, page_title: document.title });
+    };
+    let escolha = null; try { escolha = localStorage.getItem("mciCookies"); } catch (e) {}
+    if (escolha === "sim") return carregarGA();
+    if (escolha === "nao") return;
+    const av = document.createElement("div"); av.className = "aviso-cookies"; av.setAttribute("role", "dialog"); av.setAttribute("aria-label", "Cookies");
+    av.innerHTML = '<p>Usamos cookies do Google Analytics para entender o que a galera mais curte no blog. Você escolhe.</p><div class="acoes"><button type="button" class="btn ghost" data-c="nao" style="color:#F2F2F2">Recusar</button><button type="button" class="btn" data-c="sim">Aceitar</button></div>';
+    av.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (!b) return; try { localStorage.setItem("mciCookies", b.dataset.c); } catch (x) {} av.remove(); if (b.dataset.c === "sim") carregarGA(); });
+    document.body.appendChild(av);
+  })();
 })();
 </script>
 </body>

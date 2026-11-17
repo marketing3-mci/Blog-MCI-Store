@@ -43,6 +43,21 @@ h2{font-size:1.1rem;margin:0 0 1rem}
 .login form{width:min(380px,100%);background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:2rem}
 .marca{display:block;height:auto;width:auto;max-width:100%;object-fit:contain;flex:none;align-self:flex-start}
 .login .marca{height:44px;margin-bottom:1.2rem}
+/* Autenticador (2FA) */
+.qr{background:#fff;border-radius:10px;padding:.8rem;width:200px;height:200px;margin:0 auto 1rem;display:grid;place-items:center}
+.qr img{width:100%;height:100%}
+.segredo{font:500 .85rem/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.6rem .7rem;word-break:break-all;margin:.3rem 0 1rem;user-select:all}
+.codigo{font:600 1.6rem/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.4em;text-align:center;padding:.8rem}
+/* Análises */
+.barras{display:flex;align-items:flex-end;gap:3px;height:160px;padding-top:1rem;border-bottom:1px solid var(--line)}
+.barras i{flex:1;min-width:3px;background:linear-gradient(var(--teal),#0F7A66);border-radius:3px 3px 0 0;position:relative}
+.barras i:hover::after{content:attr(data-t);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--ink3);border:1px solid var(--line);border-radius:6px;padding:.2rem .45rem;font-size:.75rem;white-space:nowrap;font-style:normal;margin-bottom:4px}
+.ranking{display:grid;gap:.45rem}
+.ranking div{display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;font-size:.9rem;position:relative;padding:.35rem .5rem;border-radius:6px;overflow:hidden}
+.ranking div::before{content:"";position:absolute;inset:0;width:var(--p,0%);background:rgba(28,166,141,.14);z-index:0}
+.ranking span,.ranking b{position:relative;z-index:1}.ranking span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chave-nova{font:500 .95rem/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--ink);border:1px solid var(--teal);border-radius:8px;padding:.8rem;word-break:break-all;user-select:all;margin:.6rem 0}
+pre.ex{background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.8rem;overflow:auto;font-size:.82rem;line-height:1.5;margin:.4rem 0 1rem}
 /* App */
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
 .lado{background:var(--ink2);border-right:1px solid var(--line);padding:1.2rem 1rem;display:flex;flex-direction:column;gap:.2rem;position:sticky;top:0;height:100vh;overflow:auto}
@@ -145,6 +160,24 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
   </form>
 </div>
 
+<div class="login" id="telaCodigo" hidden>
+  <form id="formCodigo" autocomplete="off">
+    <img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store">
+    <h1 id="codTitulo">Código do autenticador</h1>
+    <div id="codCadastro" hidden>
+      <p class="mut" style="margin:0 0 1rem">Para entrar no painel, todo mundo usa um app autenticador (Google Authenticator, Microsoft Authenticator, Authy ou 1Password). Abra o app, toque em “+” e leia o QR code.</p>
+      <div class="qr" id="codQr">Gerando…</div>
+      <label>Sem câmera? Digite esta chave no app:</label>
+      <div class="segredo" id="codSegredo"></div>
+    </div>
+    <p class="mut" id="codTexto" style="margin:0 0 1rem">Abra o app autenticador e digite o código de 6 números do Blog MCI.</p>
+    <div id="msgCodigo"></div>
+    <div class="campo"><label for="cCodigo">Código de 6 números</label><input id="cCodigo" class="codigo" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></div>
+    <button class="btn" type="submit" style="width:100%;justify-content:center" id="btnCodigo">Confirmar</button>
+    <p style="text-align:center;margin:1rem 0 0"><a href="#" id="sairCodigo">Entrar com outra conta</a></p>
+  </form>
+</div>
+
 <div class="app" id="app" hidden>
   <header class="topoMob"><img class="marca" src="/assets/logo-mci-hd.png" alt="MCI Store"><button class="btn sec" id="abrirMenu" aria-controls="lado" aria-expanded="false">☰ Menu</button></header>
   <aside class="lado" id="lado">
@@ -161,7 +194,9 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     <button data-v="secoes">Seções do blog</button>
     <button data-v="visual">Fontes e visual</button>
     <button data-v="celular">Versão celular</button>
+    <button data-v="analises">Análises</button>
     <button data-v="acessos" data-min="admin">Acessos e equipe</button>
+    <button data-v="chaves" data-min="admin">Chaves de API</button>
     <button data-v="dev">Desenvolvedor</button>
     <a class="it" href="/" target="_blank" rel="noopener">Ver o blog ↗</a>
     <a class="it" href="https://mcistore.blog" target="_blank" rel="noopener">Blog atual (WordPress) ↗</a>
@@ -576,6 +611,66 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       });
     },
 
+    async analises(v) {
+      const dias = Number(sessionStorage.getItem("mciDias") || 30);
+      const [cfg, posts, res] = await Promise.all([carregarConfig(), listar("posts", "data"), db.rpc("resumo_eventos", { dias })]);
+      if (res.error) falhou(res.error);
+      const r = res.data || { visitas: 0, visitantes: 0, cliques: 0, celular: 0, por_dia: [], paginas: [], cliques_top: [], origens: [] };
+      const titulo = Object.fromEntries(posts.map(p => [p.id, p.titulo]));
+      const nomePagina = x => x.post_id ? (titulo[x.post_id] || "Post " + x.post_id) : /secao=(\w+)/.test(x.pagina) ? "Seção: " + (SECOES[x.pagina.match(/secao=(\w+)/)[1]] || "") : /pagina=/.test(x.pagina) ? "Página: " + decodeURIComponent(x.pagina.split("pagina=")[1]) : x.pagina === "/" ? "Página inicial" : x.pagina;
+      const ranking = (lista, nome) => { const max = Math.max(1, ...lista.map(x => x.n)); return lista.length ? '<div class="ranking">' + lista.map(x => '<div style="--p:' + Math.round(x.n / max * 100) + '%"><span title="' + esc(nome(x)) + '">' + esc(nome(x)) + "</span><b>" + x.n + "</b></div>").join("") + "</div>" : '<p class="mut">Ainda sem dados no período.</p>'; };
+      // Um ponto por dia do período, mesmo nos dias sem visita
+      const mapa = Object.fromEntries((r.por_dia || []).map(d => [d.dia, d.visitas])), dd = [];
+      for (let i = dias - 1; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5 - 3 * 36e5).toISOString().slice(0, 10); dd.push([d, mapa[d] || 0]); }
+      const maxd = Math.max(1, ...dd.map(d => d[1]));
+      const pct = r.visitas ? Math.round(r.celular / r.visitas * 100) : 0;
+      const ga = cfg.ga_id || "";
+      v.innerHTML = '<div class="topo"><div><h1>Análises</h1><p class="mut">Contagem própria e anônima do blog (sem cookies e sem dados pessoais). Para relatórios completos, use o Google Analytics.</p></div><div class="filtros" style="margin:0">' + [7, 30, 90].map(n => '<button data-d="' + n + '" aria-pressed="' + (n === dias) + '">' + n + " dias</button>").join("") + "</div></div>" +
+        '<div class="cards"><div class="card"><div class="num">' + r.visitas + '</div>visitas</div><div class="card"><div class="num">' + r.visitantes + '</div>visitantes (sessões)</div><div class="card"><div class="num">' + r.cliques + '</div>cliques</div><div class="card"><div class="num">' + pct + '%</div>pelo celular</div></div>' +
+        '<div class="card" style="margin-bottom:1rem"><h2>Visitas por dia</h2><div class="barras">' + dd.map(d => '<i style="height:' + Math.max(2, Math.round(d[1] / maxd * 100)) + '%" data-t="' + d[0].split("-").reverse().slice(0, 2).join("/") + ": " + d[1] + '"></i>').join("") + '</div><div class="mut" style="display:flex;justify-content:space-between;font-size:.78rem;margin-top:.3rem"><span>' + dd[0][0].split("-").reverse().join("/") + "</span><span>hoje</span></div></div>" +
+        '<div class="grid3" style="margin-bottom:1rem"><div class="card"><h2>Mais vistos</h2>' + ranking(r.paginas || [], nomePagina) + '</div><div class="card"><h2>Mais clicados</h2>' + ranking(r.cliques_top || [], x => x.alvo) + '</div><div class="card"><h2>De onde vêm</h2>' + ranking(r.origens || [], x => x.origem) + '<p class="mut" style="font-size:.8rem;margin:.6rem 0 0">Quem digitou o endereço ou veio de app (como o Instagram) muitas vezes não informa a origem.</p></div></div>' +
+        '<div class="card"><h2>Google Analytics 4</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="ga_id">ID da métrica (começa com G-)</label><input id="ga_id" value="' + esc(ga) + '" placeholder="G-XXXXXXXXXX"></div><div class="acoes" style="justify-content:flex-start">' + (pode("editor") ? '<button class="btn" id="salvarGa">Salvar</button>' : "") + '<a class="btn sec" href="https://analytics.google.com/" target="_blank" rel="noopener">Abrir o Google Analytics ↗</a></div></div>' +
+        '<div class="dica-box" style="margin-top:1rem">' + (ga ? "Tag ativa: <b>" + esc(ga) + "</b>. O GA só carrega para quem clica em “Aceitar” no aviso de cookies do blog (LGPD). Os cliques chegam ao GA como o evento <code>clique</code>, com o rótulo do que foi clicado." : "Onde achar o ID: no Google Analytics, abra <b>Administrador → Fluxos de dados</b>, escolha o site do blog e copie o <b>ID da métrica</b> (G-…). Se ainda não houver uma propriedade, crie em <b>Administrador → Criar → Propriedade</b> com o endereço do blog.") + "</div></div>";
+      v.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { sessionStorage.setItem("mciDias", b.dataset.d); render(); });
+      v.querySelector("#salvarGa")?.addEventListener("click", () => {
+        const x = v.querySelector("#ga_id").value.trim().toUpperCase();
+        if (x && !/^G-[A-Z0-9]{4,}$/.test(x)) return toast("O ID do GA4 começa com G- (ex.: G-AB12CD34EF).", true);
+        v.querySelector("#ga_id").value = x; salvarConfig(v, ["ga_id"]);
+      });
+    },
+
+    async chaves(v) {
+      if (!pode("admin")) { v.innerHTML = "<h1>Chaves de API</h1><p class=mut>Só administradores veem esta área.</p>"; return; }
+      const lista = await listar("api_chaves", "criado_em");
+      const base = location.origin + "/api";
+      v.innerHTML = '<div class="topo"><div><h1>Chaves de API</h1><p class="mut">Para outros sistemas (site mci.tv, sistema da MCI, automações) lerem ou publicarem conteúdo do blog. Cada sistema deve ter a sua chave, para poder ser revogada sozinha.</p></div></div>' +
+        '<div class="card" style="margin-bottom:1rem"><h2>Gerar nova chave</h2><div class="grid3" style="align-items:end"><div class="campo"><label for="kNome">Para quem é</label><input id="kNome" maxlength="80" placeholder="Ex.: Site mci.tv"></div><div class="campo"><label for="kPerm">Permissão</label><select id="kPerm"><option value="leitura">Leitura: posts publicados, vídeos, páginas e seções</option><option value="escrita">Leitura e escrita: também cria e edita posts e vídeos</option></select></div><div class="campo"><button class="btn" id="kGerar">Gerar chave</button></div></div><div id="kNova"></div></div>' +
+        '<div class="card" style="margin-bottom:1rem;overflow:auto"><h2>Chaves</h2>' + (lista.length ? '<table><thead><tr><th>Nome</th><th>Chave</th><th>Permissão</th><th>Criada</th><th>Último uso</th><th></th></tr></thead><tbody>' + lista.map(k => "<tr><td><b>" + esc(k.nome) + "</b></td><td><code>" + esc(k.prefixo) + "…</code></td><td>" + (k.permissao === "escrita" ? '<span class="tag agendado">leitura e escrita</span>' : '<span class="tag">leitura</span>') + "</td><td>" + dataBR(k.criado_em) + "</td><td>" + (k.ultimo_uso ? dataBR(k.ultimo_uso) : '<span class="mut">nunca</span>') + "</td><td>" + (k.revogada_em ? '<span class="tag">revogada</span>' : '<button class="btn perigo" data-rev="' + esc(k.id) + '">Revogar</button>') + "</td></tr>").join("") + "</tbody></table>" : '<p class="mut">Nenhuma chave gerada.</p>') + "</div>" +
+        '<div class="card"><h2>Como usar</h2><p class="mut" style="margin-top:-.4rem">Envie a chave no cabeçalho <code>x-api-key</code>. Endereço base: <code>' + esc(base) + '</code></p>' +
+        '<pre class="ex">curl ' + esc(base) + '/posts?secao=produto&amp;limite=10 \\\n  -H "x-api-key: SUA_CHAVE"</pre>' +
+        '<pre class="ex">curl -X POST ' + esc(base) + '/posts \\\n  -H "x-api-key: SUA_CHAVE_DE_ESCRITA" -H "content-type: application/json" \\\n  -d \'{"titulo":"Novo post","secao":"produto","resumo":"…","status":"rascunho"}\'</pre>' +
+        '<ul style="margin:0;padding-left:1.1rem;display:grid;gap:.35rem;font-size:.9rem"><li><code>GET /posts</code>, <code>/posts/{id}</code>, <code>/videos</code>, <code>/paginas</code>, <code>/paginas/{endereço}</code>, <code>/marcos</code>, <code>/secoes</code></li><li><code>?limite=</code> (até 100) e <code>?inicio=</code> para paginar; <code>?secao=</code> para filtrar posts.</li><li>Escrita: <code>POST /posts</code>, <code>PATCH /posts/{id}</code>, <code>POST /videos</code>, <code>PATCH /videos/{id}</code>. Post novo entra como rascunho, a menos que venha <code>"status":"publicado"</code>.</li><li>Trate a chave como senha: não coloque em código que roda no navegador nem em repositório público.</li></ul></div>';
+      v.querySelector("#kGerar").onclick = async () => {
+        const nome = v.querySelector("#kNome").value.trim(); if (!nome) return toast("Diga para quem é a chave.", true);
+        const bytes = crypto.getRandomValues(new Uint8Array(24));
+        const chave = "mci_" + btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(chave)))].map(b => b.toString(16).padStart(2, "0")).join("");
+        const { error } = await db.from("api_chaves").insert({ nome, prefixo: chave.slice(0, 12), hash, permissao: v.querySelector("#kPerm").value });
+        if (error) return falhou(error);
+        evento("mci:salvo", { tabela: "api_chaves", registro: { nome } });
+        const alvo = v.querySelector("#kNova");
+        alvo.innerHTML = '<div class="aviso ok" style="margin-top:.8rem">Chave criada. <b>Copie agora</b>: por segurança, ela não aparece de novo (guardamos só uma impressão digital dela).</div><div class="chave-nova" id="kTexto">' + esc(chave) + '</div><button class="btn sec" id="kCopiar">Copiar chave</button> <button class="btn sec" id="kOk">Já copiei</button>';
+        alvo.querySelector("#kCopiar").onclick = async () => { try { await navigator.clipboard.writeText(chave); toast("Chave copiada"); } catch (e) { toast("Selecione e copie a chave manualmente.", true); } };
+        alvo.querySelector("#kOk").onclick = () => render();
+        v.querySelector("#kNome").value = "";
+      };
+      v.querySelectorAll("[data-rev]").forEach(b => b.onclick = async () => {
+        if (!confirm("Revogar esta chave? O sistema que usa ela perde o acesso na hora.")) return;
+        const { error } = await db.from("api_chaves").update({ revogada_em: new Date().toISOString() }).eq("id", b.dataset.rev);
+        if (error) return falhou(error); toast("Chave revogada"); render();
+      });
+    },
+
     async acessos(v) {
       if (!pode("admin")) { v.innerHTML = "<h1>Acessos</h1><p class=mut>Só administradores veem esta área.</p>"; return; }
       const perfis = await listar("perfis", "criado_em", true);
@@ -585,7 +680,8 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
             '<select data-niv="' + p.id + '">' + Object.keys(RANK).map(n => '<option value="' + n + '"' + (n === p.nivel ? " selected" : "") + ">" + NIVEL_NOME[n] + "</option>").join("") + "</select>") +
           "</td><td>" + (p.id === eu.id ? "" : '<button class="btn perigo" data-rm="' + p.id + '">Remover acesso</button>') + "</td></tr>").join("") + "</tbody></table></div>" +
         '<div class="grid2"><div class="card"><h2>O que cada nível pode fazer</h2><ul style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li><b>Leitor:</b> vê tudo, inclusive rascunhos; não altera.</li><li><b>Colaborador:</b> cria e edita posts e vídeos e envia imagens.</li><li><b>Editor:</b> tudo do colaborador, mais excluir, história, páginas, missão e site.</li><li><b>Administrador:</b> tudo, inclusive gerenciar acessos.</li></ul></div>' +
-        '<div class="card"><h2>Como dar acesso a alguém</h2><ol style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>No Supabase, abra <b>Authentication → Users</b>.</li><li>Clique em <b>Add user → Send invitation</b> e informe o e-mail da pessoa.</li><li>Ela cria a senha pelo e-mail e entra aqui como Leitor.</li><li>Volte nesta tela e escolha o nível dela.</li></ol></div></div>';
+        '<div class="card"><h2>Como dar acesso a alguém</h2><ol style="margin:0;padding-left:1.1rem;display:grid;gap:.4rem"><li>No Supabase, abra <b>Authentication → Users</b>.</li><li>Clique em <b>Add user → Send invitation</b> e informe o e-mail da pessoa.</li><li>Ela cria a senha pelo e-mail e entra aqui como Leitor.</li><li>Volte nesta tela e escolha o nível dela.</li><li>No primeiro acesso ela cadastra o app autenticador (obrigatório para todos).</li></ol></div></div>' +
+        '<div class="card" style="margin-top:1rem"><h2>Perdeu o celular do autenticador?</h2><p class="mut" style="margin:0">No Supabase, abra <b>Authentication → Users</b>, clique na pessoa e remova o fator de autenticação (MFA). No próximo acesso ela cadastra o app de novo.</p></div>';
       v.querySelectorAll("[data-niv]").forEach(s => s.onchange = async () => { const { error } = await db.from("perfis").update({ nivel: s.value }).eq("id", s.dataset.niv); error ? falhou(error) : toast("Nível atualizado"); });
       v.querySelectorAll("[data-rm]").forEach(b => b.onclick = async () => { const p = perfis.find(x => x.id === b.dataset.rm); if (await excluir("perfis", p.id, p.email)) { toast("Acesso ao painel removido. Para apagar a conta, use o Supabase."); render(); } });
     },
@@ -704,6 +800,47 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     try { await VISTAS[vistaAtual](v); } catch (e) { falhou(e); }
   }
 
+  // ---------- Autenticador (2FA): obrigatório para todos antes de entrar no painel
+  let fatorPendente = null, sessaoPendente = null;
+  async function exigirCodigo(sessao) {
+    sessaoPendente = sessao;
+    const { data: nivel } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (nivel && nivel.currentLevel === "aal2") return entrar(sessao);
+    $("#telaLogin").hidden = true; $("#telaNovaSenha").hidden = true; $("#app").hidden = true; $("#telaCodigo").hidden = false;
+    $("#msgCodigo").innerHTML = ""; $("#cCodigo").value = "";
+    const { data: fatores } = await db.auth.mfa.listFactors();
+    const ativo = ((fatores && fatores.totp) || []).find(f => f.status === "verified");
+    if (ativo) {
+      fatorPendente = ativo.id; $("#codCadastro").hidden = true; $("#codTitulo").textContent = "Código do autenticador";
+      $("#codTexto").textContent = "Abra o app autenticador e digite o código de 6 números do Blog MCI.";
+    } else {
+      $("#codTitulo").textContent = "Ative o autenticador"; $("#codCadastro").hidden = false;
+      $("#codTexto").textContent = "Depois de ler o QR code, digite o código de 6 números que aparece no app.";
+      for (const f of ((fatores && fatores.all) || []).filter(f => f.status !== "verified")) await db.auth.mfa.unenroll({ factorId: f.id });
+      const { data, error } = await db.auth.mfa.enroll({ factorType: "totp", friendlyName: "Blog MCI " + new Date().toISOString().slice(0, 16) });
+      if (error) {
+        if (/disabled|not enabled|not supported/i.test(error.message)) { toast("O autenticador ainda não está ligado no Supabase. Entrando sem o código por enquanto.", true); return entrar(sessao); }
+        $("#msgCodigo").innerHTML = '<div class="aviso erro">Não foi possível gerar o QR code: ' + esc(error.message) + "</div>"; return;
+      }
+      fatorPendente = data.id;
+      $("#codQr").innerHTML = '<img alt="QR code para o app autenticador" src="' + esc(data.totp.qr_code) + '">';
+      $("#codSegredo").textContent = data.totp.secret;
+    }
+    setTimeout(() => $("#cCodigo").focus(), 50);
+  }
+  $("#formCodigo").onsubmit = async ev => {
+    ev.preventDefault();
+    const code = $("#cCodigo").value.replace(/\D/g, "");
+    if (code.length !== 6 || !fatorPendente) return;
+    const btn = $("#btnCodigo"); btn.disabled = true;
+    const { error } = await db.auth.mfa.challengeAndVerify({ factorId: fatorPendente, code });
+    btn.disabled = false;
+    if (error) { $("#msgCodigo").innerHTML = '<div class="aviso erro">Código incorreto ou vencido. Confira o horário do celular e tente o código novo.</div>'; $("#cCodigo").select(); return; }
+    $("#telaCodigo").hidden = true;
+    const { data } = await db.auth.getSession(); entrar(data.session || sessaoPendente);
+  };
+  $("#sairCodigo").onclick = async ev => { ev.preventDefault(); await db.auth.signOut(); location.reload(); };
+
   // ---------- Sessão
   async function entrar(sessao) {
     eu = sessao.user;
@@ -728,7 +865,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     const { data, error } = await db.auth.signInWithPassword({ email: $("#lEmail").value.trim(), password: $("#lSenha").value });
     btn.disabled = false;
     if (error) { $("#msgLogin").innerHTML = '<div class="aviso erro">' + (/invalid/i.test(error.message) ? "E-mail ou senha incorretos." : esc(error.message)) + "</div>"; return; }
-    entrar(data.session);
+    exigirCodigo(data.session);
   };
   $("#esqueci").onclick = async ev => {
     ev.preventDefault();
@@ -741,7 +878,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
     ev.preventDefault();
     const { error } = await db.auth.updateUser({ password: $("#nSenha").value });
     if (error) return toast(error.message, true);
-    toast("Senha salva"); const { data } = await db.auth.getSession(); if (data.session) entrar(data.session);
+    toast("Senha salva"); const { data } = await db.auth.getSession(); if (data.session) exigirCodigo(data.session);
   };
   $("#sair").onclick = async ev => { ev.preventDefault(); await db.auth.signOut(); location.reload(); };
   document.querySelectorAll(".lado [data-v]").forEach(b => b.onclick = () => { vistaAtual = b.dataset.v; history.replaceState(null, "", "#" + vistaAtual); $("#lado").classList.remove("aberto"); render(); });
@@ -752,7 +889,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
   });
   db.auth.getSession().then(({ data }) => {
     if (/type=(recovery|invite)/.test(location.hash)) { $("#telaNovaSenha").hidden = false; return; }
-    if (data.session) entrar(data.session); else $("#telaLogin").hidden = false;
+    if (data.session) exigirCodigo(data.session); else $("#telaLogin").hidden = false;
   });
 })();
 </script>
