@@ -96,3 +96,9 @@ O projeto não precisa de comando de build: *Framework Preset* = Other e *Output
 - Rodapé em 4 colunas: marca + loja, Fale conosco (telefone e e-mail de `site_config.contato_*`), redes sociais (links editáveis `textos.rede_*`), Institucional (Sobre, Política de Privacidade, Preferências de cookies) e linha legal com razão social e CNPJ (`textos.rodape_razao`, `textos.rodape_cnpj`).
 - Política de Privacidade (LGPD) é a página `?pagina=politica-de-privacidade` (tabela `paginas`, editável no painel). O aviso de cookies tem link para ela.
 - Retenção: job do pg_cron `limpar-eventos-24-meses` apaga diariamente eventos com mais de 24 meses, como diz a política.
+
+## Transições (nov/2026)
+
+- Ao rolar: elementos da lista `ALVOS` (index.html, função `transicoes`) ganham `.anim` e surgem com IntersectionObserver, em cascata. Itens de carrossel lateral animam o carrossel inteiro.
+- Entre páginas: View Transitions entre documentos (`@view-transition`), em navegadores compatíveis.
+- `site_config.animacoes`: `suave` (padrão), `marcante` ou `desligado` (painel → Fontes e cores). Quem usa "reduzir movimento" no aparelho não vê transições.

@@ -237,6 +237,16 @@ a.olho-sec:hover{color:#fff}
 .pref-cookies{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer;opacity:.8}
 @media (max-width:900px){.news-g{grid-template-columns:1fr}}
 @media (max-width:520px){.avisos-caixa .btn{justify-self:stretch;text-align:center}}
+/* Transições: elementos surgem ao entrar na tela (classe .anim é posta pelo JS) */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:.22s ease both saiPagina}
+::view-transition-new(root){animation:.42s cubic-bezier(.2,.7,.2,1) both entraPagina}
+@keyframes saiPagina{to{opacity:0}}
+@keyframes entraPagina{from{opacity:0;translate:0 14px}}
+.anim{opacity:0;translate:0 var(--desl,26px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),translate .75s cubic-bezier(.2,.7,.2,1),scale .75s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms)}
+html.anim-marcante .anim{--desl:48px;scale:.97}
+.anim.visto{opacity:1;translate:none;scale:none}
+@media (prefers-reduced-motion:reduce){.anim{opacity:1;translate:none;scale:none;transition:none}::view-transition-old(root),::view-transition-new(root){animation:none}}
 .aviso-cookies{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);z-index:90;width:min(560px,calc(100% - 2rem));background:#0E1110;color:#F2F2F2;border:1px solid #26302d;border-radius:12px;padding:1rem 1.1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;box-shadow:0 18px 50px rgba(0,0,0,.45);font-size:.92rem}
 .aviso-cookies p{margin:0;flex:1 1 260px;color:#cfe3dd}
 .aviso-cookies .acoes{display:flex;gap:.5rem}
@@ -830,6 +840,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const v = videoPorId[q2.get("video")];
     if (v) { modoLeitura('<div class="artigo"><a class="voltar" href="/">' + esc(T("botao_voltar", "← Voltar ao blog")) + '</a><h2>' + esc(v.titulo) + '</h2><div class="bloco-video vf" id="vAbrir"></div></div>', v.titulo); $("vAbrir").appendChild(player(v.url, op(v))); }
   } else if (location.hash) aplicarHash();
+
+  // ---- Transições ao rolar: títulos, cards, Reels e faixas surgem ao entrar na tela
+  (function transicoes() {
+    const modo = cfg.animacoes || "suave";
+    if (modo === "desligado" || q.get("previa") || matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+      document.documentElement.classList.add("sem-transicao"); return;
+    }
+    if (modo === "marcante") document.documentElement.classList.add("anim-marcante");
+    const ALVOS = [
+      "main section .olho", "main section .olho-sec", "main section h2", "main section .lead", "main section .resumo",
+      ".cards > *", ".rows > .row", ".reels > *", ".trilha > li", ".numeros > li", ".mvv > *", ".chips",
+      "#setupTexto", "#setupMidia", ".news-g > *", ".blocos > .b", ".artigo > h1", ".rodape-post", ".mais",
+      "footer .cine", "footer .feed-topo", ".feed-grade > *", ".rod-grid > *", ".rod-legal"
+    ].join(",");
+    const obs = new IntersectionObserver(itens => {
+      let n = 0;
+      itens.forEach(it => {
+        if (!it.isIntersecting) return;
+        const el = it.target; obs.unobserve(el);
+        el.style.setProperty("--d", Math.min(n++, 6) * 80 + "ms");
+        el.classList.add("visto");
+        setTimeout(() => { el.classList.remove("anim", "visto"); el.style.removeProperty("--d"); }, 1400);
+      });
+    }, { threshold: 0.08 });
+    // Itens de carrossel (rolagem lateral) não “entram” na tela: anima o carrossel inteiro
+    const lateral = el => { const ox = getComputedStyle(el).overflowX; return (ox === "auto" || ox === "scroll") && el.scrollWidth > el.clientWidth + 4; };
+    const preparar = () => document.querySelectorAll(ALVOS).forEach(el => {
+      if (el.dataset.anim || el.closest("#hero, #palco, .top, .aviso-cookies, [hidden]")) return;
+      let alvo = el;
+      if (el.parentElement && lateral(el.parentElement)) { alvo = el.parentElement; el.dataset.anim = "1"; if (alvo.dataset.anim) return; }
+      alvo.dataset.anim = "1"; alvo.classList.add("anim"); obs.observe(alvo);
+    });
+    preparar();
+    let t; new MutationObserver(() => { clearTimeout(t); t = setTimeout(preparar, 60); }).observe(document.body, { childList: true, subtree: true });
+  })();
 
   // ---- Notificações no navegador (OneSignal). O e-mail fica no mci.tv.
   (function avisos() {

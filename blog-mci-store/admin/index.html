@@ -562,9 +562,10 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const cfg = await carregarConfig();
       const sel = (k, tipo, nome) => '<div class="campo"><label for="' + k + '">' + nome + '</label><select id="' + k + '">' +
         Object.entries(FONTES[tipo]).map(([id, f]) => '<option value="' + id + '"' + ((cfg[k] || PADRAO_FONTES[tipo]) === id ? " selected" : "") + ">" + esc(f.nome) + "</option>").join("") + "</select></div>";
-      v.innerHTML = '<div class="topo"><div><h1>Fontes e cores</h1><p class="mut">As fontes valem para o blog inteiro. Veja a prévia antes de salvar.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
+      v.innerHTML = '<div class="topo"><div><h1>Fontes e cores</h1><p class="mut">Fontes e transições valem para o blog inteiro. Veja a prévia antes de salvar.</p></div>' + (pode("editor") ? '<button class="btn" id="salvar">Salvar</button>' : "") + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Fontes</h2><div class="grid3">' + sel("fonte_titulos", "titulos", "Títulos") + sel("fonte_texto", "texto", "Textos") + sel("fonte_manuscrita", "manuscrita", "Manuscrita (detalhes e frases)") + "</div>" +
         '<div class="dica-box">Helvetica usa a fonte do aparelho de quem lê: no Mac e no iPhone é a Helvetica; no Windows e no Android aparece a Arial, que é muito parecida.</div></div>' +
+        '<div class="card" style="margin-bottom:1rem"><h2>Transições</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="animacoes">Ao rolar a página e ao trocar de página</label><select id="animacoes">' + [["suave", "Suaves (recomendado)"], ["marcante", "Mais marcantes"], ["desligado", "Desligadas"]].map(([k, n]) => '<option value="' + k + '"' + ((cfg.animacoes || "suave") === k ? " selected" : "") + ">" + n + "</option>").join("") + '</select></div><p class="mut" style="margin:0;font-size:.85rem">Títulos, cards, Reels e faixas surgem ao entrar na tela. Quem pediu “reduzir movimento” no aparelho não vê as transições.</p></div></div>' +
         '<div class="card"><h2>Prévia</h2><div class="prev-fontes" id="previa" style="font-family:var(--sans)">' +
           '<span style="display:block;font:600 .75rem var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#0F7A66;margin-bottom:.7rem">' + esc(cfg.sobre_olho || "Sobre a MCI Store") + "</span>" +
           '<div style="font:500 clamp(1.4rem,3vw,2.1rem)/1.15 var(--disp);letter-spacing:-.02em;max-width:22ch">' + esc(cfg.sobre_titulo || "Mais de duas décadas crescendo junto com quem cria imagem em movimento.") + "</div>" +
@@ -575,7 +576,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
       const prev = v.querySelector("#previa");
       const atualizar = () => aplicarFontes({ fonte_titulos: v.querySelector("#fonte_titulos").value, fonte_texto: v.querySelector("#fonte_texto").value, fonte_manuscrita: v.querySelector("#fonte_manuscrita").value }, prev);
       v.querySelectorAll("select").forEach(x => x.onchange = atualizar); atualizar();
-      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["fonte_titulos", "fonte_texto", "fonte_manuscrita"]));
+      v.querySelector("#salvar")?.addEventListener("click", () => salvarConfig(v, ["fonte_titulos", "fonte_texto", "fonte_manuscrita", "animacoes"]));
     },
 
     async paginas(v) {
