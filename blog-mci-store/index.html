@@ -35,6 +35,26 @@ img{max-width:100%;display:block}
 .top img{height:38px;width:auto}
 .top nav{display:flex;gap:1.3rem;align-items:center;font-weight:500;font-size:.95rem;flex-wrap:wrap;justify-content:flex-end}
 .top nav a{text-decoration:none;color:#cfe3dd}.top nav a:hover{color:#fff}
+/* Submenus (Conteúdo ▾, Novidades ▾) */
+.sub{position:relative}
+.sub>button{background:none;border:0;color:#cfe3dd;font:inherit;font-weight:500;cursor:pointer;padding:.4rem 0;display:inline-flex;gap:.45rem;align-items:center}
+.sub>button::after{content:"";width:.42rem;height:.42rem;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.sub>button:hover{color:#fff}
+.sub-menu{position:absolute;top:calc(100% + .4rem);left:-.9rem;min-width:230px;background:rgba(14,17,16,.96);border:1px solid #26302d;border-radius:10px;padding:.45rem;display:grid;gap:.1rem;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .15s,transform .15s,visibility .15s;z-index:30;box-shadow:0 18px 40px rgba(0,0,0,.45);backdrop-filter:blur(10px)}
+.sub-menu::before{content:"";position:absolute;left:0;right:0;top:-.5rem;height:.5rem}
+.sub:hover .sub-menu,.sub:focus-within .sub-menu,.sub.aberto .sub-menu{opacity:1;visibility:visible;transform:none}
+.sub:hover>button::after,.sub.aberto>button::after{transform:translateY(1px) rotate(225deg)}
+.top nav .sub-menu a{padding:.6rem .75rem;border-radius:6px;white-space:nowrap}
+.top nav .sub-menu a:hover{background:rgba(28,166,141,.18)}
+.menu-btn,.loja-cel{display:none}
+.menu-btn{position:relative;z-index:61;align-items:center;gap:.55rem;background:rgba(14,17,16,.4);border:1px solid rgba(242,242,242,.4);color:#F2F2F2;border-radius:999px;padding:.6rem 1rem;font:600 .9rem var(--sans);cursor:pointer}
+.menu-btn i,.menu-btn i::before,.menu-btn i::after{display:block;width:16px;height:2px;background:currentColor;border-radius:2px;position:relative;transition:transform .2s,background .2s}
+.menu-btn i::before,.menu-btn i::after{content:"";position:absolute;left:0}
+.menu-btn i::before{top:-5px}.menu-btn i::after{top:5px}
+.menu-btn[aria-expanded="true"] i{background:transparent}
+.menu-btn[aria-expanded="true"] i::before{transform:translateY(5px) rotate(45deg)}
+.menu-btn[aria-expanded="true"] i::after{transform:translateY(-5px) rotate(-45deg)}
+.acoes-topo{display:flex;align-items:center;gap:.6rem}
 .hero{background:radial-gradient(60% 80% at 100% 0%,rgba(28,166,141,.35),transparent 65%),var(--ink)}
 .hero-body{display:grid;grid-template-columns:1fr 1.1fr;gap:3rem;align-items:center;padding:clamp(2rem,6vw,4.5rem) 0 clamp(3.5rem,8vw,6rem)}
 h1{font:500 clamp(2rem,4.6vw,3.6rem)/1.1 var(--disp);letter-spacing:-.03em;margin:0 0 1.2rem}
@@ -219,10 +239,31 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
 @media (prefers-reduced-motion:reduce){.fundo-luz span{animation:none}}
 .som-topo{position:absolute;right:clamp(1rem,3vw,2.5rem);bottom:clamp(1rem,4vh,2.5rem);z-index:3;font:600 .85rem/1 var(--sans);padding:.65rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.55);background:rgba(14,17,16,.55);color:#fff;cursor:pointer;backdrop-filter:blur(6px)}
 .p-fundo.vertical{max-width:340px;margin-inline:auto}.p-fundo.vertical video{aspect-ratio:9/16}
+.fundo-topo img.lento{animation:zoomLento 26s ease-in-out infinite alternate;transform-origin:50% 40%}
+@keyframes zoomLento{to{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.fundo-topo img.lento{animation:none}}
+.reel a.abrir{display:inline-block;margin-top:.45rem;text-decoration:none;font-weight:500}
+.reel a.abrir:hover{color:#fff}
+.reel .p-reel{border-radius:4px}
+/* Menu no celular e tablet: botão ☰ abre o menu em tela cheia */
+@media (max-width:900px){
+  .menu-btn,.loja-cel{display:inline-flex}
+  .top nav{display:none}
+  .top nav.aberto{display:flex;position:fixed;inset:0;z-index:60;background:radial-gradient(70% 50% at 100% 0%,rgba(28,166,141,.3),transparent 70%),#0E1110;flex-direction:column;align-items:stretch;justify-content:flex-start;flex-wrap:nowrap;gap:0;padding:calc(5.5rem + env(safe-area-inset-top,0px)) 1.6rem 2.5rem;overflow-y:auto}
+  .top nav.aberto>a,.top nav.aberto .sub>button{font:500 1.45rem/1.2 var(--disp);letter-spacing:-.01em;color:#F2F2F2;padding:1rem 0;border-bottom:1px solid #26302d;width:100%;text-align:left}
+  .top nav.aberto .sub>button{pointer-events:none;color:var(--mint);font-size:.8rem;font-family:var(--sans);font-weight:600;letter-spacing:.14em;text-transform:uppercase;border:0;padding:1.4rem 0 .3rem}
+  .top nav.aberto .sub>button::after{display:none}
+  .top nav.aberto .sub-menu{position:static;opacity:1;visibility:visible;transform:none;background:none;border:0;box-shadow:none;padding:0;min-width:0;backdrop-filter:none}
+  .top nav.aberto .sub-menu a{font:500 1.25rem/1.2 var(--sans);color:#F2F2F2;padding:.85rem 0;border-bottom:1px solid #26302d;border-radius:0}
+  .top nav.aberto>a.btn{margin-top:1.6rem;justify-content:center;text-align:center;border-bottom:2px solid rgba(242,242,242,.4);font:600 1rem var(--sans);padding:.9rem 1.4rem}
+  body.menu-aberto{overflow:hidden}
+  body.menu-aberto .top{z-index:80}
+}
+@media (max-width:560px){.cta .btn{flex:1 1 100%;text-align:center}.loja-cel{display:none}}
 /* Celular: ajustes vindos de "Versão celular" no painel */
 @media (max-width:700px){.vf{--o:-8px}.so-pc{display:none!important}.hero-cheia .hero-body h1{font-size:clamp(2rem,9vw,2.6rem)}}
 @media (max-width:700px){.cel-carrossel .reels{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:76%;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;padding:0 0 .8rem;margin-inline:-1.25rem;padding-inline:1.25rem;scrollbar-width:thin}.cel-carrossel .reel{scroll-snap-align:center}.cel-carrossel .reels .p-iframe{max-width:none}}
-@media (max-width:900px){.hero-body,.setup .wrap,.sobre-topo,.mvv,.palco.vertical{grid-template-columns:1fr}.trilha{grid-auto-columns:calc(50% - .1px)}.palco.vertical .palco-midia{max-width:340px}.reels{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr 1fr}.top nav a:not(.btn){display:none}.row{grid-template-columns:80px 1fr auto}.row .th{width:80px}.row b{display:none}}
+@media (max-width:900px){.hero-body,.setup .wrap,.sobre-topo,.mvv,.palco.vertical{grid-template-columns:1fr}.trilha{grid-auto-columns:calc(50% - .1px)}.palco.vertical .palco-midia{max-width:340px}.reels{grid-template-columns:repeat(4,1fr);gap:1rem}.reel h3{font-size:.92rem}.reel p{font-size:.84rem}.setup .adesivo{width:min(260px,100%)}.cards{grid-template-columns:1fr 1fr}.row{grid-template-columns:80px 1fr auto}.row .th{width:80px}.row b{display:none}}
 @media (max-width:560px){.reels,.cards{grid-template-columns:1fr}.trilha{grid-auto-columns:82%}.numeros{grid-template-columns:1fr;gap:1.2rem}.numeros li{padding:0;border:0}.reels .p-iframe{max-width:340px;margin-inline:auto}.cine{flex-direction:column;align-items:flex-start}.row{grid-template-columns:72px 1fr}.row .th{width:72px}.row time{grid-column:2}}
 </style>
 </head>
@@ -231,7 +272,8 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   <div class="fundo-topo" id="fundoTopo" hidden></div>
   <div class="wrap top">
     <a href="/" aria-label="Início"><img src="/assets/logo-principal.png" alt="MCI"></a>
-    <nav id="nav"><a href="#videos">Vídeos</a><a href="#leituras">Leituras</a><a href="#sobre">Sobre a MCI</a><a class="btn ghost" href="https://www.mci.tv/">Loja</a></nav>
+    <nav id="nav" aria-label="Menu principal"><a href="#leituras">Conteúdo</a><a href="#gente">Comunidade</a><a href="#sobre">Sobre</a><a class="btn ghost" href="https://www.mci.tv/">Loja</a></nav>
+    <div class="acoes-topo"><a class="btn ghost loja-cel" id="lojaCel" href="https://www.mci.tv/">Loja</a><button type="button" class="menu-btn" id="menuBtn" aria-controls="nav" aria-expanded="false"><i aria-hidden="true"></i>Menu</button></div>
   </div>
   <div class="wrap hero-body" id="hero">
     <div>
@@ -332,7 +374,7 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
 <script src="/assets/mci.js"></script>
 <script>
 (async function () {
-  const { db, C, FRENTES, SECOES, esc, urlSegura, emb, player, menu, dataBR, paragrafos, aplicarFontes, desenharBlocos } = window.MCI;
+  const { db, C, capaYoutube, FRENTES, SECOES, esc, urlSegura, emb, player, menu, dataBR, paragrafos, aplicarFontes, desenharBlocos } = window.MCI;
   const $ = id => document.getElementById(id);
   const GRAD = ["linear-gradient(160deg,#0B3A33,#1CA68D)","linear-gradient(160deg,#10301F,#4EBF8B)","linear-gradient(160deg,#15322C,#7FB96A)","linear-gradient(160deg,#0E1110,#2B8E86)"];
   const TRILHAS_EXEMPLO = [
@@ -379,7 +421,9 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   const secoesCfg = cfg.secoes || {};
   const nomeSecao = k => (secoesCfg[k] && secoesCfg[k].titulo) || SECOES[k] || "";
 
-  const op = (v, extra) => Object.assign({ titulo: v.titulo, capa: v.capa, limpo: v.exibicao !== "completo" }, extra || {});
+  const op = (v, extra) => Object.assign({ titulo: v.titulo, capa: v.capa, limpo: v.exibicao !== "completo", reel: v.tipo !== "Vídeo full" }, extra || {});
+  // Link do post na rede (Instagram, TikTok, Facebook), para o botão "Ver no …"
+  const linkRede = v => { const l = v.link_rede || (["Instagram", "TikTok", "Facebook"].includes(emb(v.url).rede) ? v.url : ""); return urlSegura(l) ? { url: urlSegura(l), rede: emb(l).rede || "perfil" } : null; };
 
   // Miniatura de um post: capa > miniatura do vídeo do post > miniatura do vídeo full ligado
   function miniaturaPost(p) {
@@ -389,22 +433,43 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   const temVideo = p => !!(p.video_url || p.video_id);
   const linkPost = p => ((p.corpo && p.corpo.trim()) || temVideo(p) || p.capa) ? "?post=" + encodeURIComponent(p.id) : (urlSegura(p.url) || "?post=" + encodeURIComponent(p.id));
 
-  // ---- Menu
-  const itens = menu(cfg.menu).filter(i => cfg.mostrar_cinema || i.destino !== "#cinema");
-  if (cfg.mostrar_cinema && !itens.some(i => i.destino === "#cinema")) {
-    const pos = itens.findIndex(i => i.destino === "#sobre");
-    itens.splice(pos < 0 ? Math.max(itens.length - 1, 0) : pos, 0, { rotulo: "Cinema", destino: "#cinema" });
+  // ---- Menu (itens com "-" no painel viram submenu)
+  const temSecao = k => posts.some(p => p.secao === k && p.status === "publicado") && (k !== "cinema" || cfg.mostrar_cinema);
+  const valido = i => { const m = i.destino.match(/^\?secao=(\w+)/); if (m) return temSecao(m[1]); if (i.destino === "#cinema") return !!cfg.mostrar_cinema; return i.destino !== "#"; };
+  let itens = menu(cfg.menu);
+  const todos = itens.flatMap(i => [i].concat(i.filhos));
+  if (cfg.mostrar_cinema && !todos.some(i => /cinema/.test(i.destino))) {
+    const pai = itens.find(i => i.filhos.length);
+    if (pai) pai.filhos.push({ rotulo: "Cinema", destino: "#cinema", filhos: [] });
+    else { const pos = itens.findIndex(i => i.destino === "#sobre"); itens.splice(pos < 0 ? Math.max(itens.length - 1, 0) : pos, 0, { rotulo: "Cinema", destino: "#cinema", filhos: [] }); }
   }
-  paginas.filter(p => p.menu).forEach(p => itens.splice(Math.max(itens.length - 1, 0), 0, { rotulo: p.titulo, destino: "?pagina=" + p.slug }));
+  itens.forEach(i => { i.tinhaFilhos = i.filhos.length > 0; i.filhos = i.filhos.filter(valido); });
+  itens = itens.filter(i => i.filhos.length || valido(i));
+  paginas.filter(p => p.menu).forEach(p => itens.splice(Math.max(itens.length - 1, 0), 0, { rotulo: p.titulo, destino: "?pagina=" + p.slug, filhos: [] }));
+  const hrefMenu = d => { const interno = d.startsWith("#") || d.startsWith("?"); return interno ? (location.search && d.startsWith("#") ? "/" + d : d) : urlSegura(d); };
+  const linkMenu = i => '<a ' + (/loja/i.test(i.rotulo) ? 'class="btn ghost" ' : "") + 'href="' + esc(hrefMenu(i.destino) || "#") + '"' + (/^https?:/.test(i.destino) && !/loja/i.test(i.rotulo) ? ' target="_blank" rel="noopener"' : "") + ">" + esc(i.rotulo) + "</a>";
   if (itens.length) {
-    $("nav").innerHTML = itens.map(i => {
-      if (i.destino === "#") return "";
-      const loja = /loja/i.test(i.rotulo);
-      const interno = i.destino.startsWith("#") || i.destino.startsWith("?");
-      const href = interno ? (location.search && i.destino.startsWith("#") ? "/" + i.destino : i.destino) : urlSegura(i.destino);
-      return "<a " + (loja ? 'class="btn ghost" ' : "") + 'href="' + esc(href || "#") + '">' + esc(i.rotulo) + "</a>";
-    }).join("");
+    $("nav").innerHTML = itens.map(i => i.filhos.length
+      ? '<div class="sub"><button type="button" aria-expanded="false">' + esc(i.rotulo) + '</button><div class="sub-menu">' + i.filhos.map(linkMenu).join("") + "</div></div>"
+      : linkMenu(i)).join("");
+    const loja = itens.find(i => /loja/i.test(i.rotulo));
+    if (loja) { $("lojaCel").href = hrefMenu(loja.destino); $("lojaCel").textContent = loja.rotulo; } else $("lojaCel").remove();
   }
+  // Submenus por toque/clique (além do passar o mouse) e menu em tela cheia no celular
+  $("nav").querySelectorAll(".sub>button").forEach(bt => bt.addEventListener("click", ev => {
+    ev.stopPropagation(); const sb = bt.parentElement, abrir = !sb.classList.contains("aberto");
+    $("nav").querySelectorAll(".sub.aberto").forEach(x => { x.classList.remove("aberto"); x.firstElementChild.setAttribute("aria-expanded", "false"); });
+    if (abrir) { sb.classList.add("aberto"); bt.setAttribute("aria-expanded", "true"); }
+  }));
+  document.addEventListener("click", () => $("nav").querySelectorAll(".sub.aberto").forEach(x => { x.classList.remove("aberto"); x.firstElementChild.setAttribute("aria-expanded", "false"); }));
+  const fecharMenu = () => { $("nav").classList.remove("aberto"); $("menuBtn").setAttribute("aria-expanded", "false"); document.body.classList.remove("menu-aberto"); };
+  $("menuBtn").addEventListener("click", ev => {
+    ev.stopPropagation(); const abrir = !$("nav").classList.contains("aberto");
+    if (!abrir) return fecharMenu();
+    $("nav").classList.add("aberto"); $("menuBtn").setAttribute("aria-expanded", "true"); document.body.classList.add("menu-aberto");
+  });
+  $("nav").addEventListener("click", ev => { if (ev.target.closest("a")) fecharMenu(); });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape") fecharMenu(); });
 
   // ---- Topo (computador e celular)
   // topo: { modo: "lado" | "tela_cheia", video, poster }  · celular: { video, poster, titulo, texto, ... }
@@ -412,6 +477,13 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
   const cel = Object.assign({ trilhas_carrossel: true, trilhas_qtd: 4, mostrar_feed: true, mostrar_cinepro: true, mostrar_adesivo: true }, cfg.celular || {});
   const mqCel = window.matchMedia("(max-width: 700px)");
   const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Celular/toque: o YouTube não toca como fundo (aparecem os controles); usamos a capa em movimento lento
+  const toque = window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
+  const imgFundo = (url, poster) => {
+    const yt = capaYoutube(url), src = urlSegura(poster) || (yt && yt.alta) || emb(url).miniatura;
+    if (!src) return "";
+    return '<img class="lento" src="' + esc(src) + '" alt=""' + (yt && !urlSegura(poster) ? ' onerror="if(this.dataset.r){this.remove()}else{this.dataset.r=1;this.src=\'' + esc(yt.media) + '\'}"' : ' onerror="this.remove()"') + ">";
+  };
   const full = videos.find(v => v.tipo === "Vídeo full");
   function desenharTopo() {
     const noCel = mqCel.matches;
@@ -430,11 +502,11 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
         const b = document.createElement("button"); b.type = "button"; b.className = "som-topo"; b.textContent = "Ativar som";
         b.onclick = () => { const v = fundo.querySelector("video"); v.muted = !v.muted; b.textContent = v.muted ? "Ativar som" : "Sem som"; v.play(); };
         $("topo").appendChild(b);
-      } else if (e.rede === "YouTube" && !semMovimento) {
+      } else if (e.rede === "YouTube" && !semMovimento && !toque) {
         const id = (url.match(/(?:youtu\.be\/|v=|shorts\/|live\/|embed\/)([\w-]{11})/) || [])[1];
         fundo.innerHTML = '<iframe tabindex="-1" aria-hidden="true" src="https://www.youtube-nocookie.com/embed/' + esc(id) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(id) + '&controls=0&modestbranding=1&playsinline=1&rel=0&disablekb=1" allow="autoplay; encrypted-media"></iframe>';
-      } else if (urlSegura(poster)) {
-        fundo.innerHTML = '<img src="' + esc(urlSegura(poster)) + '" alt="">';
+      } else if (imgFundo(url, poster)) {
+        fundo.innerHTML = imgFundo(url, poster);
       } else {
         // Sem vídeo nem foto ainda: fundo de luz com a identidade da MCI
         fundo.innerHTML = '<div class="fundo-luz" aria-hidden="true"><span></span><span></span><span></span></div>';
@@ -469,7 +541,8 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
       const moldura = document.createElement("div"); moldura.className = "vf";
       moldura.appendChild(player(v.url, op(v)));
       d.appendChild(moldura);
-      d.insertAdjacentHTML("beforeend", "<h3>" + esc(FRENTES[v.frente] || v.tipo) + "</h3><p>" + esc(v.titulo) + "</p>");
+      const lr = linkRede(v);
+      d.insertAdjacentHTML("beforeend", "<h3>" + esc(FRENTES[v.frente] || v.tipo) + "</h3><p>" + esc(v.titulo) + "</p>" + (lr ? '<a class="abrir" href="' + esc(lr.url) + '" target="_blank" rel="noopener">Ver no ' + esc(lr.rede) + " ↗</a>" : ""));
       $("reels").appendChild(d);
     });
   } else {
@@ -582,11 +655,11 @@ footer .cols img{height:34px;width:auto;margin-bottom:.6rem}
       const b = document.createElement("button"); b.type = "button"; b.className = "som-topo"; b.textContent = "Ativar som";
       b.onclick = () => { const v = fundo.querySelector("video"); v.muted = !v.muted; b.textContent = v.muted ? "Ativar som" : "Sem som"; v.play(); };
       topoEl.appendChild(b);
-    } else if (e.rede === "YouTube" && !semMovimento) {
+    } else if (e.rede === "YouTube" && !semMovimento && !toque) {
       const id = (url.match(/(?:youtu\.be\/|v=|shorts\/|live\/|embed\/)([\w-]{11})/) || [])[1];
       fundo.innerHTML = '<iframe tabindex="-1" aria-hidden="true" src="https://www.youtube-nocookie.com/embed/' + esc(id) + '?autoplay=1&mute=1&loop=1&playlist=' + esc(id) + '&controls=0&modestbranding=1&playsinline=1&rel=0&disablekb=1" allow="autoplay; encrypted-media"></iframe>';
-    } else if (urlSegura(poster) || e.miniatura) {
-      fundo.innerHTML = '<img src="' + esc(urlSegura(poster) || e.miniatura) + '" alt="">';
+    } else if (imgFundo(url, poster)) {
+      fundo.innerHTML = imgFundo(url, poster);
     } else fundo.innerHTML = '<div class="fundo-luz" aria-hidden="true"><span></span><span></span><span></span></div>';
   }
   // Topo de seção: vídeo da seção em tela grande com o texto por cima

@@ -352,9 +352,11 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
 
     async videos(v) {
       const videos = await listar("videos", "criado_em");
-      v.innerHTML = '<div class="topo"><div><h1>Vídeos das redes</h1><p class="mut">Cole o link do Instagram, YouTube, TikTok ou Facebook. O vídeo continua na rede; o blog mostra o player. “Corte ou Reels” aparece nas trilhas; “Vídeo full” vira o destaque do topo; marque “no rodapé” para entrar no feed das redes.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
+      const semMp4 = x => x.tipo !== "Vídeo full" && ["Instagram", "TikTok", "Facebook"].includes(emb(x.url).rede);
+      v.innerHTML = '<div class="topo"><div><h1>Vídeos das redes</h1><p class="mut">“Corte ou Reels” aparece nas trilhas; “Vídeo full” vira o destaque do topo; marque “no rodapé” para entrar no feed das redes.</p></div>' + (pode("colaborador") ? '<button class="btn" id="novo">+ Adicionar vídeo</button>' : "") + "</div>" +
+        (videos.some(semMp4) ? '<div class="aviso">Reels sem arquivo MP4: ' + videos.filter(semMp4).length + '. O Safari e o Android bloqueiam o player do Instagram, então esses vídeos podem não aparecer. Clique em “Editar” e envie o MP4 do Reels (até 50 MB): ele passa a tocar em qualquer aparelho, com o botão “Ver no Instagram”.</div>' : "") +
         '<div class="card" style="margin-bottom:1.5rem"><h2>Testar um link agora</h2><div class="grid2" style="align-items:end"><div class="campo" style="margin:0"><label for="teste">Link do vídeo</label><input id="teste" placeholder="https://www.instagram.com/reel/…"></div><div><button class="btn sec" id="btnTeste">Testar</button></div></div><div id="testeRes"></div></div>' +
-        '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + ((urlSegura(x.capa) || emb(x.url).miniatura) ? "url('" + esc(urlSegura(x.capa) || emb(x.url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + (x.no_rodape ? '<span class="tag publicado">no rodapé</span>' : "") + (emb(x.url).rede === "Instagram" ? '<span class="tag">' + (x.exibicao === "completo" ? "completo" : "só o vídeo") + "</span>" : "") + esc(emb(x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
+        '<div class="lista">' + (videos.map(x => '<div class="item"><div class="th" style="background-image:' + ((urlSegura(x.capa) || emb(x.url).miniatura) ? "url('" + esc(urlSegura(x.capa) || emb(x.url).miniatura) + "')" : "") + '"></div><div><div class="t">' + esc(x.titulo) + '</div><div class="s"><span class="tag' + (x.tipo === "Vídeo full" ? " publicado" : "") + '">' + esc(x.tipo) + "</span>" + (x.no_rodape ? '<span class="tag publicado">no rodapé</span>' : "") + (semMp4(x) ? '<span class="tag agendado">sem MP4</span>' : emb(x.url).tipo === "arquivo" ? '<span class="tag publicado">MP4</span>' : "") + esc(emb(x.link_rede || x.url).rede || "link") + " · " + esc(FRENTES[x.frente] || "sem frente") + '</div></div><div class="acoes"><button class="btn sec" data-ver="' + esc(x.id) + '">Ver aqui</button>' +
           (pode("colaborador") ? '<button class="btn sec" data-ed="' + esc(x.id) + '">Editar</button>' : "") + (pode("editor") ? '<button class="btn perigo" data-ex="' + esc(x.id) + '">Excluir</button>' : "") + "</div></div>").join("") || '<p class="mut">Nenhum vídeo cadastrado. O blog mostra as trilhas de exemplo enquanto isso.</p>') + "</div>";
       const testar = (url, alvo) => {
         const e = emb(url);
@@ -529,7 +531,7 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
         '<div class="mut" style="font-size:.85rem;margin-top:.3rem">Em tela cheia, o vídeo toca sozinho, sem som e em repetição, com o título por cima. Funciona com MP4 enviado ou link do YouTube. Para o celular, configure a versão vertical em “Versão celular”.</div></div>' +
         campoVideo("topo_video", "Vídeo do topo (horizontal)", (cfg.topo || {}).video, "Deixe vazio para usar o vídeo marcado como “Vídeo full” em Vídeos das redes. Ideal: MP4 de 10 a 20 segundos, 1920×1080, até 10 MB.") +
         campoImagem("topo_poster", "Foto de capa do topo (aparece enquanto o vídeo carrega e para quem desativou animações)", (cfg.topo || {}).poster) + "</div>" +
-        '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Destinos: <code>#videos</code>, <code>#leituras</code>, <code>#sobre</code>, <code>#setup</code>, a página de uma seção (<code>?secao=produto</code>, <code>?secao=educativo</code>, <code>?secao=evento</code>, <code>?secao=materia</code>) ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
+        '<div class="card" style="margin-bottom:1rem"><h2>Menu</h2><p class="mut" style="margin-top:-.6rem">Uma linha por item, no formato <code>Rótulo | destino</code>. Para um submenu, comece a linha com <code>-</code>: ela entra dentro do item de cima (ex.: <code>Novidades</code> e, embaixo, <code>- Lançamentos | ?secao=produto</code>). Seções sem posts publicados não aparecem no menu. Destinos: <code>#leituras</code>, <code>#gente</code>, <code>#sobre</code>, <code>#videos</code>, a página de uma seção (<code>?secao=produto</code>, <code>?secao=educativo</code>, <code>?secao=evento</code>, <code>?secao=materia</code>) ou um link completo. O item com “Loja” vira botão.</p>' + c("menu", "Itens do menu", true) + "</div>" +
         '<div class="card" style="margin-bottom:1rem"><h2>Seções opcionais</h2><label style="display:flex;gap:.6rem;align-items:flex-start;color:var(--txt)"><input type="checkbox" id="mostrar_cinema" style="width:auto;margin-top:.3rem" ' + (cfg.mostrar_cinema ? "checked" : "") + '><span><b>Publicar a seção “Cinema em alta”</b><br><span class="mut">Enquanto estiver desmarcado, a seção e o item “Cinema” do menu ficam escondidos, e os posts da seção Cinema não aparecem no blog. Prepare os posts com calma e marque aqui quando quiser lançar.</span></span></label></div>' +
         '<div class="card"><h2>Contato e página Sobre</h2><div class="grid2">' + c("contato_email", "E-mail de contato") + c("contato_tel", "Telefone") + "</div>" + c("video_sobre", "Vídeo da página Sobre (link)", false, "https://www.youtube.com/watch?v=…") + "</div>";
       ligarImagens(v, "topo"); ligarVideos(v, "topo");
@@ -662,25 +664,34 @@ code{background:var(--ink3);padding:.1rem .35rem;border-radius:4px;font-size:.88
   }
 
   function editarVideo(x) {
+    const ehArquivo = x && emb(x.url).tipo === "arquivo";
+    const linkAtual = x ? (x.link_rede || (ehArquivo ? "" : x.url)) : "";
     abrirDialogo(
-      "<h2>" + (x ? "Editar vídeo" : "Adicionar vídeo") + '</h2>' + campoVideo("url", "Link do vídeo ou arquivo", x?.url, "Cole o link do Instagram, YouTube, TikTok ou Facebook, ou envie um MP4 de até 50 MB. Para o topo do blog, um vídeo horizontal funciona melhor.") +
+      "<h2>" + (x ? "Editar vídeo" : "Adicionar vídeo") + "</h2>" +
+      '<div class="campo"><label for="link_rede">Link do post (Instagram, TikTok, Facebook ou YouTube)</label><input id="link_rede" value="' + esc(linkAtual) + '" placeholder="https://www.instagram.com/reel/…"><div class="mut" style="font-size:.85rem;margin-top:.3rem" id="linkInfo"></div></div>' +
+      campoVideo("arquivo", "Arquivo MP4 do vídeo (recomendado para Reels)", ehArquivo ? x.url : "", "Envie o mesmo vídeo publicado na rede (MP4, até 50 MB). Ele toca no blog em qualquer aparelho, sem som e em repetição, com o botão “Ver no Instagram”. Sem o arquivo, o blog tenta usar o player do Instagram, que o Safari e o Android costumam bloquear.") +
       '<div class="campo"><label for="titulo">Título</label><input id="titulo" required value="' + esc(x?.titulo || "") + '"></div>' +
       '<div class="grid2"><div class="campo"><label for="tipo">Tipo</label><select id="tipo">' + TIPOS.map(t => "<option" + ((x?.tipo || "Corte ou Reels") === t ? " selected" : "") + ">" + t + "</option>").join("") + '</select></div><div class="campo"><label for="frente">Frente</label><select id="frente"><option value="">—</option>' + Object.entries(FRENTES).map(([k, n]) => '<option value="' + k + '"' + (x?.frente === k ? " selected" : "") + ">" + n + "</option>").join("") + "</select></div></div>" +
-      '<div class="campo"><label for="exibicao">Como mostrar (Instagram)</label><select id="exibicao"><option value="limpo"' + ((x?.exibicao || "limpo") === "limpo" ? " selected" : "") + '>Só o vídeo, em tela cheia (sem os detalhes do Instagram)</option><option value="completo"' + (x?.exibicao === "completo" ? " selected" : "") + '>Completo, com perfil, curtidas e “Ver mais no Instagram”</option></select><div class="mut" style="font-size:.85rem;margin-top:.3rem">Use “Completo” para posts de foto ou carrossel, que não são verticais.</div></div>' +
+      '<div class="campo" id="campoExib"><label for="exibicao">Sem MP4: como mostrar o Instagram</label><select id="exibicao"><option value="limpo"' + ((x?.exibicao || "limpo") === "limpo" ? " selected" : "") + '>Só o vídeo, sem os detalhes do Instagram</option><option value="completo"' + (x?.exibicao === "completo" ? " selected" : "") + '>Completo, com perfil e curtidas (para posts de foto ou carrossel)</option></select></div>' +
       '<div class="campo"><label><input type="checkbox" id="no_rodape" style="width:auto" ' + (x?.no_rodape ? "checked" : "") + '> Mostrar no feed das redes, no rodapé do blog</label></div>' +
-      campoImagem("capa", "Capa (opcional; o Instagram e o TikTok já mostram a capa do próprio vídeo)", x?.capa) +
+      campoImagem("capa", "Capa (aparece antes de o vídeo tocar)", x?.capa) +
       '<div class="rodape"><button type="button" class="btn sec" data-cancelar>Cancelar</button><button class="btn" type="submit">Salvar vídeo</button></div>',
       async f => {
-        const url = val(f, "url"), e = emb(url);
-        if (!urlSegura(url)) { toast("Link inválido.", true); return false; }
-        return !!(await salvar("videos", { url, rede: e.rede || null, titulo: val(f, "titulo"), tipo: val(f, "tipo"), frente: val(f, "frente"), capa: val(f, "capa"), no_rodape: f.querySelector("#no_rodape").checked, exibicao: val(f, "exibicao") || "limpo" }, x?.id));
+        const link = val(f, "link_rede"), arq = val(f, "arquivo");
+        if (link && !urlSegura(link)) { toast("Link inválido.", true); return false; }
+        const url = arq || link;
+        if (!url) { toast("Cole o link do post ou envie o arquivo do vídeo.", true); return false; }
+        return !!(await salvar("videos", { url, link_rede: link || null, rede: emb(link || url).rede || null, titulo: val(f, "titulo"), tipo: val(f, "tipo"), frente: val(f, "frente"), capa: val(f, "capa"), no_rodape: f.querySelector("#no_rodape").checked, exibicao: val(f, "exibicao") || "limpo" }, x?.id));
       },
       f => {
         ligarImagens(f, "videos"); ligarVideos(f, "videos");
-        // Prévia respeita o modo de exibição escolhido
-        const u = f.querySelector("#url"), ex = f.querySelector("#exibicao"), pv = f.querySelector("#urlPrev");
-        const mostra = () => { pv.innerHTML = ""; if (emb(u.value).tipo) pv.appendChild(player(u.value, { limpo: ex.value === "limpo" })); };
-        ex.addEventListener("change", mostra); u.addEventListener("change", () => setTimeout(mostra)); mostra();
+        const l = f.querySelector("#link_rede"), a = f.querySelector("#arquivo"), info = f.querySelector("#linkInfo"), ex = f.querySelector("#campoExib");
+        const atual = () => {
+          const e = emb(l.value), temArq = emb(a.value).tipo === "arquivo";
+          info.textContent = l.value ? (e.rede ? "Reconhecido: " + e.rede + (temArq ? ". O blog toca o MP4 e mostra o botão “Ver no " + e.rede + "”." : e.rede === "YouTube" ? "." : ". Envie o MP4 abaixo para tocar em todos os aparelhos.") : "Link não reconhecido. Use o link do post, não o do perfil.") : "";
+          ex.hidden = temArq || e.rede !== "Instagram";
+        };
+        l.addEventListener("input", atual); a.addEventListener("change", () => setTimeout(atual)); f.addEventListener("change", atual); atual();
       });
   }
 

@@ -72,6 +72,19 @@
       caixa.innerHTML = '<iframe src="' + esc(e.src) + '" title="' + esc(o.titulo || "Vídeo") + '" loading="lazy" scrolling="no" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
       return caixa;
     }
+    if (e.tipo === "arquivo" && o.reel) {
+      const poster = urlSegura(o.capa) ? ' poster="' + esc(urlSegura(o.capa)) + '"' : "";
+      caixa.classList.add("p-reel");
+      caixa.innerHTML = '<video muted loop playsinline preload="metadata"' + poster + ' src="' + esc(e.src) + '#t=0.1"></video><button type="button" class="som" aria-label="Ativar som">Ativar som</button>';
+      const v = caixa.querySelector("video"), b = caixa.querySelector(".som");
+      const parar = () => { v.pause(); };
+      if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        new IntersectionObserver(es => es.forEach(x => x.isIntersecting ? v.play().catch(() => {}) : parar()), { threshold: 0.5 }).observe(caixa);
+      }
+      b.onclick = ev => { ev.stopPropagation(); v.muted = !v.muted; b.textContent = v.muted ? "Ativar som" : "Sem som"; b.setAttribute("aria-label", b.textContent); v.play().catch(() => {}); };
+      v.addEventListener("click", () => { v.paused ? v.play().catch(() => {}) : v.pause(); });
+      return caixa;
+    }
     if (e.tipo === "arquivo") {
       const poster = urlSegura(o.capa) ? ' poster="' + esc(urlSegura(o.capa)) + '"' : "";
       if (o.fundo) {
@@ -99,9 +112,22 @@
   }
 
   // Lê o menu no formato "Rótulo | destino", uma linha por item.
+  // Linhas que começam com "-" são subitens do item de cima (viram submenu).
   function menu(texto) {
-    return String(texto || "").split("\n").map(l => l.split("|").map(s => s.trim()))
-      .filter(p => p[0]).map(p => ({ rotulo: p[0], destino: p[1] || "#" }));
+    const itens = [];
+    String(texto || "").split("\n").forEach(l => {
+      const sub = /^\s*[-–•]\s*/.test(l);
+      const p = l.replace(/^\s*[-–•]\s*/, "").split("|").map(x => x.trim());
+      if (!p[0]) return;
+      const it = { rotulo: p[0], destino: p[1] || "#", filhos: [] };
+      if (sub && itens.length) itens[itens.length - 1].filhos.push(it); else itens.push(it);
+    });
+    return itens;
+  }
+  // Capa de um vídeo do YouTube (máxima resolução, com a média como reserva)
+  function capaYoutube(url) {
+    const m = String(url || "").match(/(?:youtu\.be\/|v=|shorts\/|live\/|embed\/)([\w-]{11})/);
+    return m ? { alta: "https://i.ytimg.com/vi/" + m[1] + "/maxresdefault.jpg", media: "https://i.ytimg.com/vi/" + m[1] + "/hqdefault.jpg" } : null;
   }
 
   function dataBR(d) {
@@ -276,12 +302,13 @@
     st.textContent = ".p-limpo{aspect-ratio:9/16;container-type:inline-size;background:#000}" +
       ".p-limpo iframe{position:absolute;border:0;width:142.23%;left:-21.12%;top:-56px;height:calc(56px + 177.78cqw + 200px);max-width:none}" +
       ".p-fundo{background:#000}.p-fundo video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}" +
-      ".p-fundo .som{position:absolute;right:.8rem;bottom:.8rem;z-index:3;font:600 .8rem/1 Poppins,Helvetica,Arial,sans-serif;padding:.5rem .8rem;border-radius:999px;border:1px solid rgba(255,255,255,.6);background:rgba(14,17,16,.6);color:#fff;cursor:pointer}";
+      ".p-reel{aspect-ratio:9/16;background:#000}.p-reel video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:pointer}" +
+      ".p-reel .som,.p-fundo .som{position:absolute;right:.8rem;bottom:.8rem;z-index:3;font:600 .8rem/1 Poppins,Helvetica,Arial,sans-serif;padding:.5rem .8rem;border-radius:999px;border:1px solid rgba(255,255,255,.6);background:rgba(14,17,16,.6);color:#fff;cursor:pointer}";
     document.head.appendChild(st);
     const sb = document.createElement("style"); sb.textContent = CSS_BLOCOS; document.head.appendChild(sb);
   })();
 
   const db = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_KEY);
 
-  window.MCI = { C, db, FRENTES, SECOES, FONTES, PADRAO_FONTES, URL_FONTES, aplicarFontes, limparHtml, blocosDeTexto, textoDeBlocos, desenharBlocos, esc, urlSegura, emb, player, menu, dataBR, paragrafos };
+  window.MCI = { C, db, capaYoutube, FRENTES, SECOES, FONTES, PADRAO_FONTES, URL_FONTES, aplicarFontes, limparHtml, blocosDeTexto, textoDeBlocos, desenharBlocos, esc, urlSegura, emb, player, menu, dataBR, paragrafos };
 })();

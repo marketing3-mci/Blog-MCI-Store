@@ -72,3 +72,9 @@ O projeto não precisa de comando de build: *Framework Preset* = Other e *Output
 - **Textos do blog:** títulos e textos fixos da página inicial em `site_config.textos` (jsonb), aplicados nos elementos com `data-t`.
 - **Sobre a MCI:** `sobre_*` em `site_config`; linha do tempo horizontal na ordem do campo `ordem` dos marcos.
 - **Fontes:** `MCI.FONTES` + `MCI.aplicarFontes(cfg)` → variáveis `--disp`, `--sans`, `--hand` (títulos: Unbounded, Poppins, Montserrat, Helvetica; textos: Poppins, Montserrat, Helvetica; manuscrita: Caveat, Kalam, Patrick Hand).
+
+## Menu e Reels (nov/2026)
+
+- **Menu:** em *Site e menu*, linhas que começam com `-` viram submenu do item de cima. Seções sem posts publicados somem do menu sozinhas. No celular e no tablet (até 900 px) o menu abre em tela cheia pelo botão ☰.
+- **Reels:** `videos.url` é o que toca (MP4 enviado ou link) e `videos.link_rede` é o post na rede (botão "Ver no Instagram"). Reels em MP4 tocam sem som, em repetição, só quando aparecem na tela (`player(url, { reel: true })`). Sem MP4, o blog usa o player do Instagram, que Safari e Android costumam bloquear; o painel avisa ("sem MP4").
+- **Topo no celular:** em telas de toque o YouTube não é usado como fundo (aparecem controles); entra a capa do vídeo com zoom lento.
