@@ -177,10 +177,12 @@ h2{font:500 clamp(1.5rem,3vw,2.2rem)/1.15 var(--disp);letter-spacing:-.02em;marg
 .mvv-faixa{position:relative;isolation:isolate;overflow:hidden;background:var(--ink);color:#F2F2F2;padding:clamp(3.5rem,7vw,5.5rem) 0;margin-top:clamp(3rem,6vw,4.5rem)}
 /* Brilho turquesa que se move em loop (sensação de tecnologia em movimento) */
 .mvv-faixa::before,.mvv-faixa::after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(40px)}
-.mvv-faixa::before{width:70vw;height:70vw;max-width:1100px;max-height:1100px;left:-22vw;bottom:-38vw;background:radial-gradient(closest-side,rgba(28,166,141,.55),rgba(28,166,141,.18) 55%,transparent);animation:brilho1 14s ease-in-out infinite alternate}
-.mvv-faixa::after{width:40vw;height:40vw;max-width:640px;max-height:640px;left:18vw;bottom:-26vw;background:radial-gradient(closest-side,rgba(160,217,206,.28),rgba(78,191,139,.1) 60%,transparent);animation:brilho2 19s ease-in-out infinite alternate}
-@keyframes brilho1{0%{translate:0 0;scale:1;opacity:.85}35%{translate:9vw -6vw;scale:1.12;opacity:1}70%{translate:3vw -11vw;scale:.95;opacity:.75}100%{translate:-4vw -3vw;scale:1.08;opacity:.95}}
-@keyframes brilho2{0%{translate:0 0;opacity:.5}50%{translate:-14vw -8vw;opacity:.9}100%{translate:10vw -4vw;opacity:.6}}
+.mvv-faixa::before{width:72vw;height:72vw;max-width:1150px;max-height:1150px;left:-22vw;bottom:-38vw;background:radial-gradient(closest-side,rgba(28,166,141,.62),rgba(28,166,141,.22) 55%,transparent);animation:brilho1 9s ease-in-out infinite alternate}
+.mvv-faixa::after{width:44vw;height:44vw;max-width:700px;max-height:700px;left:18vw;bottom:-26vw;background:radial-gradient(closest-side,rgba(160,217,206,.34),rgba(78,191,139,.14) 60%,transparent);animation:brilho2 12s ease-in-out infinite alternate}
+/* Texto sempre legível sobre o brilho */
+.mvv-faixa .mvv{position:relative;z-index:1;text-shadow:0 1px 14px rgba(14,17,16,.55)}
+@keyframes brilho1{0%{translate:0 0;scale:1;opacity:.8}25%{translate:16vw -9vw;scale:1.2;opacity:1}50%{translate:30vw -4vw;scale:1.05;opacity:.85}75%{translate:12vw -16vw;scale:1.25;opacity:1}100%{translate:-6vw -6vw;scale:.95;opacity:.9}}
+@keyframes brilho2{0%{translate:0 0;scale:1;opacity:.55}33%{translate:-18vw -12vw;scale:1.15;opacity:1}66%{translate:24vw -6vw;scale:.9;opacity:.75}100%{translate:40vw -14vw;scale:1.1;opacity:.95}}
 @media (prefers-reduced-motion:reduce){.mvv-faixa::before,.mvv-faixa::after{animation:none}}
 .mvv{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:clamp(2rem,4vw,3.2rem);align-items:start}
 .mvv .rot{display:block;font:600 .78rem var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin-bottom:.9rem}
